@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt # plotting
 import numpy as np # linear algebra
 import os # accessing directory structure
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-from functools import reduce
-import pyfolio as pf # for technial analysis
-from zipline.api import order, record, symbol
+# from zipline.api import order, record, symbol # for algo trading
+import pyfolio as pf
+import matplotlib.pyplot as plt
 
 
 
@@ -18,7 +18,8 @@ print(df.info())
 # convert values from timestamp to date
 df['time'] = pd.to_datetime(df['time'], unit='ms')
 print(df['time'])
-#this doesn't work well, we have multiple obs with the same timestamp but different price values
+
+# this doesn't work well, we have multiple obs with the same timestamp but different price values
 
 ### DATA SOURCE 2: CRYPTODATADOWNLOAD.com ----------------------------
 # import dataframe
@@ -29,6 +30,7 @@ print(df2.info())
 # convert values from timestamp to date
 df2['unix'] = pd.to_datetime(df2['unix'], unit = 'ms')
 print(df2['unix'])
+
 # we only have data until 15th of November, so less than a month
 
 
@@ -52,6 +54,10 @@ df_merged = pd.concat(data_frames)
 df_merged['time'] = pd.to_datetime(df_merged['time'], unit = 'ms')
 
 # Write csv of merged files
-pd.DataFrame.to_csv(df_merged, 'Zoombie_merged.txt', sep=',', na_rep='.', index=False)
+# pd.DataFrame.to_csv(df_merged, 'Zoombie_merged.txt', sep=',', na_rep='.', index=False)
 
-# we should have a df with 6'832'800 rows (13y*365d*24h*60m)but only have 2'630'217 rows 
+# we should have a df with 6'832'800 rows (13y*365d*24h*60m)but only have 2'630'217 rows
+
+# plot the open prices against time
+df_merged.plot(x ='time', y='open', kind = 'scatter')
+plt.show()
