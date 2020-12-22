@@ -1,7 +1,7 @@
 import pandas as pd 
 from ta import add_all_ta_features
 
-
+"""
 ### DATA SOURCE 1: KAGGLE ------------------------------
 # import dataframe
 df_merged = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
@@ -24,7 +24,7 @@ df2['unix'] = pd.to_datetime(df2['unix'], unit = 'ms')
 print(df2['unix'])
 
 # we only have data until 15th of November, so less than a month
-
+"""
 
 ### DATA SOURCE 3: GITHUB  ------------------------------
 #https://github.com/Zombie-3000/Bitfinex-historical-data
