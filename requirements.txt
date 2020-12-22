@@ -4,3 +4,6 @@ pandas_ta
 numpy
 datetime
 matplotlib
+sklearn
+xgboost
+#test
