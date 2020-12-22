@@ -9,6 +9,7 @@ from ta import add_all_ta_features
 import backtrader as bt
 from datetime import datetime
 
+# import the functions from functions.py
 import Functions
 
 
@@ -78,7 +79,6 @@ plt.show()
 
 
 # BOLLINGER BANDS 2 -------------------------------------
-import pandas as pd
 from ta.volatility import *
 
 # Initialize Bollinger Bands Indicator
@@ -100,3 +100,4 @@ with pd.plotting.plot_params.use('x_compat', True):
     df_subset['close'].plot(color='r')
     df_subset['bb_bbm'].plot(color='g')
     df_subset['bb_bbh'].plot(color='b')
+
