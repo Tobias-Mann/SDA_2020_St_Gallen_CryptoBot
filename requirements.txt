@@ -1,4 +1,6 @@
 backtrader
 pandas
+pandas_ta
 numpy
-
+datetime
+matplotlib

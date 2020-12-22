@@ -1,16 +1,4 @@
-import Functions
-
-import pandas as pd
-import matplotlib.pyplot as plt 
-import numpy as np 
-import os 
-# from zipline.api import order, record, symbol # for algo trading
-# import pyfolio as pf
-import pandas_ta as pdt # pandas wrapper for technical analysis
-from ta import add_all_ta_features
-import backtrader as bt
-from datetime import datetime
-
+import pandas as pd 
 
 ### DATA SOURCE 1: KAGGLE ------------------------------
 # import dataframe
@@ -48,13 +36,15 @@ df_17 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-hist
 df_18 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2018/merged.csv?raw=true', names = headers)
 df_19 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2019/merged.csv?raw=true', names = headers)
 
+len(df_19)
+
 # Merge dataframes
 data_frames = [df_13, df_14, df_15, df_16, df_17, df_18, df_19]
 df_merged = pd.concat(data_frames)
 
 #convert timestamp to datae
 df_merged['time'] = pd.to_datetime(df_merged['time'], unit = 'ms')
-print(df_merged)
+print(df_merged.info())
 
 # we should have a df with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows
 
@@ -69,61 +59,13 @@ plt.show()
 df_merged = df_merged.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
 df_merged = df_merged.rename(columns={"index": "old_index"})
 df_merged = df_merged.sort_values(by=['time'], ascending = True, na_position = 'last')
-df_merged
-
-# Write csv of merged files
-# pd.DataFrame.to_csv(df_merged, 'Zoombie_merged.txt', sep=',', na_rep='.', index=False)
-
-
-### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
-
-# take a subset of the data for faster computation
-x = len(df_merged) - len(df_19)
-y = len(df_merged)
-df_subset = df_merged[x:y]
-
-# add all 84 technical features
-# this takes a while
-df_ta = add_all_ta_features(
-    df_subset, open="open", high="high", 
-    low="low", close="close", volume="volume", fillna=True)
-
-df_ta = df_ta.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
-df_ta = df_ta.rename(columns={"index": "old_index"})
-df_ta = df_ta.sort_values(by=['time'], ascending = True, na_position = 'last')
-df_ta.info()
-# pd.DataFrame.to_csv(df, 'df_with_ta.txt', sep=',', na_rep='.', index=False)
-
 
 # assign days to the dataset
-df_ta['day'] = df_ta['time'].dt.day
-df_ta['month'] = df_ta['time'].dt.month
-df_ta['year'] = df_ta['time'].dt.month
-df_ta
+df_merged['day'] = df_merged['time'].dt.day
+df_merged['month'] = df_merged['time'].dt.month
+df_merged['year'] = df_merged['time'].dt.month
 
-# calculate returns
-# this takes a while
-df_ta['returns'] = 'NA'
-for i in range(len(df_ta)):
-    df_ta['returns'][i] = np.log(df_ta['close'][i+1]/df_ta['close'][i])
-print(df_ta)
+print(df_merged)
 
-# calculate Simple Moving Average with 20 days window
-sma = df_ta.rolling(window=20).mean()
-
-# calculate the standard deviation
-rstd = df_ta.rolling(window=20).std()
-
-upper_band = sma + 2 * rstd
-upper_band = upper_band.rename(columns={symbol: 'upper'})
-lower_band = sma - 2 * rstd
-lower_band = lower_band.rename(columns={symbol: 'lower'})
-
-#plot the 
-df_ta = df_ta.join(upper_band).join(lower_band)
-ax = df_ta.plot(title='{} Price and BB'.format(symbol))
-ax.fill_between(df_ta.index, lower_band['lower'], upper_band['upper'], color='#ADCCFF', alpha='0.4')
-ax.set_xlabel('date')
-ax.set_ylabel('SMA and BB')
-ax.grid()
-plt.show()
+# Write csv of merged files
+pd.DataFrame.to_csv(df_merged, 'df_raw.csv', sep=',', na_rep='.', index=False)

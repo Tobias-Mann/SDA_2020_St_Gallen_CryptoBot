@@ -1,3 +1,5 @@
+import backtrader as bt
+
 # Create a subclass of Strategy to define the indicators and logic
 
 class SmaCross(bt.Strategy):
