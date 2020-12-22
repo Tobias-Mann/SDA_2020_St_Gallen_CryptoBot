@@ -1,13 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
 import numpy as np 
-import os 
-# from zipline.api import order, record, symbol # for algo trading
-# import pyfolio as pf
 import pandas_ta as pdt # pandas wrapper for technical analysis
-from ta import add_all_ta_features
 import backtrader as bt
 from datetime import datetime
+from sklearn.ensemble import *
+import xgboost as xgb
+from statsmodels.tsa.stattools import adfuller
+
 
 # import the functions from functions.py
 import Functions
@@ -17,37 +17,18 @@ import Functions
 ### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
 
 # import dataframe
-df_raw = pd.read_csv('df_raw.csv')
+df_raw = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/df_raw.csv')
 
 
 # take a subset of Dec 19 of the data for faster computation
-df_raw.loc[df_raw['time'] == '2019-12-01 00:00:00']
-x = 2587233
+index = df_raw[df_raw['Time']=='2019-12-31 00:00:00'].index.values[0]
+x = index
 y = len(df_raw)
 df_subset = df_raw[x:y]
+print('Number of rows: {}, Number of columns: {}'.format(*df_subset.shape))
+
 
 """
-# add all 84 technical features
-# this takes a while
-df_subset = add_all_ta_features(
-    df_subset, open="open", high="high", 
-    low="low", close="close", volume="volume", fillna=True)
-
-df_subset = df_subset.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
-df_subset = df_subset.rename(columns={"index": "old_index"})
-df_subset = df_subset.sort_values(by=['time'], ascending = True, na_position = 'last')
-df_subset.info()
-# pd.DataFrame.to_csv(df, 'df_with_ta.txt', sep=',', na_rep='.', index=False)
-
-# calculate returns
-# this takes a while
-df_subset['returns'] = 'NA'
-for i in range(len(df_subset)):
-    df_subset['returns'][i] = np.log(df_subset['close'][i+1]/df_subset['close'][i])
-print(df_subset)
-"""
-
-
 # BOLLINGER BANDS -------------------------------------
 # https://towardsdatascience.com/trading-technical-analysis-with-pandas-43e737a17861
 
@@ -100,4 +81,58 @@ with pd.plotting.plot_params.use('x_compat', True):
     df_subset['close'].plot(color='r')
     df_subset['bb_bbm'].plot(color='g')
     df_subset['bb_bbh'].plot(color='b')
+"""
 
+# STATIONARITY Analysis ----------------------
+
+# Historgram
+df_subset['Close'].hist()
+plt.show() 
+# clearly we have a non-gaussian distribution
+
+# Mean and Variance
+X = df_subset['Close'].values
+split = round(len(X) / 2)
+X1, X2 = X[0:split], X[split:]
+mean1, mean2 = X1.mean(), X2.mean()
+var1, var2 = X1.var(), X2.var()
+print('mean1=%f, mean2=%f' % (mean1, mean2))
+print('variance1=%f, variance2=%f' % (var1, var2))
+# running this tests shows different variances for different timeframes
+
+# Augmented Dickey-Fuller Test
+X = df_subset['Close'].values
+result = adfuller(X)
+print('ADF Statistic: %f' % result[0])
+print('p-value: %f' % result[1])
+print('Critical Values:')
+for key, value in result[4].items():
+	print('\t%s: %.3f' % (key, value))
+# Null Hypothesis (H0): If failed to be rejected, it suggests the time series 
+# has a unit root, meaning it is non-stationary. It has some time dependent structure.
+
+
+# XGBOOST ----------------------
+df_subset.info()
+df_subset = df_subset.drop(columns='old_index')
+
+excl = ['Close', 'Time', 'Open', 'High', 'Volume', 'day', 'Week', 'Weekday', 'month', 'year']
+cols = [c for c in df_subset.columns if c not in excl]
+
+y_test = df_subset[round(0.9*len(df_subset)):len(df_subset)]['Close']
+y_train = df_subset[0:round(0.9*len(df_subset))]
+y_mean = np.mean(y_train)
+
+xgb_params = {
+    'n_trees': 800,
+    'eta': 0.0045,
+    'max_depth': 20,
+    'subsample': 0.95,
+    'colsample_bytree': 0.95,
+    'colsample_bylevel': 0.95,
+    'objective': 'multi:softmax',
+    'num_class' : 3,
+    'eval_metric': 'mlogloss', # 'merror', # 'rmse',
+    'base_score': 0,
+    'silent': 1
+}
