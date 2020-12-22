@@ -2,13 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import numpy as np 
 import os 
-# from zipline.api import order, record, symbol # for algo trading
-# import pyfolio as pf
-import ta # technical analysis
-import pandas_ta as pdt # pandas wrapper for technical analysis
 
 
-### DATA SOURCE 1: KAGGLE ----------------------------
+### DATA SOURCE 1: KAGGLE ------------------------------
 # import dataframe
 df = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
 print(df.info())
@@ -19,7 +15,7 @@ print(df['time'])
 
 # this doesn't work well, we have multiple obs with the same timestamp but different price values
 
-### DATA SOURCE 2: CRYPTODATADOWNLOAD.com ----------------------------
+### DATA SOURCE 2: CRYPTODATADOWNLOAD.com ------------------------------
 # import dataframe
 df2 = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/Bitfinex_BTCUSD_minute.csv', 
     header=1)
@@ -32,7 +28,7 @@ print(df2['unix'])
 # we only have data until 15th of November, so less than a month
 
 
-### DATA SOURCE 3: GITHUB  ----------------------------
+### DATA SOURCE 3: GITHUB  ------------------------------
 #https://github.com/Zombie-3000/Bitfinex-historical-data
 
 headers = ['time', 'open', 'close', 'high', 'low', 'volume']
@@ -55,7 +51,7 @@ print(df_merged)
 # Write csv of merged files
 # pd.DataFrame.to_csv(df_merged, 'Zoombie_merged.txt', sep=',', na_rep='.', index=False)
 
-# we should have a df with 6'832'800 rows (13y*365d*24h*60m)but only have 2'630'217 rows
+# we should have a df with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows
 
 # plot the open prices against time
 # this takes a while
@@ -70,29 +66,48 @@ df_merged = df_merged.rename(columns={"index": "old_index"})
 df_merged = df_merged.sort_values(by=['time'], ascending = True, na_position = 'last')
 df_merged
 
-### TECHNICAL ANALYSIS OF DATA SOURCE 3 -------------------
+
+### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
+# from zipline.api import order, record, symbol # for algo trading
+# import pyfolio as pf
+import pandas_ta as pdt # pandas wrapper for technical analysis
 from ta import add_all_ta_features
-from ta.utils import dropna
+import backtrader 
+from datetime import datetime
+
+
+# take a subset of the data to faster computation
+x = len(df_merged) - len(df_19)
+y = len(df_merged)
+df_subset = df_merged[x:y]
 
 # add all 84 technical features
 # this takes a while
-"""
-df = add_all_ta_features(
+df_subset = add_all_ta_features(
     df_merged, open="open", high="high", 
     low="low", close="close", volume="volume", fillna=True)
 
-df = df.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
-df = df.rename(columns={"index": "old_index"})
-df = df.sort_values(by=['time'], ascending = True, na_position = 'last')
-df.info()
-pd.DataFrame.to_csv(df, 'df_with_ta.txt', sep=',', na_rep='.', index=False)
-"""
+df_subset = df_subset.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
+df_subset = df_subset.rename(columns={"index": "old_index"})
+df_subset = df_subset.sort_values(by=['time'], ascending = True, na_position = 'last')
+df_subset.info()
+# pd.DataFrame.to_csv(df, 'df_with_ta.txt', sep=',', na_rep='.', index=False)
 
 
-i = 1
-df_merged['returns'][i] = np.log(df_merged['close'][i+1]/df_merged['close'][i])
+# assign days to the dataset
+df_subset['day'] = df_subset['time'].dt.day
+df_subset['month'] = df_subset['time'].dt.month
+df_subset['year'] = df_subset['time'].dt.month
+day_of_year = datetime.now().timetuple().tm_yday  # returns 1 for January 1st
+d = datetime.date(YEAR, 1, 1)
+
+
+
 
 # calculate returns
+# this takes a while
+"""
 df_merged['returns'] = 'NA'
 for i in range(len(df_merged)):
     df_merged['returns'][i] = np.log(df_merged['close'][i+1]/df_merged['close'][i])
+"""
