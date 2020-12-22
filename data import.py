@@ -1,7 +1,15 @@
+import Functions
+
 import pandas as pd
 import matplotlib.pyplot as plt 
 import numpy as np 
 import os 
+# from zipline.api import order, record, symbol # for algo trading
+# import pyfolio as pf
+import pandas_ta as pdt # pandas wrapper for technical analysis
+from ta import add_all_ta_features
+import backtrader as bt
+from datetime import datetime
 
 
 ### DATA SOURCE 1: KAGGLE ------------------------------
@@ -48,9 +56,6 @@ df_merged = pd.concat(data_frames)
 df_merged['time'] = pd.to_datetime(df_merged['time'], unit = 'ms')
 print(df_merged)
 
-# Write csv of merged files
-# pd.DataFrame.to_csv(df_merged, 'Zoombie_merged.txt', sep=',', na_rep='.', index=False)
-
 # we should have a df with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows
 
 # plot the open prices against time
@@ -66,48 +71,59 @@ df_merged = df_merged.rename(columns={"index": "old_index"})
 df_merged = df_merged.sort_values(by=['time'], ascending = True, na_position = 'last')
 df_merged
 
+# Write csv of merged files
+# pd.DataFrame.to_csv(df_merged, 'Zoombie_merged.txt', sep=',', na_rep='.', index=False)
+
 
 ### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
-# from zipline.api import order, record, symbol # for algo trading
-# import pyfolio as pf
-import pandas_ta as pdt # pandas wrapper for technical analysis
-from ta import add_all_ta_features
-import backtrader 
-from datetime import datetime
 
-
-# take a subset of the data to faster computation
+# take a subset of the data for faster computation
 x = len(df_merged) - len(df_19)
 y = len(df_merged)
 df_subset = df_merged[x:y]
 
 # add all 84 technical features
 # this takes a while
-df_subset = add_all_ta_features(
-    df_merged, open="open", high="high", 
+df_ta = add_all_ta_features(
+    df_subset, open="open", high="high", 
     low="low", close="close", volume="volume", fillna=True)
 
-df_subset = df_subset.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
-df_subset = df_subset.rename(columns={"index": "old_index"})
-df_subset = df_subset.sort_values(by=['time'], ascending = True, na_position = 'last')
-df_subset.info()
+df_ta = df_ta.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
+df_ta = df_ta.rename(columns={"index": "old_index"})
+df_ta = df_ta.sort_values(by=['time'], ascending = True, na_position = 'last')
+df_ta.info()
 # pd.DataFrame.to_csv(df, 'df_with_ta.txt', sep=',', na_rep='.', index=False)
 
 
 # assign days to the dataset
-df_subset['day'] = df_subset['time'].dt.day
-df_subset['month'] = df_subset['time'].dt.month
-df_subset['year'] = df_subset['time'].dt.month
-day_of_year = datetime.now().timetuple().tm_yday  # returns 1 for January 1st
-d = datetime.date(YEAR, 1, 1)
-
-
-
+df_ta['day'] = df_ta['time'].dt.day
+df_ta['month'] = df_ta['time'].dt.month
+df_ta['year'] = df_ta['time'].dt.month
+df_ta
 
 # calculate returns
 # this takes a while
-"""
-df_merged['returns'] = 'NA'
-for i in range(len(df_merged)):
-    df_merged['returns'][i] = np.log(df_merged['close'][i+1]/df_merged['close'][i])
-"""
+df_ta['returns'] = 'NA'
+for i in range(len(df_ta)):
+    df_ta['returns'][i] = np.log(df_ta['close'][i+1]/df_ta['close'][i])
+print(df_ta)
+
+# calculate Simple Moving Average with 20 days window
+sma = df_ta.rolling(window=20).mean()
+
+# calculate the standard deviation
+rstd = df_ta.rolling(window=20).std()
+
+upper_band = sma + 2 * rstd
+upper_band = upper_band.rename(columns={symbol: 'upper'})
+lower_band = sma - 2 * rstd
+lower_band = lower_band.rename(columns={symbol: 'lower'})
+
+#plot the 
+df_ta = df_ta.join(upper_band).join(lower_band)
+ax = df_ta.plot(title='{} Price and BB'.format(symbol))
+ax.fill_between(df_ta.index, lower_band['lower'], upper_band['upper'], color='#ADCCFF', alpha='0.4')
+ax.set_xlabel('date')
+ax.set_ylabel('SMA and BB')
+ax.grid()
+plt.show()
