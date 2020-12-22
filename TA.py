@@ -13,12 +13,8 @@ from statsmodels.tsa.stattools import adfuller
 import Functions
 
 
-
-### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
-
 # import dataframe
 df_raw = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/df_raw.csv')
-
 
 # take a subset of Dec 19 of the data for faster computation
 index = df_raw[df_raw['Time']=='2019-12-31 00:00:00'].index.values[0]
@@ -27,6 +23,8 @@ y = len(df_raw)
 df_subset = df_raw[x:y]
 print('Number of rows: {}, Number of columns: {}'.format(*df_subset.shape))
 
+
+### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
 
 """
 # BOLLINGER BANDS -------------------------------------
