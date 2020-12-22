@@ -50,11 +50,15 @@ print(df_subset)
 # BOLLINGER BANDS -------------------------------------
 # https://towardsdatascience.com/trading-technical-analysis-with-pandas-43e737a17861
 
+
+# Periods
+n = 20 
+
 # calculate Simple Moving Average with 20 days window
-sma = df_subset['close'].rolling(window=20).mean()
+sma = df_subset['close'].rolling(window=n).mean()
 
 # calculate the standard deviation
-rstd = df_subset['close'].rolling(window=20).std()
+rstd = df_subset['close'].rolling(window=n).std()
 
 upper_band = pd.DataFrame(sma + 2 * rstd)
 upper_band = upper_band.rename(columns={'close': 'upper'})
@@ -64,6 +68,7 @@ lower_band = lower_band.rename(columns={'close': 'lower'})
 # plot the bollinger bands
 df_bands = pd.merge(upper_band, lower_band,left_index=True, right_index=True, how='left')
 df_bands = pd.merge(df_bands, df_subset['close'],left_index=True, right_index=True, how='left')
+df_bands = pd.merge(df_bands, df_subset['time'],left_index=True, right_index=True, how='left')
 ax = df_bands.plot(title='{} Price and BB'.format('btc'))
 ax.fill_between(df_bands.index, lower_band['lower'], upper_band['upper'], color='#ADCCFF', alpha='0.4')
 ax.set_xlabel('date')
@@ -72,4 +77,26 @@ ax.grid()
 plt.show()
 
 
-# BOLLINGER BANDS -------------------------------------
+# BOLLINGER BANDS 2 -------------------------------------
+import pandas as pd
+from ta.volatility import *
+
+# Initialize Bollinger Bands Indicator
+indicator_bb = BollingerBands(close=df_subset["close"], window=20, window_dev=2)
+
+# Add Bollinger Bands features
+df_subset['bb_bbm'] = indicator_bb.bollinger_mavg()
+df_subset['bb_bbh'] = indicator_bb.bollinger_hband()
+df_subset['bb_bbl'] = indicator_bb.bollinger_lband()
+
+# Add Bollinger Band high indicator
+df_subset['bb_bbhi'] = indicator_bb.bollinger_hband_indicator()
+
+# Add Bollinger Band low indicator
+df_subset['bb_bbli'] = indicator_bb.bollinger_lband_indicator()
+
+# plot
+with pd.plotting.plot_params.use('x_compat', True):
+    df_subset['close'].plot(color='r')
+    df_subset['bb_bbm'].plot(color='g')
+    df_subset['bb_bbh'].plot(color='b')
