@@ -1,13 +1,15 @@
 import pandas as pd 
+from ta import add_all_ta_features
+
 
 ### DATA SOURCE 1: KAGGLE ------------------------------
 # import dataframe
-df = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
-print(df.info())
+df_merged = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
+print(df_merged.info())
 
 # convert values from timestamp to date
-df['time'] = pd.to_datetime(df['time'], unit='ms')
-print(df['time'])
+df_merged['time'] = pd.to_datetime(df_merged['time'], unit='ms')
+print(df_merged['time'])
 
 # this doesn't work well, we have multiple obs with the same timestamp but different price values
 
@@ -27,7 +29,7 @@ print(df2['unix'])
 ### DATA SOURCE 3: GITHUB  ------------------------------
 #https://github.com/Zombie-3000/Bitfinex-historical-data
 
-headers = ['time', 'open', 'close', 'high', 'low', 'volume']
+headers = ['Time', 'Open', 'Close', 'High', 'Low', 'Volume']
 df_13 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2013/merged.csv?raw=true', names = headers)
 df_14 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2014/merged.csv?raw=true', names = headers)
 df_15 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2015/merged.csv?raw=true', names = headers)
@@ -43,29 +45,53 @@ data_frames = [df_13, df_14, df_15, df_16, df_17, df_18, df_19]
 df_merged = pd.concat(data_frames)
 
 #convert timestamp to datae
-df_merged['time'] = pd.to_datetime(df_merged['time'], unit = 'ms')
+df_merged['Time'] = pd.to_datetime(df_merged['Time'], unit = 'ms')
 print(df_merged.info())
 
-# we should have a df with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows
+# we should have a df_merged with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows
 
-# plot the open prices against time
+# plot the open prices against Time
 # this takes a while
 """
-df_merged.plot(x ='time', y='open', kind = 'scatter')
+df_merged.plot(x ='Time', y='open', kind = 'scatter')
 plt.show()
 """
 
-# reset index and sort values according to time
+# reset index and sort values according to Time
+df_merged = df_merged.sort_values(by=['Time'], ascending = True, na_position = 'last')
 df_merged = df_merged.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
 df_merged = df_merged.rename(columns={"index": "old_index"})
-df_merged = df_merged.sort_values(by=['time'], ascending = True, na_position = 'last')
 
-# assign days to the dataset
-df_merged['day'] = df_merged['time'].dt.day
-df_merged['month'] = df_merged['time'].dt.month
-df_merged['year'] = df_merged['time'].dt.month
+### Feature Engineering ------------------------
+
+# Time
+df_merged['day'] = df_merged['Time'].dt.day
+df_merged['Week'] = df_merged['Time'].dt.weekofyear
+df_merged['Weekday'] = df_merged['Time'].dt.weekday
+df_merged['month'] = df_merged['Time'].dt.month
+df_merged['year'] = df_merged['Time'].dt.year
+
+# shift 1 in order to calculate returns
+for col in headers:
+    df_merged[col] = df_merged[col].shift(1)
+df_merged = df_merged.dropna()
+
+# daily return
+df_merged['Daily_return'] = (df_merged['Close'] / df_merged['Close'].shift(1)) - 1
+df_merged['Daily_return_100'] = ((df_merged['Close'] / df_merged['Close'].shift(1)) - 1) * 100
+
+# cumulative return
+df_merged = df_merged.dropna()
+df_merged['Cumulative_return'] = (df_merged['Close'] / df_merged['Close'].iloc[0]) - 1
+df_merged['Cumulative_return_100'] = ((df_merged['Close'] / df_merged['Close'].iloc[0]) - 1) * 100
+
+# all technical indicators
+df_merged = add_all_ta_features(
+    df_merged, open="Open", high="High", 
+    low="Low", close="Close", volume="Volume", fillna=True)
 
 print(df_merged)
+print('Number of rows: {}, Number of columns: {}'.format(*df_merged.shape))
 
 # Write csv of merged files
 pd.DataFrame.to_csv(df_merged, 'df_raw.csv', sep=',', na_rep='.', index=False)
