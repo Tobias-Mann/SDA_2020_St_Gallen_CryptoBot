@@ -1,10 +1,15 @@
 import pandas as pd 
 from ta import add_all_ta_features
+import os
+
+#PATH = "/Users/Tobias/OneDrive - Universitaet St.Gallen/MBF/CryptoBot/Single-Timeseries-Crypto-Bot/"
+PATH = '/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/' # Set your path to the checkout
+os.chdir(PATH)
 
 
 ### DATA SOURCE 1: KAGGLE ------------------------------
 # import dataframe
-df_merged = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
+df_merged = pd.read_csv('./Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
 print(df_merged.info())
 
 # convert values from timestamp to date
@@ -15,7 +20,7 @@ print(df_merged['time'])
 
 ### DATA SOURCE 2: CRYPTODATADOWNLOAD.com ------------------------------
 # import dataframe
-df2 = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/Data/Bitfinex_BTCUSD_minute.csv', 
+df2 = pd.read_csv('./Data/Bitfinex_BTCUSD_minute.csv', 
     header=1)
 print(df2.info())
 
@@ -48,7 +53,7 @@ df_merged = pd.concat(data_frames)
 df_merged['Time'] = pd.to_datetime(df_merged['Time'], unit = 'ms')
 print(df_merged.info())
 
-# we should have a df_merged with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows
+# we should have a df_merged with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows --> this is purely due to missing data cf sum([x.shape[0] for x in data_frames]) = 2'630'217
 
 # plot the open prices against Time
 # this takes a while
