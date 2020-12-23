@@ -22,5 +22,4 @@ class SmaCross(bt.Strategy):
         elif self.crossover < 0:  # in the market & cross to the downside
             self.close()  # close long position
 
-#class TechnicalAnalysis:
 
