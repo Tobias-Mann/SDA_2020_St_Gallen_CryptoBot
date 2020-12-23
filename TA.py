@@ -22,14 +22,13 @@ x = index
 y = len(df_raw)
 df_subset = df_raw[x:y]
 print('Number of rows: {}, Number of columns: {}'.format(*df_subset.shape))
-
+print(df_subset.info())
 
 ### TECHNICAL ANALYSIS OF DATA SOURCE 3 ------------------------------
 
 """
 # BOLLINGER BANDS -------------------------------------
 # https://towardsdatascience.com/trading-technical-analysis-with-pandas-43e737a17861
-
 
 # Periods
 n = 20 
@@ -109,7 +108,7 @@ for key, value in result[4].items():
 # Null Hypothesis (H0): If failed to be rejected, it suggests the time series 
 # has a unit root, meaning it is non-stationary. It has some time dependent structure.
 
-
+"""
 # XGBOOST ----------------------
 df_subset.info()
 df_subset = df_subset.drop(columns='old_index')
@@ -134,3 +133,4 @@ xgb_params = {
     'base_score': 0,
     'silent': 1
 }
+"""
