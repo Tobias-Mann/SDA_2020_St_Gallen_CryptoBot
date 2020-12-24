@@ -44,11 +44,15 @@ minutely_log_returns = np.log(df_subset['Close'].pct_change() + 1)
 print('\n', minutely_log_returns)
 """
 
+# Define binwidth for plotting
+binwidth = 50
+
 ## MINUTELY RETRUNS & HISTORGRAM
 minutely = df_subset
-minutely.drop(['Time', 'Date'], axis=1, inplace=True)
+minutely.drop(['Time', 'Date'], axis = 1, inplace = True)
 minutely_pct_c = minutely.pct_change()
-minutely_pct_c['Close'].hist(bins = 20)
+minutely_pct_c.fillna(0, inplace = True)
+minutely_pct_c['Close'].hist(bins=20)
 plt.title('MINUTELY RETRUNS')
 plt.show()
 
@@ -102,7 +106,7 @@ plt.show()
 min_periods = 10
 vol = daily_pct_c['Close'].rolling(min_periods).std() * np.sqrt(min_periods)
 vol.plot(figsize=(10, 8))
-plt.title('DAILY VOLATILITY for min_periods', min_periods)
+plt.title('DAILY VOLATILITY')
 plt.show()
 
 """
@@ -240,6 +244,7 @@ ax1.plot(portfolio.loc[signals.positions == -1.0].index,
          color='k')
 
 # Show the plot
+plt.title('PORTFOLIO HOLDINGS OVER TIME')
 plt.show()
 
 
@@ -269,4 +274,5 @@ max_hourly_drawdown = hourly_drawdown.rolling(window, min_periods=1).min()
 # Plot the results
 hourly_drawdown.plot()
 max_hourly_drawdown.plot()
+plt.title('MAXIMUM DRAWDOWN')
 plt.show()
