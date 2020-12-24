@@ -3,13 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas_ta as pdt
 from datetime import datetime
+from random import gauss
+from random import seed
+from statsmodels.graphics.tsaplots import plot_acf
+from arch import arch_model
 
 
 # import the functions from functions.py
 import Functions
 
 # import dataframe
-df_raw = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/df_raw.csv')
+df_raw = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Data/df_raw.csv')
 
 # Set the Subset here
 index = df_raw[df_raw['Time'] == '2019-01-01 00:00:00'].index.values[0]
@@ -108,6 +112,39 @@ vol = daily_pct_c['Close'].rolling(min_periods).std() * np.sqrt(min_periods)
 vol.plot(figsize=(10, 8))
 plt.title('DAILY VOLATILITY')
 plt.show()
+
+"""
+### AR - MA --------------------------------
+
+# create acf plot
+plot_acf(daily['Close'])
+plt.title('AUTOCORRELATION DAILY')
+plt.show()
+
+# split into train/test
+n_test = round(0.1*len(hourly))
+returns = 100 * hourly['Close'].pct_change().dropna()
+train, test = returns[:-n_test], returns[-n_test:]
+
+# define model
+model = arch_model(train, mean='AR', vol='GARCH', p=15)
+
+# fit model
+model_fit = model.fit()
+print(model.summary())
+
+# forecast the test set
+y_hat = model_fit.forecast(horizon = n_test)
+
+# plot the actual variance
+var = [i for i in range(len(hourly))]
+plt.plot(var[-n_test:], color = 'r')
+
+# plot forecast variance
+plt.plot(y_hat.variance.values[-1, :], color='b')
+plt.show()
+"""
+
 
 """
 ### OLS -------------------------------------
