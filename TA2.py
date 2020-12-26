@@ -212,8 +212,6 @@ signals.loc[signals['positions'] == 0]
 signals.loc[signals['positions'] == -1]
 # 0 = do nothing, 1 = Buy, 2 = Sell
 
-
-
 # Initialize the plot figure
 fig = plt.figure(num=None,
                  figsize=(10, 10),
@@ -243,6 +241,8 @@ ax1.plot(signals.loc[signals.positions == -1.0].index,
          color='k')
 
 # Show the plot
+name = ('MA LONG:', long_window, '| MA SHORT:', short_window)
+plt.title(name)
 plt.show()
 
 
