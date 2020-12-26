@@ -115,6 +115,10 @@ class simulator:
             if filled:
                 self.orderbook.change_order_status(order["id"], "filled")
         
+    def performance(self):
+        # Add later -> function to retrive realtime performance evaluation
+        pass
+    
 
 class decisionmaker:
     def __init__(self, orderbook, transactionbook):
@@ -123,6 +127,3 @@ class decisionmaker:
         self.transactionbook = transactionbook
         
     def observe_new_price
-
-class BestDecsionsEver(decisionmaker_class):
-    
