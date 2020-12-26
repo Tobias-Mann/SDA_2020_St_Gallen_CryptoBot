@@ -219,8 +219,8 @@ plt.show()
 
 ### BACKTESTING THE STRATEGY WITH PANDAS ------------------------------
 
-# choose which time sample to take (minutely, hourly, daily)
-df = daily
+# Optional: Change which time sample to take (minutely, hourly, daily)
+# df = hourly
 
 # Set the initial capital
 initial_capital = float(10000.0)
@@ -269,11 +269,14 @@ ax1.plot(portfolio.loc[signals.positions == -1.0].index,
 plt.title('PORTFOLIO HOLDINGS OVER time')
 plt.show()
 
+print('initial portfolio value:', portfolio['total'][0])
+print('ending portfolio value:', portfolio['total'][-1])
+
 
 ### EVALUATE THE RESULTS --------------------------
 
 # choose which time sample to take (minutely, hourly, daily)
-df = daily
+# df = daily
 
 
 # SHARPE RATIO
@@ -282,7 +285,7 @@ returns = portfolio['returns']
 # dailyized Sharpe ratio
 sharpe_ratio = np.sqrt(60*24) * (returns.mean() / returns.std())
 # Print the Sharpe ratio
-print(sharpe_ratio)
+print('\nSharpe Ratio:', sharpe_ratio)
 
 
 # MAXIMUM DRAWDOWN
@@ -290,11 +293,11 @@ print(sharpe_ratio)
 window = 252
 # Calculate the max drawdown in the past window days for each day
 rolling_max = df['close'].rolling(window, min_periods = 1).max()
-hourly_drawdown = df['close'] / rolling_max - 1.0
+drawdown = df['close'] / rolling_max - 1.0
 # Calculate the minimum (negative) daily drawdown
-max_hourly_drawdown = hourly_drawdown.rolling(window, min_periods=1).min()
+max_drawdown = drawdown.rolling(window, min_periods=1).min()
 # Plot the results
-hourly_drawdown.plot()
-max_hourly_drawdown.plot()
+drawdown.plot(figsize=(25, 25))
+max_drawdown.plot()
 plt.title('MAXIMUM DRAWDOWN')
 plt.show()
