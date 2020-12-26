@@ -249,7 +249,7 @@ plt.show()
 ### BACKTESTING THE STRATEGY WITH PANDAS ------------------------------
 
 # choose which time sample to take (minutely, hourly, daily)
-df = daily
+# df = daily
 
 # Set the initial capital
 initial_capital = float(10000.0)
@@ -298,11 +298,14 @@ ax1.plot(portfolio.loc[signals.positions == -1.0].index,
 plt.title('PORTFOLIO HOLDINGS OVER TIME')
 plt.show()
 
+print('initial portfolio value:', portfolio['total'][0])
+print('ending portfolio value:', portfolio['total'][-1])
+
 
 ### EVALUATE THE RESULTS --------------------------
 
 # choose which time sample to take (minutely, hourly, daily)
-df = daily
+# # df = daily
 
 
 # SHARPE RATIO
@@ -311,7 +314,7 @@ returns = portfolio['returns']
 # dailyized Sharpe ratio
 sharpe_ratio = np.sqrt(60*24) * (returns.mean() / returns.std())
 # Print the Sharpe ratio
-print(sharpe_ratio)
+print('\nSharpe Ratio:', sharpe_ratio)
 
 
 # MAXIMUM DRAWDOWN
