@@ -1,5 +1,6 @@
 import pandas as pd 
 import numpy as np
+from tqdm import tqdm
 
 class orderbook:
     def __init__(self):
@@ -85,7 +86,7 @@ class simulator_environment:
         weights = randoms/randoms.sum()
         return ((np.array([ open, high, low, close]) * weights).sum()*2 + open + close)/4
     
-    def process_orders(self, time, ohcl):
+    def process_orders(self, time, ohlc):
         # Check for open orders to be filled
         # A filled order needs to change its status from active to filled,
         # aditionally an according transaction is added to the transactions book
@@ -96,11 +97,11 @@ class simulator_environment:
             if order["is_buy"]:
                 if order["type"]=="market":
                     # buy at market
-                    price = self.random_market_price(ohcl[0], ohcl[1], ohcl[2], ohcl[3])
+                    price = self.random_market_price(ohlc[0], ohlc[1], ohlc[2], ohlc[3])
                     self.env.transactionbook.buy(price, order["quantity"], time, order["id"])
                     self.env.portfolio.buy(time, order["quantity"], price)
                     filled = True
-                elif order["limit"] >= ohcl[2]:
+                elif order["limit"] >= ohlc[2]:
                     # buy at limit
                     self.env.transactionbook.buy(order["limit"], order["quantity"], time, order["id"])
                     self.env.portfolio.buy(time, order["quantity"], order["limit"])
@@ -108,11 +109,11 @@ class simulator_environment:
             else:
                 if order["type"]=="market":
                     # sell at market
-                    price = self.random_market_price(ohcl[0], ohcl[1], ohcl[2], ohcl[3])
+                    price = self.random_market_price(ohlc[0], ohlc[1], ohlc[2], ohlc[3])
                     self.env.transactionbook.sell(price, order["quantity"], time, order["id"])
                     self.env.portfolio.sell(time, order["quantity"], price)
                     filled = True
-                elif order["limit"] <= ohcl[1]:
+                elif order["limit"] <= ohlc[1]:
                     # sell at limit
                     self.env.transactionbook.sell(order["limit"], order["quantity"], time, order["id"])
                     self.env.portfolio.sell(time, order["quantity"], order["limit"])
@@ -127,9 +128,12 @@ class simulator_environment:
         pass
     
     def simulate_on_aggregate_data(self, data):
-        for row in data.iterrows():
+        print("Starting Simulation:\n")
+        for row in tqdm(data.iterrows()):
             self.closing_prices = np.append(self.closing_prices, row[1]["close"])
+            self.process_orders(row[1]["time"], [row[1]["open"], row[1]["high"], row[1]["low"], row[1]["close"]])
             self.decisionmaker.make_decision(row[1]) # because the decision maker is initialized it can access the simulators orderbook, the function can take additional inputs
+            
             
 class portfolio:
     def __init__(self, usd = 10**6, btc = 0):
@@ -144,22 +148,22 @@ class portfolio:
     def buy(self, time, quantity, price):
         if not self.__is_initialized__:
             self.__is_initialized__ = True
-            __update__(time, price)
+            self.__update__(time, price)
         cost = quantity * price
         if cost > self.__usd__: raise Exception("Using laverage, bitcoin order exceeds usd funds")
         self.__usd__ -= cost
         self.__btc__ += quantity
-        self.__update__(price)
+        self.__update__(time, price)
     
     def sell(self, time, quantity, price):
         if not self.__is_initialized__:
             self.__is_initialized__ = True
-            __update__(time, price)
+            self.__update__(time, price)
         revenue = quantity * price
         if quantity > self.__btc__: raise Exception("Using laverage, bitcoin order exceeds btc funds")
         self.__usd__ += revenue
         self.__btc__ -= quantity
-        self.__update__(price)
+        self.__update__(time, price)
     
     def __update__(self, time, price):
         self.__position_over_time__.append((time, self.__usd__, self.__btc__, price))
