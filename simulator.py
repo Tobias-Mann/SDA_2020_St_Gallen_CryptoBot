@@ -129,10 +129,10 @@ class simulator_environment:
     
     def simulate_on_aggregate_data(self, data):
         print("Starting Simulation:\n")
-        for row in tqdm(data.iterrows()):
-            self.closing_prices = np.append(self.closing_prices, row[1]["close"])
-            self.process_orders(row[1]["time"], [row[1]["open"], row[1]["high"], row[1]["low"], row[1]["close"]])
-            self.decisionmaker.make_decision(row[1]) # because the decision maker is initialized it can access the simulators orderbook, the function can take additional inputs
+        for row in tqdm(data.values):
+            self.closing_prices = np.append(self.closing_prices, row[5])
+            self.process_orders(row[0], row[1:5])
+            self.decisionmaker.make_decision(row[1:5]) # because the decision maker is initialized it can access the simulators orderbook, the function can take additional inputs
             
             
 class portfolio:

@@ -13,18 +13,18 @@ class meanreversion(simulator.decisionmaker):
         self.__critical_deviation__ = new
         
     def make_decision(self, row):
-        self.memory = np.append(self.memory, row["close"])
+        self.memory = np.append(self.memory, row[-1])
         n = 50
         values = self.memory[-n:]
         if self.memory.size >= n:
             mean = np.mean(values)
             std = np.std(values)
-            z = (row["close"] - mean)/std
+            z = (row[-1] - mean)/std
             if z > self.__critical_deviation__ and self.env.portfolio.btc >0 :
                 # sell at market
-                quantity = self.env.portfolio.usd//row["close"]
+                quantity = self.env.portfolio.usd//row[-1]
                 self.env.orderbook.new_marketorder(quantity, False)
-            elif z < -self.__critical_deviation__ and self.env.portfolio.usd>=row["close"]:
+            elif z < -self.__critical_deviation__ and self.env.portfolio.usd>=row[-1]:
                 # buy at market
                 quantity = self.env.portfolio.btc
                 self.env.orderbook.new_marketorder(quantity)
