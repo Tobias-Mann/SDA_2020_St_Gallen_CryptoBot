@@ -63,11 +63,11 @@ class transactionbook:
         id = self.__assign_id__()
         self.transactions[id] = {"quantity":qyt, "price":price, "is_buy":False, "id":id, "time":time, "origin":origin}
     
-    def get_buys(self):
-        pass
-    
-    def get_sells(self):
-        pass
+    def process(self, transaction, origin):
+        id = self.__assign_id__()
+        transaction["id"] = id
+        transaction["origin"] = origin
+        self.transactions[id] = transaction
 
 class simulator_environment:
     def __init__(self):
@@ -76,7 +76,6 @@ class simulator_environment:
         #self.portfolio = portfolio()
         self.env = environment()
         self.decisionmaker = None
-        self.closing_prices = np.array([])
     
     def initialize_decisionmaker(self, decisionmakerclass):
         self.decisionmaker = decisionmakerclass(environment=self.env)
@@ -98,25 +97,25 @@ class simulator_environment:
                 if order["type"]=="market":
                     # buy at market
                     price = self.random_market_price(ohlc[0], ohlc[1], ohlc[2], ohlc[3])
-                    self.env.transactionbook.buy(price, order["quantity"], time, order["id"])
-                    self.env.portfolio.buy(time, order["quantity"], price)
+                    transaction = self.env.portfolio.buy(time, order["quantity"], price)
+                    self.env.transactionbook.process(transaction, order["id"])
                     filled = True
                 elif order["limit"] >= ohlc[2]:
                     # buy at limit
-                    self.env.transactionbook.buy(order["limit"], order["quantity"], time, order["id"])
-                    self.env.portfolio.buy(time, order["quantity"], order["limit"])
+                    transaction = self.env.portfolio.buy(time, order["quantity"], order["limit"])
+                    self.env.transactionbook.process(transaction, order["id"])
                     filled = True
             else:
                 if order["type"]=="market":
                     # sell at market
                     price = self.random_market_price(ohlc[0], ohlc[1], ohlc[2], ohlc[3])
-                    self.env.transactionbook.sell(price, order["quantity"], time, order["id"])
-                    self.env.portfolio.sell(time, order["quantity"], price)
+                    transaction= self.env.portfolio.sell(time, order["quantity"], price)
+                    self.env.transactionbook.process(transaction, order["id"])
                     filled = True
                 elif order["limit"] <= ohlc[1]:
                     # sell at limit
-                    self.env.transactionbook.sell(order["limit"], order["quantity"], time, order["id"])
-                    self.env.portfolio.sell(time, order["quantity"], order["limit"])
+                    transaction = self.env.portfolio.sell(time, order["quantity"], order["limit"])
+                    self.env.transactionbook.process(transaction, order["id"])
                     filled = True
                     
             # update the orderbook for trades
@@ -130,7 +129,6 @@ class simulator_environment:
     def simulate_on_aggregate_data(self, data):
         print("Starting Simulation:\n")
         for row in tqdm(data.values):
-            self.closing_prices = np.append(self.closing_prices, row[5])
             self.process_orders(row[0], row[1:5])
             self.decisionmaker.make_decision(row[1:5]) # because the decision maker is initialized it can access the simulators orderbook, the function can take additional inputs
             
@@ -150,10 +148,13 @@ class portfolio:
             self.__is_initialized__ = True
             self.__update__(time, price)
         cost = quantity * price
-        if cost > self.__usd__: raise Exception("Using laverage, bitcoin order exceeds usd funds")
+        if cost > self.__usd__:
+            quantity = self.__usd__ // price
+            cost = quantity * price
         self.__usd__ -= cost
         self.__btc__ += quantity
         self.__update__(time, price)
+        return {"quantity":quantity, "price":price, "is_buy":True, "time":time}
     
     def sell(self, time, quantity, price):
         if not self.__is_initialized__:
@@ -164,6 +165,7 @@ class portfolio:
         self.__usd__ += revenue
         self.__btc__ -= quantity
         self.__update__(time, price)
+        return {"quantity":quantity, "price":price, "is_buy":False, "time":time}
     
     def __update__(self, time, price):
         self.__position_over_time__.append((time, self.__usd__, self.__btc__, price))
