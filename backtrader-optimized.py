@@ -135,7 +135,7 @@ if __name__ == '__main__':
     # Optimize the strategy
     strats = cerebro.optstrategy(
         TestStrategy,
-        maperiod=range(10, 31))
+        maperiod=range(5, 30))
 
     # Create a Data Feed
     data = bt.feeds.GenericCSVData(
