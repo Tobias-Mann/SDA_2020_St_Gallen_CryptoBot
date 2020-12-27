@@ -164,7 +164,6 @@ class portfolio:
     
     @property
     def portfolio_over_time(self):
-        if len(self.__position_over_time__) == 0: raise Execption("No")
         df = pd.DataFrame(self.__position_over_time__)
         df.columns = ["Time", "USD", "BTC", "Price"]
         df["Value"] = df["USD"] + df["BTC"] * df["Price"]
