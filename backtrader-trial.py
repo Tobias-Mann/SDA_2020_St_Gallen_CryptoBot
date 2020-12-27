@@ -6,12 +6,12 @@ $pip3 uninstall matplotlib
 $pip3 install matplotlib==3.2.2
 """
 
-
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import datetime  # For datetime objects
 import os.path  # To manage paths
+import pathlib
 import sys  # To find out the script name (in argv[0])
 
 # Import the backtrader platform
@@ -19,9 +19,6 @@ import backtrader as bt
 import pandas as pd
 import datetime
 import matplotlib
-
-df_dec = pd.read_csv(
-    '/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Data/Dec19.csv')
 
 
 """
@@ -271,8 +268,8 @@ if __name__ == '__main__':
 
     # Datas are in a subfolder of the samples. Need to find where the script is
     # because it could have been called from anywhere
-    modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    datapath = os.path.join(modpath, '../../datas/orcl-1995-2014.txt')
+    path = pathlib.Path(__file__).parent.absolute()
+    datapath = os.path.join(path, 'Data/Dec19.csv')
     # Add a strategy
     cerebro.addstrategy(TestStrategy4)
 
@@ -289,15 +286,13 @@ if __name__ == '__main__':
         low=3,
         close=4,
         volume=5,
-        openinterest=-1, 
+        openinterest=-1,
         time = -1
 
-        
         # Do not pass values before this date
         # fromdate=datetime.datetime(2019, 12, 30),
         # Do not pass values before this date
         # todate=datetime.datetime(2019, 12, 31)
-        
     )
 
     # Add a FixedSize sizer according to the stake
@@ -321,8 +316,5 @@ if __name__ == '__main__':
     # Print out the final result
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
-
-
-# PLOTTING THE RESULTS ------------------------------------------------
-
-cerebro.plot()
+    # Plot the resuls
+    cerebro.plot()
