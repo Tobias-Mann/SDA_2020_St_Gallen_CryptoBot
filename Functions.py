@@ -5,32 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-# Create a subclass of Strategy to define the indicators and logic
-
-""" class SmaCross(bt.Strategy):
-    # list of parameters which are configurable for the strategy
-    params = dict(
-        pfast=10,  # period for the fast moving average
-        pslow=30   # period for the slow moving average
-    )
-
-    def __init__(self):
-        sma1 = bt.ind.SMA(period=self.p.pfast)  # fast moving average
-        sma2 = bt.ind.SMA(period=self.p.pslow)  # slow moving average
-        self.crossover = bt.ind.CrossOver(sma1, sma2)  # crossover signal
-
-    def next(self):
-        if not self.position:  # not in the market
-            if self.crossover > 0:  # if fast crosses slow to the upside
-                self.buy()  # enter long
-
-        elif self.crossover < 0:  # in the market & cross to the downside
-            self.close()  # close long position
- """
-#short_window = 12
-#long_window = 26
-
 def Simple_MA(df, short_window, long_window):
     # make all columns lowercase
     df.columns = df.columns.str.lower()
@@ -156,46 +130,6 @@ def MACD(df, ema_short, ema_long, signal):
 
 
 
-
-""" 
-def portfolio2(df, signals_simplema, signals_macd):
-
-    # Set the initial capital
-    initial_capital = float(10000.0)
-    # Create an empty DataFrame with the same index: `positions`
-    positions = pd.DataFrame(index = signals_simplema.index).fillna(0.0)
-    # Note how many btc you buy and add it to positions
-    positions['btc_simplema'] = 1 * signals_simplema['action']
-    positions['btc_macd'] = 1 * signals_macd['action']
-
-    # Initialize the portfolio with value owned
-    portfolio = positions.multiply(df['close'], axis=0) # axis = 0 means rows
-
-    portfolio['datetime'] = df['datetime']
-
-    portfolio['cash_simplema'] = 0
-    portfolio['cash_macd'] = 0
-
-    for i in range(len(df)):
-
-        if i == 0 or i == 1:
-            portfolio['cash_simplema'][i] = initial_capital
-            portfolio['cash_macd'][i] = initial_capital
-        else:
-            portfolio['cash_simplema'][i] = portfolio['cash_simplema'][i-1] - portfolio['btc_simplema'][i]
-            portfolio['cash_macd'][i] = portfolio['cash_macd'][i-1] - portfolio['btc_macd'][i]
-
-    print('Beginning PF Value: ', portfolio['total'][0])
-    print('Ending PF Value: ', portfolio['total'].iloc[-1])
-
-    #Plot the holdings
-    plt.plot(portfolio.datetime, portfolio.total, label = 'PF Holdings', color = 'Red')
-    plt.legend(loc='upper left')
-    plt.show()
-
-    return portfolio """
-
-
 def calc_portfolio(df, df_signals, strategy_name):
 
     # df = hourly
@@ -247,7 +181,7 @@ def calc_portfolio(df, df_signals, strategy_name):
 
     return portfolio
 
-
+# IMPORT DATA FRAMES -------------------------------
 df = pd.read_csv('Data/Dec19.csv')
 
 df['datetime'] = pd.to_datetime(df['datetime'])
@@ -255,6 +189,9 @@ df.set_index('datetime', drop=True, inplace=True)
 hourly = df.resample('60T').apply(lambda x: x[-1])
 hourly.reset_index(inplace = True)
 hourly['datetime'] = pd.to_datetime(hourly['datetime'])
+
+
+# RUN THE FUNCTIONS ----------------------------------------
 
 signals_simplema = Simple_MA(hourly, 12, 26)
 signals_macd = MACD(hourly, 12, 26, 9)
