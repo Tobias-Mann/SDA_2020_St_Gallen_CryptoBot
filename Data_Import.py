@@ -100,3 +100,6 @@ print('Number of rows: {}, Number of columns: {}'.format(*df_merged.shape))
 
 # Write csv of merged files
 pd.DataFrame.to_csv(df_merged, 'df_raw.csv', sep=',', na_rep='.', index=False)
+
+
+
