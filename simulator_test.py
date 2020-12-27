@@ -40,7 +40,7 @@ data = pd.read_csv("./Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv")
 data['time'] = pd.to_datetime(data['time'], unit = 'ms')
 
 # start simulation --> This will take some time!!!
-sim.simulate_on_aggregate_data(data.head(200000))
+sim.simulate_on_aggregate_data(data.dropna().head(200000))
 
 # retrieve Portfolio performance over simulated time
 print(sim.env.portfolio.portfolio_over_time)

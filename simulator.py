@@ -55,14 +55,6 @@ class transactionbook:
         self.__last_id__+=1
         return self.__last_id__
     
-    def buy(self,price, qyt, time, origin):
-        id = self.__assign_id__()
-        self.transactions[id] = {"quantity":qyt, "price":price, "is_buy":True, "id":id, "time":time, "origin":origin}
-    
-    def sell(self,price, qyt, time, origin):
-        id = self.__assign_id__()
-        self.transactions[id] = {"quantity":qyt, "price":price, "is_buy":False, "id":id, "time":time, "origin":origin}
-    
     def process(self, transaction, origin):
         id = self.__assign_id__()
         transaction["id"] = id
