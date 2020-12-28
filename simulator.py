@@ -162,6 +162,22 @@ class portfolio:
     def __update__(self, time, price):
         self.__position_over_time__.append((time, self.__usd__, self.__btc__, price))
     
+    def portfolio_repricing(self, data):
+        df = pd.DataFrame(self.__position_over_time__)
+        df.columns = ["Time", "USD", "BTC", "Price"]
+        
+        p = df.loc[1:,["USD", "BTC", "Time"]].set_index("Time")
+        
+        answer = pd.DataFrame(index = data["time"].values.flatten(), columns= ["USD", "BTC"])
+        answer[answer.index.isin(p.index)] = p
+        answer.loc[answer.index[0],:]=df.loc[0,["USD", "BTC"]]
+        answer = answer.fillna(method="ffill")
+        answer["price"] = data.set_index("time")["close"]
+        answer["value"] = answer["price"] * answer["BTC"] + answer["USD"]
+        answer["returns"] = answer["value"].pct_change()
+        answer["cumreturn"] = answer["value"]/ answer.loc[answer.index[0],"value"] -1
+        return answer
+    
     @property
     def portfolio_over_time(self):
         df = pd.DataFrame(self.__position_over_time__)
