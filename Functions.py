@@ -139,9 +139,9 @@ def MACD(df, ema_short, ema_long, signal):
 
 def calc_portfolio(df, df_signals, strategy_name):
 
-    df = hourly
-    df_signals = signals_macd
-    strategy_name = 'macd'
+    #df = hourly
+    #df_signals = signals_macd
+    #strategy_name = 'macd'
 
     initial_capital = float('10000')
     positions = pd.DataFrame(index = df.index).fillna(0.0)
@@ -188,18 +188,19 @@ def calc_portfolio(df, df_signals, strategy_name):
     plt.legend(loc='upper left')
 
     # Create a tear sheet
-    rows = ['Start Date', 'End Date', 'Total Periods', 'CAGR', 'Volatility', 'Sharpe Ratio', 'Max Drawdown', 'Avg Period Holdings']
-    cols = [strategy_name]
+
     start_date = portfolio['datetime'][0]
     end_date = portfolio['datetime'].iloc[-1]
     total_periods = len(portfolio)
+    start_pf = initial_capital
+    end_pf = portfolio['total'].iloc[-1]
     cagr = (portfolio['total'].iloc[-1]/portfolio['total'][0])**(1/total_periods)-1
     volatility = portfolio['total'].std()
     sharpe_ratio = cagr / volatility
     max_drawdown = (portfolio['total'].min() - portfolio['total'].max()) / portfolio['total'].max()
 
-    values = [start_date, end_date, total_periods, cagr, volatility, sharpe_ratio, max_drawdown]
-    
+    values = [start_date, end_date, total_periods, start_pf, end_pf, cagr, volatility, sharpe_ratio, max_drawdown]
+
     return portfolio, values
 
 # IMPORT DATA FRAMES -------------------------------
@@ -217,6 +218,10 @@ hourly['datetime'] = pd.to_datetime(hourly['datetime'])
 signals_simplema = Simple_MA(hourly, 12, 26)
 signals_macd = MACD(hourly, 12, 26, 9)
 
-pf1[200:210]
 pf1, values1 = calc_portfolio(hourly, signals_simplema, 'SIMPLE MOVING AVERAGE')
 pf2, values2 = calc_portfolio(hourly, signals_macd, 'MACD')
+
+rows = ['Start Date', 'End Date', 'Total Periods', 'Initial Capital', 'Ending PF Value', 'CAGR', 'Volatility', 'Sharpe Ratio', 'Max Drawdown']
+
+print(pd.DataFrame(values1, index = rows, columns = ['MACD']))
+print(pd.DataFrame(values2, index = rows, columns=['SIMPLE MA']))
