@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd 
+import pandas as pd
 import simulator
 
 class meanreversion(simulator.decisionmaker):
@@ -7,10 +7,10 @@ class meanreversion(simulator.decisionmaker):
         super(meanreversion, self).__init__(environment)
         self.memory = []
         self.__critical_deviation__ = 2
-        
+
     def change_critical_deviation(self, new):
         self.__critical_deviation__ = new
-        
+
     def make_decision(self, row):
         closing_price = row[-1]
         self.memory.append(closing_price)
@@ -29,6 +29,80 @@ class meanreversion(simulator.decisionmaker):
                 quantity = self.env.portfolio.usd//closing_price
                 self.env.orderbook.new_marketorder(quantity)
 
+class SimpleMA(simulator.decisionmaker):
+    def __init__(self, environment):
+        super(SimpleMA, self).__init__(environment)
+        self.memory = []
+
+    # function for calculating a moving average with numpy arrays
+    def moving_average(array, periods):
+        weights = np.ones(periods) / periods
+        return np.convolve(array, weights, mode='valid')
+
+    def make_decision(self, row):
+        closing_price = row[-1]
+        self.memory.append(closing_price)
+        short_window = 12
+        long_window = 26
+        if len(self.memory) >= long_window:
+            values = np.array(self.memory[-long_window:])
+
+            # calculate the moving averages
+            values_short = moving_average(values, short_window)
+            values_long = moving_average(values, long_window)
+
+            if values_short < values_long and self.env.portfolio.btc > 0:
+                # sell at market
+                quantity = self.env.portfolio.btc
+                self.env.orderbook.new_marketorder(quantity, False)
+            elif values_short > values_long and self.env.portfolio.usd >= closing_price > 0:
+                # buy at market
+                quantity = self.env.portfolio.usd // closing_price
+                self.env.orderbook.new_marketorder(quantity)
+
+class MACD(simulator.decisionmaker):
+    def __init__(self, environment):
+        super(MACD, self).__init__(environment)
+        self.memory = []
+
+    def ExpMovingAverage(values, window):
+        weights = np.exp(np.linspace(-1., 0., window))
+        weights /= weights.sum()
+        a = np.convolve(values, weights, mode='full')[:len(values)]
+        a[:window] = a[window]
+        return a
+
+    def computeMACD(x, slow, fast, signal):
+        # compute the MACD (Moving Average Convergence/Divergence) using a fast and slow exponential moving avg'
+        # return value is emaslow, emafast, macd which are len(x) arrays
+        emaslow = ExpMovingAverage(x, slow)
+        emafast = ExpMovingAverage(x, fast)
+        macd = emafast - emaslow
+        signal_line = ExpMovingAverage(macd, signal)
+        return macd, signal_line
+
+    def make_decision(self, row):
+        closing_price = row[-1]
+        self.memory.append(closing_price)
+        slow = 12
+        fast = 26
+        signal = 9
+
+        if len(self.memory) >= long_window:
+            values = np.array(self.memory[-long_window:])
+            # calculate the exponential moving averages
+            macd, signal = computeMACD(values, slow, fast)
+
+            if signal < macd and self.env.portfolio.btc > 0:
+                # sell at market
+                quantity = self.env.portfolio.btc
+                self.env.orderbook.new_marketorder(quantity, False)
+            elif signal > macd and self.env.portfolio.usd >= closing_price > 0:
+                # buy at market
+                quantity = self.env.portfolio.usd // closing_price
+                self.env.orderbook.new_marketorder(quantity)
+
+
 
 
 class relativestrength(simulator.decisionmaker):
@@ -39,7 +113,7 @@ class relativestrength(simulator.decisionmaker):
         self.overbought = 70
         self.oversold = 30
         self.period = 14
-        
+
     def make_decision(self, row):
         closing_price = row[-1]
         if len(self.memory) <= 1 or closing_price != self.memory[-1]:
@@ -62,4 +136,3 @@ class relativestrength(simulator.decisionmaker):
             # buy at market
             quantity = self.env.portfolio.usd//closing_price
             self.env.orderbook.new_marketorder(quantity)
-        
