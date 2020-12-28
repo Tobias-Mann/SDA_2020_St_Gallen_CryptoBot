@@ -75,6 +75,10 @@ def Simple_MA(df, short_window, long_window):
 
 def MACD(df, ema_short, ema_long, signal):
 
+    #ema_long = 26
+    #ema_short = 12
+    #signal = 9
+
     ema_name_short = 'ema' + str(ema_short)
     ema_name_long = 'ema' + str(ema_long)
 
@@ -92,8 +96,11 @@ def MACD(df, ema_short, ema_long, signal):
     signals['signal'] = signals['macd'].ewm(span = signal).mean()
 
     # Crossovers, 1.0 = Signal or True, 0.0 = No signal or False
-    signals['position'][ema_long:] = np.where(
-        signals['macd'][ema_long:] > signals['signal'][ema_long:], 1.0, 0.0)
+    #    signals['position'][ema_long:] = np.where(
+    #       signals['macd'][ema_long:] > signals['signal'][ema_long:], 1.0, 0.0)
+
+    signals.loc[:,'position'][ema_long:] = np.where(
+        signals.loc[:, 'macd'][ema_long:] > signals.loc[:, 'signal'][ema_long:], 1.0, 0.0)
 
     # Generate trading orders from Crossovers
     signals['action'] = signals['position'].diff()
@@ -172,7 +179,7 @@ def calc_portfolio(df, df_signals, strategy_name):
     # Set up the figures
     fig, ax1 = plt.subplots(1, sharex=True, figsize=(10, 10))
     gs = fig.add_gridspec(ncols=1, nrows=2, hspace=0)
-    title = str(strategy_name) + ": HOLDINGS WITH STRATEGY vs. BUY AND HODL" 
+    title = str(strategy_name) + ": HOLDINGS WITH STRATEGY vs. BUY AND HODL"
     ax1.set_title(title)
 
     ax1.plot(portfolio.datetime, cum_return['close'], color = 'black', label = 'BUY AND HODL')
