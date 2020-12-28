@@ -3,7 +3,7 @@ import pandas as pd
 import simulator
 import strategies
 
-STRATEGIESCOLLECTION = { "relativestrength":strategies.relativestrength, "meanreversion":strategies.meanreversion, "SimpleMA":strategies.SimpleMA,"MACD":strategies.MACD}
+STRATEGIESCOLLECTION = {"relativestrength":strategies.relativestrength, "meanreversion":strategies.meanreversion, "SimpleMA":strategies.SimpleMA,"MACD":strategies.MACD}
 
 
 # read in data
