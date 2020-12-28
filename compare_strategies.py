@@ -9,7 +9,6 @@ STRATEGIESCOLLECTION = { "relativestrength":strategies.relativestrength, "meanre
 # read in data
 data = pd.read_csv("./Data/Dec19.csv")
 data = data.dropna().head(200000)
-data.columns = ["time", "open","high","low","close","volume"]
 
 # simulate multiple strategies
 portfolios = {}
@@ -19,5 +18,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     sim.simulate_on_aggregate_data(data)
     portfolios[name] = sim.env.portfolio
 
+
+data.columns = ["time", "open","high","low","close","volume"]
 portfolios["SimpleMA"]
     
