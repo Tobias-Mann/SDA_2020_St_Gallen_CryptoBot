@@ -1,4 +1,3 @@
-import backtrader as bt
 import pandas as pd
 from datetime import datetime
 import numpy as np
@@ -99,6 +98,7 @@ def MACD(df, ema_short, ema_long, signal):
     #    signals['position'][ema_long:] = np.where(
     #       signals['macd'][ema_long:] > signals['signal'][ema_long:], 1.0, 0.0)
 
+    # Crossovers, 1.0 = Signal or True, 0.0 = No signal or False
     signals.loc[:,'position'][ema_long:] = np.where(
         signals.loc[:, 'macd'][ema_long:] > signals.loc[:, 'signal'][ema_long:], 1.0, 0.0)
 
@@ -139,10 +139,11 @@ def MACD(df, ema_short, ema_long, signal):
 
 def calc_portfolio(df, df_signals, strategy_name):
 
-    # df = hourly
-    # df_signals = signals_macd
+    df = hourly
+    df_signals = signals_macd
+    strategy_name = 'macd'
 
-    initial_capital = float(10000.0)
+    initial_capital = float('10000')
     positions = pd.DataFrame(index = df.index).fillna(0.0)
 
     # Note how many btc you buy and add it to positions
@@ -186,7 +187,20 @@ def calc_portfolio(df, df_signals, strategy_name):
     ax1.plot(portfolio.datetime, portfolio['total'], color = 'green', label = strategy_name)
     plt.legend(loc='upper left')
 
-    return portfolio
+    # Create a tear sheet
+    rows = ['Start Date', 'End Date', 'Total Periods', 'CAGR', 'Volatility', 'Sharpe Ratio', 'Max Drawdown', 'Avg Period Holdings']
+    cols = [strategy_name]
+    start_date = portfolio['datetime'][0]
+    end_date = portfolio['datetime'].iloc[-1]
+    total_periods = len(portfolio)
+    cagr = (portfolio['total'].iloc[-1]/portfolio['total'][0])**(1/total_periods)-1
+    volatility = portfolio['total'].std()
+    sharpe_ratio = cagr / volatility
+    max_drawdown = (portfolio['total'].min() - portfolio['total'].max()) / portfolio['total'].max()
+
+    values = [start_date, end_date, total_periods, cagr, volatility, sharpe_ratio, max_drawdown]
+    
+    return portfolio, values
 
 # IMPORT DATA FRAMES -------------------------------
 df = pd.read_csv('Data/Dec19.csv')
@@ -203,5 +217,6 @@ hourly['datetime'] = pd.to_datetime(hourly['datetime'])
 signals_simplema = Simple_MA(hourly, 12, 26)
 signals_macd = MACD(hourly, 12, 26, 9)
 
-pf1 = calc_portfolio(hourly, signals_simplema, 'SIMPLE MOVING AVERAGE')
-pf2 = calc_portfolio(hourly, signals_macd, 'MACD')
+pf1[200:210]
+pf1, values1 = calc_portfolio(hourly, signals_simplema, 'SIMPLE MOVING AVERAGE')
+pf2, values2 = calc_portfolio(hourly, signals_macd, 'MACD')
