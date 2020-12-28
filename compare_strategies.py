@@ -16,7 +16,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     sim = simulator.simulator_environment()
     sim.initialize_decisionmaker(strategy)
     sim.simulate_on_aggregate_data(data)
-    portfolios[name] = sim.env.portfolio.portfolio_over_time
+    portfolios[name] = sim.env.portfolio
 
 portfolios["SimpleMA"]
     
