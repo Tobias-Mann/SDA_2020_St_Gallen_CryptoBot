@@ -20,5 +20,11 @@ for name, strategy in STRATEGIESCOLLECTION.items():
 
 
 data.columns = ["time", "open","high","low","close","volume"]
-portfolios["SimpleMA"]
-    
+
+def dataframebycolumn(column):
+    colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
+    columns, colvals = list(zip(*colzip))
+    return pd.DataFrame(zip(*colvals), columns=columns, index=data["time"])
+
+df_cumulative = dataframebycolumn("cumreturn")
+df_Absolute = dataframebycolumn("value")
