@@ -206,6 +206,12 @@ class portfolio:
         return pd.DataFrame(index=summary.keys(), data=summary.values(), columns=["Performance Summary"])
     
     @property
+    def ratio(self):
+        last = self.__position_over_time__[-1]
+        exposure = last[-1] *last[-2]
+        return exposure / (exposure + last[1])
+    
+    @property
     def portfolio_over_time(self):
         df = pd.DataFrame(self.__position_over_time__)
         df.columns = ["Time", "USD", "BTC", "Price"]
