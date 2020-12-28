@@ -3,7 +3,7 @@ import pandas as pd
 import simulator
 import strategies
 
-STRATEGIESCOLLECTION = {"relativestrength":strategies.relativestrength, "meanreversion":strategies.meanreversion}
+STRATEGIESCOLLECTION = { "relativestrength":strategies.relativestrength, "meanreversion":strategies.meanreversion, "SimpleMA":strategies.SimpleMA,"MACD":strategies.MACD}
 
 
 # read in data
@@ -18,4 +18,5 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     sim.simulate_on_aggregate_data(data)
     portfolios[name] = sim.env.portfolio.portfolio_over_time
 
+portfolios["SimpleMA"]
     

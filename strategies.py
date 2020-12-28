@@ -35,9 +35,9 @@ class SimpleMA(simulator.decisionmaker):
         self.memory = []
 
     # function for calculating a moving average with numpy arrays
-    def moving_average(array, periods):
+    def moving_average(self, array, periods):
         weights = np.ones(periods) / periods
-        return np.convolve(array, weights, mode='valid')
+        return (array * weights).sum()
 
     def make_decision(self, row):
         closing_price = row[-1]
@@ -48,8 +48,8 @@ class SimpleMA(simulator.decisionmaker):
             values = np.array(self.memory[-long_window:])
 
             # calculate the moving averages
-            values_short = moving_average(values, short_window)
-            values_long = moving_average(values, long_window)
+            values_short = self.moving_average(values[-short_window:], short_window)
+            values_long = self.moving_average(values, long_window)
 
             if values_short < values_long and self.env.portfolio.btc > 0:
                 # sell at market
@@ -65,33 +65,33 @@ class MACD(simulator.decisionmaker):
         super(MACD, self).__init__(environment)
         self.memory = []
 
-    def ExpMovingAverage(values, window):
+    def ExpMovingAverage(self, values, window):
         weights = np.exp(np.linspace(-1., 0., window))
         weights /= weights.sum()
-        a = np.convolve(values, weights, mode='full')[:len(values)]
-        a[:window] = a[window]
+        a = (weights * values).sum()
+        # a[:window] = a[window]
         return a
 
-    def computeMACD(x, slow, fast, signal):
+    def computeMACD(self, x, slow, fast, signal):
         # compute the MACD (Moving Average Convergence/Divergence) using a fast and slow exponential moving avg'
         # return value is emaslow, emafast, macd which are len(x) arrays
-        emaslow = ExpMovingAverage(x, slow)
-        emafast = ExpMovingAverage(x, fast)
+        emaslow = self.ExpMovingAverage(x, slow)
+        emafast = self.ExpMovingAverage(x[-fast:], fast)
         macd = emafast - emaslow
-        signal_line = ExpMovingAverage(macd, signal)
+        signal_line = self.ExpMovingAverage(macd, signal)
         return macd, signal_line
 
     def make_decision(self, row):
         closing_price = row[-1]
         self.memory.append(closing_price)
-        slow = 12
-        fast = 26
-        signal = 9
+        slow = 26
+        fast = 12
+        signal_lenght = 9
 
-        if len(self.memory) >= long_window:
-            values = np.array(self.memory[-long_window:])
+        if len(self.memory) >= slow:
+            values = np.array(self.memory[-slow:])
             # calculate the exponential moving averages
-            macd, signal = computeMACD(values, slow, fast)
+            macd, signal = self.computeMACD(values, slow, fast, signal_lenght)
 
             if signal < macd and self.env.portfolio.btc > 0:
                 # sell at market
