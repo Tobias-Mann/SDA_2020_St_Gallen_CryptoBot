@@ -201,7 +201,7 @@ class portfolio:
         summary["Absolute Exposure"] = ((repriced["value"] - repriced["USD"]) /repriced["value"] ).mean() * 100
         summary["Net Exposure"] = (repriced["BTC"] * repriced["price"] / repriced["value"]).mean() *100 
         summary["Average Daily Position"] = repriced["BTC"].groupby(repriced.index.date).agg(lambda x: x.mean()).mean()
-        summary["Average Daily Turnover (percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x["BTC"].diff().abs().sum() * x["price"][-1] / x["value"][-1] ).mean()[0]
+        summary["Average Daily Turnover (percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0]
         summary["Normalized CAGR"] = (cagr*100 / summary["Absolute Exposure"]) *100
         return pd.DataFrame(index=summary.keys(), data=summary.values(), columns=["Performance Summary"])
     
