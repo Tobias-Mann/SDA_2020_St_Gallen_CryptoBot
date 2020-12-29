@@ -1,6 +1,5 @@
 ### This is jus a Trial Run of the code by SENTDEX
 
-
 import gym
 import numpy as np
 import matplotlib.pyplot as plt
