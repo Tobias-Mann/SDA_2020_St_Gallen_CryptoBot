@@ -1,10 +1,7 @@
-import pandas as pd 
-from ta import add_all_ta_features
+import pandas as pd
+# from ta import add_all_ta_features
 import os
 
-#PATH = "/Users/Tobias/OneDrive - Universitaet St.Gallen/MBF/CryptoBot/Single-Timeseries-Crypto-Bot/"
-PATH = '/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/00 Group Project/Repository/Single-Timeseries-Crypto-Bot/' # Set your path to the checkout
-os.chdir(PATH)
 
 """
 ### DATA SOURCE 1: KAGGLE ------------------------------
@@ -43,7 +40,9 @@ df_17 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-hist
 df_18 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2018/merged.csv?raw=true', names = headers)
 df_19 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2019/merged.csv?raw=true', names = headers)
 
-len(df_19)
+# check length and compare to theoretical value
+print('Theoretical maximum obervations:', 24*365*7)
+print('Actual observations of df:' len(df_19))
 
 # Merge dataframes
 data_frames = [df_13, df_14, df_15, df_16, df_17, df_18, df_19]
@@ -51,22 +50,20 @@ df_merged = pd.concat(data_frames)
 
 #convert timestamp to datae
 df_merged['Time'] = pd.to_datetime(df_merged['Time'], unit = 'ms')
-print(df_merged.info())
-
-# we should have a df_merged with 3'679'200 rows (7y*365d*24h*60m)but only have 2'630'217 rows --> this is purely due to missing data cf sum([x.shape[0] for x in data_frames]) = 2'630'217
-
-# plot the open prices against Time
-# this takes a while
-"""
-df_merged.plot(x ='Time', y='open', kind = 'scatter')
-plt.show()
-"""
 
 # reset index and sort values according to Time
 df_merged = df_merged.sort_values(by=['Time'], ascending = True, na_position = 'last')
-df_merged = df_merged.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
-df_merged = df_merged.rename(columns={"index": "old_index"})
+df_merged = df_merged.reset_index(level = None, drop = False, inplace = False, col_level = 0, col_fill='')
+df_merged = df_merged.rename(columns = {"index": "old_index"})
 
+#print output
+print(df_merged.info())
+
+# save the new file under the folder Data
+df_merged.to_csv('Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
+
+
+"""
 ### Feature Engineering ------------------------
 
 # Time
@@ -100,6 +97,4 @@ print('Number of rows: {}, Number of columns: {}'.format(*df_merged.shape))
 
 # Write csv of merged files
 pd.DataFrame.to_csv(df_merged, 'df_raw.csv', sep=',', na_rep='.', index=False)
-
-
-
+"""
