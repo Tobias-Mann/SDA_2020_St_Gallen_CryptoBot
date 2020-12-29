@@ -12,9 +12,9 @@ style.use("ggplot")  # setting our style!
 SIZE = 10
 
 HM_EPISODES = 25000
-MOVE_PENALTY = 1
-ENEMY_PENALTY = 300
-FOOD_REWARD = 25
+MOVE_PENALTY = 1 # could be for entering a trade, like a commission
+ENEMY_PENALTY = 300 # could be trade loss
+FOOD_REWARD = 25 # could be a trade profit
 epsilon = 0.9
 EPS_DECAY = 0.9998  # Every episode will be epsilon*EPS_DECAY
 SHOW_EVERY = 3000  # how often to play through env visually.
@@ -28,16 +28,18 @@ PLAYER_N = 1  # player key in dict
 FOOD_N = 2  # food key in dict
 ENEMY_N = 3  # enemy key in dict
 
-# the dict!
+# the dict for colors!
 d = {1: (255, 175, 0), 2: (0, 255, 0), 3: (0, 0, 255)}
 
 
 class Blob:
     def __init__(self):
+        # set random numbers where the player starts
         self.x = np.random.randint(0, SIZE)
         self.y = np.random.randint(0, SIZE)
 
     def __str__(self):
+        # return the x and y coordinates
         return f"{self.x}, {self.y}"
 
     def __sub__(self, other):
@@ -47,6 +49,7 @@ class Blob:
         '''
         Gives us 4 total movement options. (0,1,2,3)
         '''
+        # this could be our actions for trades
         if choice == 0:
             self.move(x=1, y=1)
         elif choice == 1:
@@ -80,9 +83,10 @@ class Blob:
         elif self.y > SIZE - 1:
             self.y = SIZE - 1
 
-
+# if we have no q-table we initialize it with random variables from the SIZE range
+# for us this could be the different price combinations for open, high, low, close
 if start_q_table is None:
-    # initialize the q-table#
+    # we have i, ii = player - food coordinates, iii, iiii = player - enemy coordinates
     q_table = {}
     for i in range(-SIZE + 1, SIZE):
         for ii in range(-SIZE + 1, SIZE):
@@ -101,7 +105,7 @@ else:
 episode_rewards = []
 
 for episode in range(HM_EPISODES):
-    player = Blob()
+    player = Blob() # initializes the players coordinates
     food = Blob()
     enemy = Blob()
     if episode % SHOW_EVERY == 0:
@@ -113,13 +117,17 @@ for episode in range(HM_EPISODES):
         show = False
 
     episode_reward = 0
+
+    # 200 is the amount of steps we are taking, this is our amount of trades
     for i in range(200):
+        # this could be basically the current price observation
         obs = (player - food, player - enemy)
         #print(obs)
         if np.random.random() > epsilon:
             # GET THE ACTION
             action = np.argmax(q_table[obs])
         else:
+            # this is a random function and could be the same for our trading bot
             action = np.random.randint(0, 4)
         # Take the action!
         player.action(action)
@@ -129,12 +137,14 @@ for episode in range(HM_EPISODES):
         #food.move()
         ##############
 
+        # this could represent our penalities for profits and losses
         if player.x == enemy.x and player.y == enemy.y:
             reward = -ENEMY_PENALTY
         elif player.x == food.x and player.y == food.y:
             reward = FOOD_REWARD
         else:
             reward = -MOVE_PENALTY
+
         ## NOW WE KNOW THE REWARD, LET'S CALC YO
         # first we need to obs immediately after the move.
         new_obs = (player - food, player - enemy)
