@@ -3,7 +3,7 @@ import pandas as pd
 import simulator
 import strategies
 
-STRATEGIESCOLLECTION = { "relativestrength":strategies.relativestrength, "meanreversion":strategies.meanreversion, "SimpleMA":strategies.SimpleMA,"MACD":strategies.MACD}
+STRATEGIESCOLLECTION = {"relativestrength":strategies.relativestrength, "meanreversion":strategies.meanreversion, "SimpleMA":strategies.SimpleMA,"MACD":strategies.MACD}
 
 
 # read in data
@@ -20,5 +20,11 @@ for name, strategy in STRATEGIESCOLLECTION.items():
 
 
 data.columns = ["time", "open","high","low","close","volume"]
-portfolios["SimpleMA"]
-    
+
+def dataframebycolumn(column):
+    colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
+    columns, colvals = list(zip(*colzip))
+    return pd.DataFrame(zip(*colvals), columns=columns, index=data["time"])
+
+df_cumulative = dataframebycolumn("cumreturn")
+df_Absolute = dataframebycolumn("value")
