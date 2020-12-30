@@ -110,6 +110,7 @@ class StockTradingEnvironment(gym.Env):
             self.df.loc[self.current_step, "Close"])
         action_type = action[0] # column 0 is buy, sell or hold
         amount = action[1] # is a percentage value between 0 and 1
+
         if action_type < 1:
             # Buy amount % of balance in shares
             total_possible = self.balance / current_price
@@ -117,24 +118,52 @@ class StockTradingEnvironment(gym.Env):
             prev_cost = self.cost_basis * self.shares_held
             additional_cost = shares_bought * current_price
             self.balance -= additional_cost
-            self.cost_basis = (prev_cost + additional_cost) / 
-                                    (self.shares_held + shares_bought)
+            self.cost_basis = (prev_cost + additional_cost) / (self.shares_held + shares_bought)
             self.shares_held += shares_bought
+
         elif actionType < 2:
             # Sell amount % of shares held
-            shares_sold = self.shares_held * amount . 
+            shares_sold = self.shares_held * amount 
             self.balance += shares_sold * current_price
             self.shares_held -= shares_sold
             self.total_shares_sold += shares_sold
             self.total_sales_value += shares_sold * current_price
+
         self.netWorth = self.balance + self.shares_held * current_price
+
         if self.net_worth > self.max_net_worth:
             self.max_net_worth = net_worth
         if self.shares_held == 0:
             self.cost_basis = 0
+    
+    def render(self, mode='human', close=False):
+        # Render the environment to the screen
+        profit = self.net_worth - INITIAL_ACCOUNT_BALANCE
+        print(f'Step: {self.current_step}')
+        print(f'Balance: {self.balance}')
+        print(f'Shares held: {self.shares_held}(Total sold: {self.total_shares_sold})')
+        print(f'Avg cost for held shares: {self.cost_basis}(Total sales value: {self.total_sales_value})')
+        print(f'Net worth: {self.net_worth}(Max net worth: {self.max_net_worth})')
+        print(f'Profit: {profit}')
 
+
+import gym
+import json
+import datetime as dt
+from stable_baselines.common.policies import MlpPolicy
+from stable_baselines.common.vec_env import DummyVecEnv
+from stable_baselines import PPO2
+from env.StockTradingEnv import StockTradingEnv
+import pandas as pd
 
 df = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/Stock-Trading-Environment-master/data/AAPL.csv')
-
-current_step = random.randint(0, len(df.loc[:, 'Open'].values) - 6)
-df.loc[current_step + 5, 'Open'] / MAX_SHARE_PRICE
+df = df.sort_values('Date')
+# The algorithms require a vectorized environment to run
+env = DummyVecEnv([lambda: StockTradingEnv(df)])
+model = PPO2(MlpPolicy, env, verbose=1)
+model.learn(total_timesteps=20000)
+obs = env.reset()
+for i in range(2000):
+  action, _states = model.predict(obs)
+  obs, rewards, done, info = env.step(action)
+  env.render()
