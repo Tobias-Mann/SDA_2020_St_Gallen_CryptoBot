@@ -92,10 +92,11 @@ class macd_lag(ql.feature):
         fast = 12
         slow = 26
         signal_length = 9
-        emaslow = self.ExpMovingAverage(observations[-slow:], slow)
-        emafast = self.ExpMovingAverage(observations[-fast:], fast)
-        macd = emafast - emaslow
-        self.macd_memory.append(macd)
+        if len(observations) >= slow:
+            emaslow = self.ExpMovingAverage(observations[-slow:], slow)
+            emafast = self.ExpMovingAverage(observations[-fast:], fast)
+            macd = emafast - emaslow
+            self.macd_memory.append(macd)
 
         if len(self.macd_memory) >= signal_length:
             signal = self.ExpMovingAverage(self.macd_memory[-signal_length:], signal_length)
