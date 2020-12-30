@@ -6,6 +6,7 @@ class meanreversion(simulator.decisionmaker):
     def __init__(self, environment):
         super(meanreversion, self).__init__(environment)
         self.memory = []
+        self.z_memory = []
         self.__critical_deviation__ = 2
 
     def change_critical_deviation(self, new):
@@ -20,6 +21,7 @@ class meanreversion(simulator.decisionmaker):
             mean = np.mean(values)
             std = np.std(values)
             z = (closing_price - mean)/std
+            self.z_memory.append(z)
             if z > self.__critical_deviation__ and self.env.portfolio.btc >0 :
                 # sell at market
                 quantity = self.env.portfolio.btc
@@ -33,6 +35,9 @@ class SimpleMA(simulator.decisionmaker):
     def __init__(self, environment):
         super(SimpleMA, self).__init__(environment)
         self.memory = []
+        self.short_memory = []
+        self.long_memory = []
+
 
     # function for calculating a moving average with numpy arrays
     def moving_average(self, array, periods):
@@ -50,6 +55,8 @@ class SimpleMA(simulator.decisionmaker):
             # calculate the moving averages
             values_short = self.moving_average(values[-short_window:], short_window)
             values_long = self.moving_average(values, long_window)
+            self.short_memory.append(values_short)
+            self.long_memory.append(values_long)
 
             if values_short < values_long and self.env.portfolio.btc > 0:
                 # sell at market

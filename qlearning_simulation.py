@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd 
+import pandas as pd
 import qlearning as ql
 import simulator
 import smartstrategies
@@ -17,13 +17,29 @@ class pct_change_lag(ql.feature):
         self.min_observations = max(1, abs(lag))
         self.low = -1
         self.high = 1
-    
+
     def calculate(self, observations):
         return (observations[-1]/observations[-self.lag])-1
+
+
+class z_score_lag(ql.feature):
+    def __init__(self, lag):
+        super(z_score_lag, self).__init__()
+        self.lag = lag
+        self.min_observations = max(1, abs(lag))
+        self.low = -4
+        self.high = 4
+
+    def calculate(self, observations):
+        std = observations[-self.lag:].std()
+        m_mean = observations[-self.lag:].mean()
+        return (observations[-1] - m_mean) / std
+
 # define observationspace
 osp = ql.observationspace()
-osp.features.append(pct_change_lag(1))
-osp.features.append(pct_change_lag(60))
+#osp.features.append(pct_change_lag(1))
+#osp.features.append(pct_change_lag(60))
+osp.features.append(z_score_lag(60))
 
 # Build q-environment
 env = ql.environment(osp, asp)
