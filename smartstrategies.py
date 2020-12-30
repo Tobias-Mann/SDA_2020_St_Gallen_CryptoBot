@@ -7,6 +7,7 @@ class smartbalancer(simulator.decisionmaker):
     def __init__(self, environment):
         super(smartbalancer, self).__init__(environment)
         self.agent = None
+        self.reward_memory = []
     
     def assign_agent(self, agent):
         self.agent = agent
@@ -42,6 +43,7 @@ class smartbalancer(simulator.decisionmaker):
             else:
                 reward =  w * r -.1
             self.agent.learn(reward)
+            self.reward_memory.append(reward)
         if self.agent.is_ready:
             new_ratio = self.agent.act()
             adjustment = int(self.balance(new_ratio))
