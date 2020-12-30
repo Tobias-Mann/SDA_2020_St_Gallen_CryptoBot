@@ -1,8 +1,25 @@
+import random
+import json
 import gym
 from gym import spaces
 import pandas as pd
 import numpy as np
-import random
+from tensorflow.python.compiler.tensorrt import trt_convert as trt
+
+import datetime as dt
+from stable_baselines.common.policies import MlpPolicy
+from stable_baselines.common.vec_env import DummyVecEnv
+from stable_baselines.common import make_vec_env
+#from stable_baselines import PPO2
+from env.StockTradingEnv import StockTradingEnv
+
+MAX_ACCOUNT_BALANCE = 2147483647
+MAX_NUM_SHARES = 2147483647
+MAX_SHARE_PRICE = 5000
+MAX_OPEN_POSITIONS = 5
+MAX_STEPS = 20000
+
+INITIAL_ACCOUNT_BALANCE = 10000
 
 '''
 class CustomEnv(gym.Env):
@@ -102,7 +119,7 @@ class StockTradingEnvironment(gym.Env):
         done = self.net_worth <= 0 # reset when we have no money left
         obs = self._next_observation()
         return obs, reward, done, {}
-    
+
     def _take_action(self, action):
         # Set the current price to a random price within the time step
         current_price = random.uniform(
@@ -123,7 +140,7 @@ class StockTradingEnvironment(gym.Env):
 
         elif actionType < 2:
             # Sell amount % of shares held
-            shares_sold = self.shares_held * amount 
+            shares_sold = self.shares_held * amount
             self.balance += shares_sold * current_price
             self.shares_held -= shares_sold
             self.total_shares_sold += shares_sold
@@ -135,7 +152,7 @@ class StockTradingEnvironment(gym.Env):
             self.max_net_worth = net_worth
         if self.shares_held == 0:
             self.cost_basis = 0
-    
+
     def render(self, mode='human', close=False):
         # Render the environment to the screen
         profit = self.net_worth - INITIAL_ACCOUNT_BALANCE
@@ -147,16 +164,7 @@ class StockTradingEnvironment(gym.Env):
         print(f'Profit: {profit}')
 
 
-import gym
-import json
-import datetime as dt
-from stable_baselines.common.policies import MlpPolicy
-from stable_baselines.common.vec_env import DummyVecEnv
-from stable_baselines import PPO2
-from env.StockTradingEnv import StockTradingEnv
-import pandas as pd
-
-df = pd.read_csv('/Users/tgraf/Google Drive/Uni SG/Master/Smart Data Analytics/Stock-Trading-Environment-master/data/AAPL.csv')
+df = pd.read_csv('Data/AAPL.csv')
 df = df.sort_values('Date')
 # The algorithms require a vectorized environment to run
 env = DummyVecEnv([lambda: StockTradingEnv(df)])
@@ -164,6 +172,6 @@ model = PPO2(MlpPolicy, env, verbose=1)
 model.learn(total_timesteps=20000)
 obs = env.reset()
 for i in range(2000):
-  action, _states = model.predict(obs)
-  obs, rewards, done, info = env.step(action)
-  env.render()
+    action, _states = model.predict(obs)
+    obs, rewards, done, info = env.step(action)
+    env.render()
