@@ -46,4 +46,5 @@ data = pd.read_csv("./Data/Dec19.csv")
 sim.simulate_on_aggregate_data(data.dropna().head(200000))
 
 data.columns = ["time", "open","high","low","close","volume"]
-sim.env.portfolio
+
+sim.env.portfolio.portfolio_over_time

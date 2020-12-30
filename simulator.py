@@ -1,6 +1,7 @@
 import pandas as pd 
 import numpy as np
 from tqdm import tqdm
+import warnings
 
 class orderbook:
     def __init__(self):
@@ -164,50 +165,62 @@ class portfolio:
         self.__position_over_time__.append((time, self.__usd__, self.__btc__, price))
     
     def portfolio_repricing(self, data):
-        df = pd.DataFrame(self.__position_over_time__)
-        df.columns = ["Time", "USD", "BTC", "Price"]
-        
-        p = df.loc[1:,["USD", "BTC", "Time"]].set_index("Time")
-        
-        answer = pd.DataFrame(index = data["time"].values.flatten(), columns= ["USD", "BTC"])
-        answer[answer.index.isin(p.index)] = p
-        answer.loc[answer.index[0],:]=df.loc[0,["USD", "BTC"]]
-        answer = answer.fillna(method="ffill")
-        answer["price"] = data.set_index("time")["close"]
-        answer["value"] = answer["price"] * answer["BTC"] + answer["USD"]
-        answer["returns"] = answer["value"].pct_change()
-        answer["cumreturn"] = answer["value"]/ answer.loc[answer.index[0],"value"] -1
-        answer.index = pd.to_datetime(answer.index)
-        return answer
+        columns = ["Time", "USD", "BTC", "Price"]
+        if self._sanity:
+            df = pd.DataFrame(self.__position_over_time__)
+            df.columns = columns
+            
+            p = df.loc[1:,["USD", "BTC", "Time"]].set_index("Time")
+            
+            answer = pd.DataFrame(index = data["time"].values.flatten(), columns= ["USD", "BTC"])
+            answer[answer.index.isin(p.index)] = p
+            answer.loc[answer.index[0],:]=df.loc[0,["USD", "BTC"]]
+            answer = answer.fillna(method="ffill")
+            answer["price"] = data.set_index("time")["close"]
+            answer["value"] = answer["price"] * answer["BTC"] + answer["USD"]
+            answer["returns"] = answer["value"].pct_change()
+            answer["cumreturn"] = answer["value"]/ answer.loc[answer.index[0],"value"] -1
+            answer.index = pd.to_datetime(answer.index)
+            return answer
+        return pd.DataFrame(columns = columns)
     
     def tearsheet(self, data):
-        repriced = self.portfolio_repricing(data)
-        summary={}
-        summary["Start Date"] = repriced.index.min()
-        summary["End Date"] = repriced.index.max()
-        summary["Total Days"] = (summary["End Date"] - summary["Start Date"]).days
-        cagr = np.exp(365 * (np.power((repriced.loc[summary["End Date"], ["value"]]/repriced.loc[summary["Start Date"], ["value"]]), 1/summary["Total Days"])-1).values[0])-1
-        summary["CAGR"] = f"{cagr*100}%"
-        # summary["Sharpe ratio"] = (repriced.returns.mean() - repriced.price.pct_change().mean()) / (repriced.returns.std() - repriced.price.pct_change().std())
-        daily_min = repriced["value"].groupby(repriced.index.date).agg(lambda x: min(x))
-        daily_max = repriced["value"].groupby(repriced.index.date).agg(lambda x: max(x))
-        max_drawdown = min([ daily_min[day2]/daily_max[day] - 1 for day in daily_max.index for day2 in daily_min.index[daily_min.index>day]])
-        summary["Max Drawdown"] = f"{max_drawdown*100}%"
-        summary["Cumulative Return"] = f"{repriced.loc[repriced.index[-1], ['cumreturn']].values[0]*100}%"
-        daily_returns = repriced['value'].groupby(repriced.index.date).agg(lambda x: x[-1]).pct_change()
-        summary["Annual Volatility"] = f"{daily_returns.std()*np.sqrt(365) * 100}%"
-        summary["Calmar Ratio"] = cagr / abs(max_drawdown)
-        summary["Skew"] = daily_returns.skew()
-        summary["Kurtosis"] = daily_returns.kurtosis()
-        summary["Absolute Exposure"] = ((repriced["value"] - repriced["USD"]) /repriced["value"] ).mean() * 100
-        summary["Net Exposure"] = (repriced["BTC"] * repriced["price"] / repriced["value"]).mean() *100 
-        summary["Average Daily Position"] = repriced["BTC"].groupby(repriced.index.date).agg(lambda x: x.mean()).mean()
-        summary["Average Daily Turnover\n(percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0]
-        summary["Normalized CAGR"] = (cagr*100 / summary["Absolute Exposure"]) *100
-        return pd.DataFrame(index=summary.keys(), data=summary.values(), columns=["Performance Summary"])
+        if self._sanity:
+            repriced = self.portfolio_repricing(data)
+            summary={}
+            summary["Start Date"] = repriced.index.min()
+            summary["End Date"] = repriced.index.max()
+            summary["Total Days"] = (summary["End Date"] - summary["Start Date"]).days
+            cagr = np.exp(365 * (np.power((repriced.loc[summary["End Date"], ["value"]]/repriced.loc[summary["Start Date"], ["value"]]), 1/summary["Total Days"])-1).values[0])-1
+            summary["CAGR"] = f"{cagr*100}%"
+            # summary["Sharpe ratio"] = (repriced.returns.mean() - repriced.price.pct_change().mean()) / (repriced.returns.std() - repriced.price.pct_change().std())
+            daily_min = repriced["value"].groupby(repriced.index.date).agg(lambda x: min(x))
+            daily_max = repriced["value"].groupby(repriced.index.date).agg(lambda x: max(x))
+            max_drawdown = min([ daily_min[day2]/daily_max[day] - 1 for day in daily_max.index for day2 in daily_min.index[daily_min.index>day]])
+            summary["Max Drawdown"] = f"{max_drawdown*100}%"
+            summary["Cumulative Return"] = f"{repriced.loc[repriced.index[-1], ['cumreturn']].values[0]*100}%"
+            daily_returns = repriced['value'].groupby(repriced.index.date).agg(lambda x: x[-1]).pct_change()
+            summary["Annual Volatility"] = f"{daily_returns.std()*np.sqrt(365) * 100}%"
+            summary["Calmar Ratio"] = cagr / abs(max_drawdown)
+            summary["Skew"] = daily_returns.skew()
+            summary["Kurtosis"] = daily_returns.kurtosis()
+            summary["Absolute Exposure"] = ((repriced["value"] - repriced["USD"]) /repriced["value"] ).mean() * 100
+            summary["Net Exposure"] = (repriced["BTC"] * repriced["price"] / repriced["value"]).mean() *100 
+            summary["Average Daily Position"] = repriced["BTC"].groupby(repriced.index.date).agg(lambda x: x.mean()).mean()
+            summary["Average Daily Turnover\n(percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0]
+            summary["Normalized CAGR"] = (cagr*100 / summary["Absolute Exposure"]) *100
+            return pd.DataFrame(index=summary.keys(), data=summary.values(), columns=["Performance Summary"])
+        return pd.DataFrame(columns=["Performance Summary"])
     
     def current_ratio(self, price):
         return self.__btc__ * price / (self.__usd__ + self.__btc__ * price)
+    
+    @property
+    def _sanity(self):
+        if not bool(self.__position_over_time__):
+            warnings.warn("No orders were executed: The portfolio was a cash position for the entire simulation!")
+            return False
+        return True
     
     @property
     def ratio(self):
@@ -217,13 +230,16 @@ class portfolio:
     
     @property
     def portfolio_over_time(self):
-        df = pd.DataFrame(self.__position_over_time__)
-        df.columns = ["Time", "USD", "BTC", "Price"]
-        df["Value"] = df["USD"] + df["BTC"] * df["Price"]
-        df["BTCRatio"] = 1 - df["USD"]/ df["Value"]
-        df["Returns"] = df["Value"].pct_change()
-        df["CumulativeReturn"] = df["Value"]/(df["Value"].values[0]) - 1
-        return df
+        columns = ["Time", "USD", "BTC", "Price"]
+        if self._sanity:
+            df = pd.DataFrame(self.__position_over_time__)
+            df.columns =columns
+            df["Value"] = df["USD"] + df["BTC"] * df["Price"]
+            df["BTCRatio"] = 1 - df["USD"]/ df["Value"]
+            df["Returns"] = df["Value"].pct_change()
+            df["CumulativeReturn"] = df["Value"]/(df["Value"].values[0]) - 1
+            return df
+        return pd.DataFrame(columns = columns)
     
     @property
     def usd(self):
