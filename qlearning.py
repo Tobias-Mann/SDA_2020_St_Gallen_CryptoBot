@@ -92,7 +92,7 @@ class agent:
             discrete_state = self.get_discrete_state(self.env.observationspace.states[-1])
         choosen_action = self.find_action(discrete_state)
         self.action_memory.append(choosen_action)
-        return choosen_action
+        return self.env.actionspace.actions[choosen_action]
     
     def new_data(self):
         self.__ready_to_learn__ = False

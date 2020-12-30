@@ -38,9 +38,9 @@ class smartbalancer(simulator.decisionmaker):
             r = (self.memory[-1]/self.memory[-2])-1
             w = self.env.portfolio.current_ratio(closing_price)
             if w == 0:
-                reward = -r -1
+                reward = -r -.1
             else:
-                reward =  w * r -1
+                reward =  w * r -.1
             self.agent.learn(reward)
         if self.agent.is_ready:
             new_ratio = self.agent.act()
