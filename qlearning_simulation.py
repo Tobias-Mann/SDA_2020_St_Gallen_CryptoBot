@@ -106,8 +106,8 @@ class macd_lag(ql.feature):
 
 # define observationspace
 osp = ql.observationspace()
-#osp.features.append(pct_change_lag(1))
-#osp.features.append(pct_change_lag(60))
+osp.features.append(pct_change_lag(1))
+osp.features.append(pct_change_lag(60))
 osp.features.append(z_score_lag(60))
 
 # Build q-environment
@@ -129,7 +129,6 @@ data = pd.read_csv("./Data/Dec19.csv")
 
 # start simulator
 sim.simulate_on_aggregate_data(data.dropna())
-
 
 
 # Show Portfolio Performance
