@@ -74,6 +74,7 @@ class agent:
     
     def get_discrete_state(self, state):
         discretestate = state - self.env.observationspace.low
+        discretestate = np.array([min(discretestate[i], self.q_table.shape[i]-1) for i in range(len(discretestate))])
         return tuple(discretestate.astype(np.int))
     
     def find_action(self, discretestate):
