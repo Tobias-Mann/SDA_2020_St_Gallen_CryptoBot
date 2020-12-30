@@ -58,7 +58,7 @@ class environment:
 class agent:
     def __init__(self, env):
         self.env = env
-        self.DISCRETE_OS_SIZE = [20] * len(env.observationspace.features)
+        self.DISCRETE_OS_SIZE = [5] * len(env.observationspace.features)
         self.discrete_os_win_size = np.array([f.high - f.low for f in env.observationspace.features]) / self.DISCRETE_OS_SIZE
         self.q_table = np.random.uniform(low=-2, high=0, size=(self.DISCRETE_OS_SIZE + [env.actionspace.n] ))
         self.LEARNING_RATE = .1
