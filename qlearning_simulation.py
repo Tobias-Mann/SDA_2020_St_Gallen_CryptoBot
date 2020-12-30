@@ -38,7 +38,7 @@ class z_score_lag(ql.feature):
 
 class relativestrength_lag(ql.feature):
     def __init__(self, lag):
-        super(relative_strength, self).__init__()
+        super(relativestrength_lag, self).__init__()
         self.lag = lag
         self.min_observations = max(1, abs(lag))
         self.low = -1
@@ -68,11 +68,11 @@ class simplema_lag(ql.feature):
         long_window = self.lag * 2
         ma_short = np.convolve(observations[-short_window:],
             np.ones(short_window)/short_window, mode = 'valid')
-        ma_long = np.convolve(observations[-short_window:],
+        ma_long = np.convolve(observations[-long_window:],
             np.ones(long_window)/long_window, mode = 'valid')
         return ma_short
         return ma_long
-"""
+
 class macd_lag(ql.feature):
     def __init__(self, lag):
         super(macd_lag, self).__init__()
@@ -81,34 +81,38 @@ class macd_lag(ql.feature):
         self.low = -1
         self.low = 1
         self.macd_memory = []
-    
+
     def ExpMovingAverage(self, values, window):
         weights = np.exp(np.linspace(-1., 0., window))
         weights /= weights.sum()
-        a = (weights * values).sum()
-        return a
+        ema = (weights * values).sum()
+        return ema
 
     def calculate(self, observations):
-        fast = self.lag
-        slow = self.lag * 2
-        signal_length = 
-        emaslow = self.ExpMovingAverage(observations, slow)
-        emafast = self.ExpMovingAverage(observations, fast)
+        fast = 12
+        slow = 26
+        signal_length = 9
+        emaslow = self.ExpMovingAverage(observations[-slow:], slow)
+        emafast = self.ExpMovingAverage(observations[-fast:], fast)
         macd = emafast - emaslow
         self.macd_memory.append(macd)
 
-        if len(self.macd_memory) >= signal_length
-        signal = self.ExpMovingAverage(observations)
-        return macd[self.lag]
-        return signal[self.lag]
-"""
+        if len(self.macd_memory) >= signal_length:
+            signal = self.ExpMovingAverage(self.macd_memory[-signal_length:], signal_length)
+            return self.macd_memory[-1]
+            return signal
+
 
 
 # define observationspace
 osp = ql.observationspace()
-osp.features.append(pct_change_lag(1))
-osp.features.append(pct_change_lag(60))
-osp.features.append(z_score_lag(60))
+#osp.features.append(pct_change_lag(1))
+#osp.features.append(pct_change_lag(60))
+#osp.features.append(z_score_lag(60))
+#osp.features.append(relativestrength_lag(1))
+#osp.features.append(simplema_lag(1))
+osp.features.append(macd_lag(5))
+
 
 # Build q-environment
 env = ql.environment(osp, asp)
