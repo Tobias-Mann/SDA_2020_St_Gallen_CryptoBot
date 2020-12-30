@@ -124,7 +124,6 @@ class simulator_environment:
             self.process_orders(row[0], row[1:5])
             self.decisionmaker.make_decision(row[1:5]) # because the decision maker is initialized it can access the simulators orderbook, the function can take additional inputs
             
-            
 class portfolio:
     def __init__(self, usd = 10**6, btc = 0):
         self.__usd__ = usd
@@ -153,7 +152,9 @@ class portfolio:
             self.__is_initialized__ = True
             self.__update__(time, price)
         revenue = quantity * price
-        if quantity > self.__btc__: raise Exception("Using laverage, bitcoin order exceeds btc funds")
+        if quantity > self.__btc__:
+            #raise Exception("Using laverage, bitcoin order exceeds btc funds")
+            quantity = self.__btc__
         self.__usd__ += revenue
         self.__btc__ -= quantity
         self.__update__(time, price)
@@ -201,9 +202,12 @@ class portfolio:
         summary["Absolute Exposure"] = ((repriced["value"] - repriced["USD"]) /repriced["value"] ).mean() * 100
         summary["Net Exposure"] = (repriced["BTC"] * repriced["price"] / repriced["value"]).mean() *100 
         summary["Average Daily Position"] = repriced["BTC"].groupby(repriced.index.date).agg(lambda x: x.mean()).mean()
-        summary["Average Daily Turnover (percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0]
+        summary["Average Daily Turnover\n(percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0]
         summary["Normalized CAGR"] = (cagr*100 / summary["Absolute Exposure"]) *100
         return pd.DataFrame(index=summary.keys(), data=summary.values(), columns=["Performance Summary"])
+    
+    def current_ratio(self, price):
+        return self.__btc__ * price / (self.__usd__ + self.__btc__ * price)
     
     @property
     def ratio(self):
