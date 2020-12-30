@@ -94,15 +94,15 @@ class MACD(simulator.decisionmaker):
         fast = 12
         signal_length = 9
 
+        # calculate macd only if we have enough values
         if len(self.memory) >= slow:
             values = np.array(self.memory[-slow:])
-            # calculate the exponential moving averages
             macd = self.computeMACD(values, slow, fast, signal_length)
             self.macd_memory.append(macd)
 
+        # calculate signal line only when we have enough macd values
         if len(self.macd_memory) >= signal_length:
             values = np.array(self.macd_memory[-signal_length:])
-            # calculate the exponential moving averages
             signal = self.ExpMovingAverage(values, signal_length)
             self.signal_memory.append(signal)
 
