@@ -44,7 +44,7 @@ class smartbalancer(simulator.decisionmaker):
             self.agent.learn(reward)
         if self.agent.is_ready:
             new_ratio = self.agent.act()
-            adjustment = self.balance(new_ratio)
+            adjustment = int(self.balance(new_ratio))
             if adjustment < 0 and self.env.portfolio.btc > 0:
                 # sell btc
                 self.env.orderbook.new_marketorder(abs(adjustment), False)

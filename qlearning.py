@@ -58,11 +58,16 @@ class environment:
 class agent:
     def __init__(self, env):
         self.env = env
-        self.DISCRETE_OS_SIZE = [5] * len(env.observationspace.features)
+        self.DISCRETE_OS_SIZE = [5] * len(env.observationspace.features) # could be improved to be feature dependent
         self.discrete_os_win_size = np.array([f.high - f.low for f in env.observationspace.features]) / self.DISCRETE_OS_SIZE
         self.q_table = np.random.uniform(low=-2, high=0, size=(self.DISCRETE_OS_SIZE + [env.actionspace.n] ))
         self.LEARNING_RATE = .1
         self.DISCOUNT = 0.95
+        
+        self.epsilon_start = 0.5
+        self.epsilon_decay_counter = 0
+        self.epsilon_decay_limit = 10000
+        
         self.min_observations = self.env.observationspace.min_observations
         self.__ready_to_learn__ = False
         self.action_memory = []
@@ -75,7 +80,7 @@ class agent:
         return np.argmax(self.q_table[discretestate])
     
     def learn(self, reward):
-        # At this time the agent has already made a new observation, but did not act on it, thus -2 and -1 for observations, actions
+        # At this time the agent has already made a new observation, but did not act on it, thus -2 (and -1) for observations, (actions)
         max_future_q = np.max( self.q_table[ self.get_discrete_state( self.env.observationspace.states[-1] ) ] )
         last_q = self.q_table[self.get_discrete_state(self.env.observationspace.states[-2])][self.action_memory[-1]]
         new_q = (1- self.LEARNING_RATE) * last_q + self.LEARNING_RATE * (reward + self.DISCOUNT * max_future_q)
@@ -90,7 +95,12 @@ class agent:
             self.__ready_to_learn__ = True
         elif len(self.env.observationspace.observations) > self.min_observations:
             discrete_state = self.get_discrete_state(self.env.observationspace.states[-1])
-        choosen_action = self.find_action(discrete_state)
+        
+        if np.random.random() > self.epsilon:
+            choosen_action = self.find_action(discrete_state)
+        else:
+            choosen_action = np.random.randint(0, self.env.actionspace.n)
+        self.epsilon_decay_counter += 1
         self.action_memory.append(choosen_action)
         return self.env.actionspace.actions[choosen_action]
     
@@ -106,3 +116,11 @@ class agent:
     @property
     def is_ready(self):
         return len(self.env.observationspace.observations) >= self.min_observations
+    
+    @property
+    def epsilon(self):
+        return self.epsilon_start - self.epsilon_decay_value * min(self.epsilon_decay_counter, self.epsilon_decay_limit)
+    
+    @property
+    def epsilon_decay_value(self):
+        return self.epsilon_start / self.epsilon_decay_limit

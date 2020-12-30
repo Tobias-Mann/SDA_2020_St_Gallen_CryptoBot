@@ -4,6 +4,8 @@ import qlearning as ql
 import simulator
 import smartstrategies
 
+# set random seed
+np.random.seed(0)
 
 # define actions
 n = 3
@@ -20,8 +22,10 @@ class pct_change_lag(ql.feature):
     
     def calculate(self, observations):
         return (observations[-1]/observations[-self.lag])-1
+
 # define observationspace
 osp = ql.observationspace()
+# assign features to osp
 osp.features.append(pct_change_lag(1))
 osp.features.append(pct_change_lag(60))
 
@@ -43,8 +47,10 @@ sim.decisionmaker.agent = agent
 data = pd.read_csv("./Data/Dec19.csv")
 
 # start simulator
-sim.simulate_on_aggregate_data(data.dropna().head(200000))
+sim.simulate_on_aggregate_data(data.dropna())
 
+
+
+# Show Portfolio Performance
 data.columns = ["time", "open","high","low","close","volume"]
-
-sim.env.portfolio.portfolio_over_time
+print("\n", sim.env.portfolio.portfolio_over_time)
