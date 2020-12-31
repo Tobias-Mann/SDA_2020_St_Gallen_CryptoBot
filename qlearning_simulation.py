@@ -134,17 +134,21 @@ sim2 = simulator.simulator_environment()
 
 # link simulator to smartbalancer
 sim.initialize_decisionmaker(smartstrategies.smartbalancer)
+sim2.initialize_decisionmaker(smartstrategies.smartbalancer)
 
 # assign agent to smart balancer
 sim.decisionmaker.agent = agent
+sim2.decisionmaker.agent = agent2
 
 # read in data
 data = pd.read_csv("./Data/Dec19.csv")
 
 # start simulator
-sim.simulate_on_aggregate_data(data.dropna())
+sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
+sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
 
 
 # Show Portfolio Performance
 data.columns = ["time", "open","high","low","close","volume"]
-print("\n", sim.env.portfolio.portfolio_over_time)
+print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_over_time)
+print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_over_time)
