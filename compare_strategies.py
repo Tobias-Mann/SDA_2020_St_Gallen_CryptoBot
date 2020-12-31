@@ -3,7 +3,8 @@ import pandas as pd
 import simulator
 import strategies
 
-STRATEGIESCOLLECTION = {"MACD":strategies.MACD}
+STRATEGIESCOLLECTION = {"SimpleMA":strategies.SimpleMA, "MACD":strategies.MACD,
+    "RSI":strategies.relativestrength, "meanreversion":strategies.meanreversion}
 
 
 # read in data
@@ -21,7 +22,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     portfolios[name] = sim.env.portfolio
     memories[name] = sim.decisionmaker
 
-
+"""
 data.columns = ["time", "open","high","low","close","volume"]
 
 def dataframebycolumn(column):
@@ -63,3 +64,4 @@ print(df)
 
 # save dataframe
 df.to_csv('Data/strategies.csv')
+"""
