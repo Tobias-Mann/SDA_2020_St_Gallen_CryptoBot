@@ -130,14 +130,9 @@ class relativestrength(simulator.decisionmaker):
         if len(self.memory) <= 1 or closing_price != self.memory[-1]:
             self.memory.append(closing_price)
         values = self.memory[-(self.period+1):]
-        returns = np.diff(values)/values[:-1]
-        returns = returns[~np.isnan(returns)]
-        select = returns>0
-        avg_gain = np.mean(returns[select])
-        avg_loss = np.mean(returns[~select])
-        rsi = 100
-        if avg_loss != 0 and np.any(~np.isnan([avg_gain, avg_loss])):
-            rsi = 100 - (100 / (1 + abs(avg_gain/avg_loss)))
+        U, D = zip(*[(max(0, values[i+1]-values[i]), max(0, values[i]-values[i+1])) for i in range(len(values)-1)])
+        rs = np.array(U).mean()/np.array(D).mean()
+        rsi = 100 - (100 / (1 + rs))
         self.rsi_memory.append(rsi)
         if rsi >= self.overbought:
             # sell at market
