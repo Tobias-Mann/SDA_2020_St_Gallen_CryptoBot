@@ -36,8 +36,80 @@ class z_score_lag(ql.feature):
         m_mean = observations[-self.lag:].mean()
         return max(self.low, min((observations[-1] - m_mean) / std, self.high))
 
+class relativestrength_lag(ql.feature):
+    def __init__(self, lag):
+        super(relativestrength_lag, self).__init__()
+        self.lag = lag
+        self.min_observations = max(1, abs(lag))
+        self.low = -1
+        self.high = 1
+
+    def calculate(self, observations):
+        returns = np.diff(observations[-self.lag:])/observations[-self.lag:]
+        returns = returns[~np.isnan(returns)]
+        select = returns > 0
+        avg_gain = np.mean(returns[select])
+        avg_loss = np.mean(returns[~select])
+        rsi = 100
+        if avg_loss != 0 and np.any(~np.isnan([avg_gain, avg_loss])):
+            rsi = 100 - (100 / (1 + avg_gain/avg_loss))
+        return rsi
+
+# lag is here defined as the short moving average, and long_ma is = 2 * lag
+class simplema_lag(ql.feature):
+    def __init__(self, lag):
+        super(simplema_lag, self).__init__()
+        self.lag = lag
+        self.min_observations = max(1, abs(lag))
+        self.low = -1
+        self.high = 1
+
+    def calculate(self, observations):
+        short_window = self.lag
+        long_window = self.lag * 2
+        ma_short = np.convolve(observations[-short_window:],
+            np.ones(short_window)/short_window, mode = 'valid')
+        ma_long = np.convolve(observations[-long_window:],
+            np.ones(long_window)/long_window, mode = 'valid')
+        return ma_short
+        return ma_long
+
+class macd_lag(ql.feature):
+    def __init__(self, lag):
+        super(macd_lag, self).__init__()
+        self.lag = lag
+        self.min_observations = max(1, abs(lag))
+        self.low = -1
+        self.low = 1
+        self.macd_memory = []
+
+    def ExpMovingAverage(self, values, window):
+        weights = np.exp(np.linspace(-1., 0., window))
+        weights /= weights.sum()
+        ema = (weights * values).sum()
+        return ema
+
+    def calculate(self, observations):
+        fast = 12
+        slow = 26
+        signal_length = 9
+        if len(observations) >= slow:
+            emaslow = self.ExpMovingAverage(observations[-slow:], slow)
+            emafast = self.ExpMovingAverage(observations[-fast:], fast)
+            macd = emafast - emaslow
+            self.macd_memory.append(macd)
+
+        if len(self.macd_memory) >= signal_length:
+            signal = self.ExpMovingAverage(self.macd_memory[-signal_length:], signal_length)
+            return self.macd_memory[-1]
+            return signal
+
+
+
 # define observationspace
 osp = ql.observationspace()
+
+
 osp.features.append(pct_change_lag(1))
 osp.features.append(pct_change_lag(60))
 
@@ -46,6 +118,7 @@ big_osp.features.append(pct_change_lag(1))
 big_osp.features.append(pct_change_lag(60))
 big_osp.features.append(z_score_lag(20))
 big_osp.features.append(z_score_lag(60))
+osp.features.append(macd_lag(5))
 
 # Build q-environment
 env = ql.environment(osp, asp)
