@@ -137,7 +137,7 @@ class relativestrength(simulator.decisionmaker):
         avg_loss = np.mean(returns[~select])
         rsi = 100
         if avg_loss != 0 and np.any(~np.isnan([avg_gain, avg_loss])):
-            rsi = 100 - (100 / (1 + avg_gain/avg_loss))
+            rsi = 100 - (100 / (1 + abs(avg_gain/avg_loss)))
         self.rsi_memory.append(rsi)
         if rsi >= self.overbought:
             # sell at market
