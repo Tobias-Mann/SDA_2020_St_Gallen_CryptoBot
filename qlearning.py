@@ -73,6 +73,7 @@ class agent:
         self.action_memory = []
     
     def get_discrete_state(self, state):
+        state = [ 0 if (x is None) else x for x in state] # treatment of dauf
         discretestate = state - self.env.observationspace.low
         discretestate = np.array([min(discretestate[i], self.q_table.shape[i]-1) for i in range(len(discretestate))])
         return tuple(discretestate.astype(np.int))
