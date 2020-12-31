@@ -74,8 +74,7 @@ class agent:
     
     def get_discrete_state(self, state):
         state = [ 0 if (x is None) else x for x in state] # treatment of dauf
-        discretestate = state - self.env.observationspace.low
-        discretestate = np.array([min(discretestate[i], self.q_table.shape[i]-1) for i in range(len(discretestate))])
+        discretestate = np.array([max(0, min((state - self.env.observationspace.low)[i], self.q_table.shape[i]-1)) for i in range(len(state))])
         return tuple(discretestate.astype(np.int))
     
     def find_action(self, discretestate):
@@ -83,6 +82,8 @@ class agent:
     
     def learn(self, reward):
         # At this time the agent has already made a new observation, but did not act on it, thus -2 (and -1) for observations, (actions)
+        # print( self.env.observationspace.states[-1])
+        # print(self.get_discrete_state( self.env.observationspace.states[-1] ) )
         max_future_q = np.max( self.q_table[ self.get_discrete_state( self.env.observationspace.states[-1] ) ] )
         last_q = self.q_table[self.get_discrete_state(self.env.observationspace.states[-2])][self.action_memory[-1]]
         new_q = (1- self.LEARNING_RATE) * last_q + self.LEARNING_RATE * (reward + self.DISCOUNT * max_future_q)
