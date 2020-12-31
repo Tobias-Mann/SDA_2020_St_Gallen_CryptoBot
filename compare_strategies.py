@@ -41,14 +41,13 @@ def merge_basedonlength (df1, df2, column_name):
     df1[column_name][-len2:] = df2.iloc[:, 0]
 
 # create dataframes
-df = pd.DataFrame(sim.decisionmaker.memory, columns = ['price'])
+df = pd.DataFrame(memories['MACD'].memory, columns = ['price'])
 df_macd = pd.DataFrame(memories['MACD'].macd_memory, columns = ['macd'])
 df_signal = pd.DataFrame(memories['MACD'].signal_memory, columns = ['signal'])
 df_short = pd.DataFrame(memories['SimpleMA'].short_memory, columns=['short MA'])
 df_long = pd.DataFrame(memories['SimpleMA'].long_memory, columns=['long MA'])
 df_rsi = pd.DataFrame(memories['RSI'].rsi_memory, columns=['RSI'])
 df_z = pd.DataFrame(memories['meanreversion'].z_memory, columns=['Z-Value'])
-
 
 
 # merge dataframes and save them
@@ -59,9 +58,4 @@ merge_basedonlength(df, df_long, 'long MA')
 merge_basedonlength(df, df_z, 'Z-Value')
 merge_basedonlength(df, df_rsi, 'RSI')
 
-'''
-#get dfs 
-df_rsi = pd.DataFrame(sim.decisionmaker.rsi_memory, columns = ['rsi'])
-df_simplema_short = pd.DataFrame(sim.decisionmaker.short_memory, columns = ['shortMA'])
-df_simplema_long = pd.DataFrame(sim.decisionmaker.long_memory, columns=['longMA'])
-'''
+print(df)
