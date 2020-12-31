@@ -9,14 +9,17 @@ STRATEGIESCOLLECTION = {"MACD":strategies.MACD}
 # read in data
 data = pd.read_csv("./Data/Dec19.csv")
 data = data.dropna().head(200000)
+data.rename(columns = {'datetime': 'time'}, inplace = True)
 
 # simulate multiple strategies
 portfolios = {}
+memories = {}
 for name, strategy in STRATEGIESCOLLECTION.items():
     sim = simulator.simulator_environment()
     sim.initialize_decisionmaker(strategy)
     sim.simulate_on_aggregate_data(data)
     portfolios[name] = sim.env.portfolio
+    memories[name] = sim.decisionmaker
 
 
 data.columns = ["time", "open","high","low","close","volume"]
