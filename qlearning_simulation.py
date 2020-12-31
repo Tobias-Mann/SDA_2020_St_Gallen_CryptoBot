@@ -55,6 +55,21 @@ class relativestrength_lag(ql.feature):
             rsi = 100 - (100 / (1 + avg_gain/avg_loss))
         return rsi
 
+class rsi(ql.feature):
+    def __init__(self, periods):
+        super(rsi, self).__init__()
+        self.periods = periods
+        self.min_observations = max(1, abs(periods+1))
+        self.low = 0
+        self.high = 100
+    
+    def calculate(self, observations):
+        values = observations[-(self.period+1):]
+        U, D = zip(*[(max(0, values[i+1]-values[i]), max(0, values[i]-values[i+1])) for i in range(len(values)-1)])
+        U, D = np.array(U).mean(), np.array(D).mean()
+        rs =  U/D if (D != 0) else 1
+        rsi = 100 - (100 / (1 + rs))
+        return rsi
 # lag is here defined as the short moving average, and long_ma is = 2 * lag
 class simplema_lag(ql.feature):
     def __init__(self, lag):
@@ -112,13 +127,14 @@ osp = ql.observationspace()
 
 osp.features.append(pct_change_lag(1))
 osp.features.append(pct_change_lag(60))
+osp.features.append(macd_lag(5))
 
 big_osp = ql.observationspace()
 big_osp.features.append(pct_change_lag(1))
 big_osp.features.append(pct_change_lag(60))
 big_osp.features.append(z_score_lag(20))
 big_osp.features.append(z_score_lag(60))
-osp.features.append(macd_lag(5))
+big_osp.features.append(rsi(14))
 
 # Build q-environment
 env = ql.environment(osp, asp)
