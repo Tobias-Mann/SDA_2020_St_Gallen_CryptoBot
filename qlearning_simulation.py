@@ -55,6 +55,7 @@ class relativestrength_lag(ql.feature):
             rsi = 100 - (100 / (1 + avg_gain/avg_loss))
         return rsi
 
+# lag is here defined as the short moving average, and long_ma is = 2 * lag
 class simplema_lag(ql.feature):
     def __init__(self, lag):
         super(simplema_lag, self).__init__()
