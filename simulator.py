@@ -119,9 +119,13 @@ class simulator_environment:
         # Add later -> function to retrive realtime performance evaluation
         pass
     
-    def simulate_on_aggregate_data(self, data):
-        print("Starting Simulation:\n")
-        for row in tqdm(data.values):
+    def simulate_on_aggregate_data(self, data, verbose=False):
+        if verbose:
+            print("Starting Simulation:\n")
+            bar = lambda values: tqdm(values)
+        else:
+            bar = lambda values: values
+        for row in bar(data.values):
             self.process_orders(row[0], row[1:5])
             self.decisionmaker.make_decision(row[1:5]) # because the decision maker is initialized it can access the simulators orderbook, the function can take additional inputs
             
