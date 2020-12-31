@@ -38,7 +38,6 @@ class SimpleMA(simulator.decisionmaker):
         self.short_memory = []
         self.long_memory = []
 
-
     # function for calculating a moving average with numpy arrays
     def moving_average(self, array, periods):
         weights = np.ones(periods) / periods
@@ -71,12 +70,13 @@ class MACD(simulator.decisionmaker):
     def __init__(self, environment):
         super(MACD, self).__init__(environment)
         self.memory = []
+        self.macd_memory = []
+        self.signal_memory = []
 
     def ExpMovingAverage(self, values, window):
         weights = np.exp(np.linspace(-1., 0., window))
         weights /= weights.sum()
         a = (weights * values).sum()
-        # a[:window] = a[window]
         return a
 
     def computeMACD(self, x, slow, fast, signal):
@@ -85,20 +85,26 @@ class MACD(simulator.decisionmaker):
         emaslow = self.ExpMovingAverage(x, slow)
         emafast = self.ExpMovingAverage(x[-fast:], fast)
         macd = emafast - emaslow
-        signal_line = self.ExpMovingAverage(macd, signal)
-        return macd, signal_line
+        return macd
 
     def make_decision(self, row):
         closing_price = row[-1]
         self.memory.append(closing_price)
         slow = 26
         fast = 12
-        signal_lenght = 9
+        signal_length = 9
 
+        # calculate macd only if we have enough values
         if len(self.memory) >= slow:
             values = np.array(self.memory[-slow:])
-            # calculate the exponential moving averages
-            macd, signal = self.computeMACD(values, slow, fast, signal_lenght)
+            macd = self.computeMACD(values, slow, fast, signal_length)
+            self.macd_memory.append(macd)
+
+        # calculate signal line only when we have enough macd values
+        if len(self.macd_memory) >= signal_length:
+            values = np.array(self.macd_memory[-signal_length:])
+            signal = self.ExpMovingAverage(values, signal_length)
+            self.signal_memory.append(signal)
 
             if signal < macd and self.env.portfolio.btc > 0:
                 # sell at market
@@ -108,8 +114,6 @@ class MACD(simulator.decisionmaker):
                 # buy at market
                 quantity = self.env.portfolio.usd // closing_price
                 self.env.orderbook.new_marketorder(quantity)
-
-
 
 
 class relativestrength(simulator.decisionmaker):
