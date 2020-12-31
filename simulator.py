@@ -195,24 +195,25 @@ class portfolio:
             summary["Start Date"] = repriced.index.min()
             summary["End Date"] = repriced.index.max()
             summary["Total Days"] = (summary["End Date"] - summary["Start Date"]).days
-            cagr = np.exp(365 * (np.power((repriced.loc[summary["End Date"], ["value"]]/repriced.loc[summary["Start Date"], ["value"]]), 1/summary["Total Days"])-1).values[0])-1
-            summary["CAGR"] = f"{cagr*100}%"
+            cagr = np.exp(365 * (np.power((repriced.loc[summary["End Date"], 
+                ["value"]]/repriced.loc[summary["Start Date"], ["value"]]), 1/summary["Total Days"])-1).values[0])-1
+            summary["CAGR"] = f"{round(cagr * 100, 2)}%"
             # summary["Sharpe ratio"] = (repriced.returns.mean() - repriced.price.pct_change().mean()) / (repriced.returns.std() - repriced.price.pct_change().std())
             daily_min = repriced["value"].groupby(repriced.index.date).agg(lambda x: min(x))
             daily_max = repriced["value"].groupby(repriced.index.date).agg(lambda x: max(x))
             max_drawdown = min([ daily_min[day2]/daily_max[day] - 1 for day in daily_max.index for day2 in daily_min.index[daily_min.index>day]])
-            summary["Max Drawdown"] = f"{max_drawdown*100}%"
-            summary["Cumulative Return"] = f"{repriced.loc[repriced.index[-1], ['cumreturn']].values[0]*100}%"
+            summary["Max Drawdown"] = f"{round(max_drawdown * 100, 2)}%"
+            summary["Cumulative Return"] = f"{round(repriced.loc[repriced.index[-1], ['cumreturn']].values[0] * 100, 2)}%"
             daily_returns = repriced['value'].groupby(repriced.index.date).agg(lambda x: x[-1]).pct_change()
-            summary["Annual Volatility"] = f"{daily_returns.std()*np.sqrt(365) * 100}%"
-            summary["Calmar Ratio"] = cagr / abs(max_drawdown)
-            summary["Skew"] = daily_returns.skew()
-            summary["Kurtosis"] = daily_returns.kurtosis()
-            summary["Absolute Exposure"] = ((repriced["value"] - repriced["USD"]) /repriced["value"] ).mean() * 100
-            summary["Net Exposure"] = (repriced["BTC"] * repriced["price"] / repriced["value"]).mean() *100 
-            summary["Average Daily Position"] = repriced["BTC"].groupby(repriced.index.date).agg(lambda x: x.mean()).mean()
-            summary["Average Daily Turnover\n(percentage of capital)"] = 100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0]
-            summary["Normalized CAGR"] = (cagr*100 / summary["Absolute Exposure"]) *100
+            summary["Annual Volatility"] = f"{round(daily_returns.std()*np.sqrt(365) * 100, 2)}%"
+            summary["Calmar Ratio"] = round(cagr / abs(max_drawdown), 4)
+            summary["Skew"] = round(daily_returns.skew(), 4)
+            summary["Kurtosis"] = round(daily_returns.kurtosis(), 4)
+            summary["Absolute Exposure (BTC)"] = round(((repriced["value"] - repriced["USD"]) /repriced["value"] ).mean() * 100, 4)
+            summary["Net Exposure (BTC)"] = round((repriced["BTC"] * repriced["price"] / repriced["value"]).mean() * 100, 4)
+            summary["Average Daily Position (BTC)"] = round(repriced["BTC"].groupby(repriced.index.date).agg(lambda x: x.mean()).mean(), 4)
+            summary["Average Daily Turnover (% of capital)"] = f"{round(100*repriced.groupby(repriced.index.date).agg(lambda x: x.BTC.diff().abs().sum() * x.price[-1] / x.value[-1] ).mean()[0], 2)}%"
+            summary["Normalized CAGR"] = f"{round(cagr * 100 / (summary['Absolute Exposure (BTC)']) * 100, 2)}%"
             return pd.DataFrame(index=summary.keys(), data=summary.values(), columns=["Performance Summary"])
         return pd.DataFrame(columns=["Performance Summary"])
     
