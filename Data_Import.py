@@ -62,39 +62,3 @@ print(df_merged.info())
 # save the new file under the folder Data
 df_merged.to_csv('Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
-
-"""
-### Feature Engineering ------------------------
-
-# Time
-df_merged['day'] = df_merged['Time'].dt.day
-df_merged['Week'] = df_merged['Time'].dt.weekofyear
-df_merged['Weekday'] = df_merged['Time'].dt.weekday
-df_merged['month'] = df_merged['Time'].dt.month
-df_merged['year'] = df_merged['Time'].dt.year
-
-# shift 1 in order to calculate returns
-for col in headers:
-    df_merged[col] = df_merged[col].shift(1)
-df_merged = df_merged.dropna()
-
-# daily return
-df_merged['Daily_return'] = (df_merged['Close'] / df_merged['Close'].shift(1)) - 1
-df_merged['Daily_return_100'] = ((df_merged['Close'] / df_merged['Close'].shift(1)) - 1) * 100
-
-# cumulative return
-df_merged = df_merged.dropna()
-df_merged['Cumulative_return'] = (df_merged['Close'] / df_merged['Close'].iloc[0]) - 1
-df_merged['Cumulative_return_100'] = ((df_merged['Close'] / df_merged['Close'].iloc[0]) - 1) * 100
-
-# all technical indicators
-df_merged = add_all_ta_features(
-    df_merged, open="Open", high="High", 
-    low="Low", close="Close", volume="Volume", fillna=True)
-
-print(df_merged)
-print('Number of rows: {}, Number of columns: {}'.format(*df_merged.shape))
-
-# Write csv of merged files
-pd.DataFrame.to_csv(df_merged, 'df_raw.csv', sep=',', na_rep='.', index=False)
-"""
