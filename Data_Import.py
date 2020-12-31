@@ -41,8 +41,8 @@ df_18 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-hist
 df_19 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2019/merged.csv?raw=true', names = headers)
 
 # check length and compare to theoretical value
-print('Theoretical maximum obervations:', 24*365*7)
-print('Actual observations of df:' len(df_19))
+#print('Theoretical maximum obervations:', 24*365*7)
+#print('Actual observations of df:' len())
 
 # Merge dataframes
 data_frames = [df_13, df_14, df_15, df_16, df_17, df_18, df_19]
