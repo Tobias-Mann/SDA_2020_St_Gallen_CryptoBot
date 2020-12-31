@@ -71,8 +71,8 @@ class simplema_lag(ql.feature):
             np.ones(short_window)/short_window, mode = 'valid')
         ma_long = np.convolve(observations[-long_window:],
             np.ones(long_window)/long_window, mode = 'valid')
-        return ma_short
-        return ma_long
+        # we return ma_short / ma_long as opposed to returning the features seperately
+        return ma_short / ma_long
 
 class macd_lag(ql.feature):
     def __init__(self, lag):
@@ -101,8 +101,8 @@ class macd_lag(ql.feature):
 
         if len(self.macd_memory) >= signal_length:
             signal = self.ExpMovingAverage(self.macd_memory[-signal_length:], signal_length)
-            return self.macd_memory[-1]
-            return signal
+            # we return signal / macd_memory as opposed to returning the features seperately
+            return signal / self.macd_memory[-1]
 
 
 

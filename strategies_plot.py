@@ -1,12 +1,13 @@
+import matplotlib as plt
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# Data Import --------------------------
 
-### Plot --------------------------
+df = pd.read_csv('Data/strategies.csv')
+
 
 # Moving Averages--------------------------
-import matplotlib as plt
-import matplotlib.pyplot as plt
 
 short_window = 12
 long_window = 26
@@ -59,4 +60,4 @@ plt.show()
 fast = 12
 slow = 26
 signal = 9
-df['signal_point'] = 0.0
+# df['signal_point'] = 0.0
