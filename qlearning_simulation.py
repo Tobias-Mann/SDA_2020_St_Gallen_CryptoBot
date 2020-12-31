@@ -34,7 +34,7 @@ class z_score_lag(ql.feature):
     def calculate(self, observations):
         std = observations[-self.lag:].std()
         m_mean = observations[-self.lag:].mean()
-        return (observations[-1] - m_mean) / std
+        return max(self.low, min((observations[-1] - m_mean) / std, self.high))
 
 class relativestrength_lag(ql.feature):
     def __init__(self, lag):
@@ -108,35 +108,47 @@ class macd_lag(ql.feature):
 
 # define observationspace
 osp = ql.observationspace()
-#osp.features.append(pct_change_lag(1))
-#osp.features.append(pct_change_lag(60))
-#osp.features.append(z_score_lag(60))
-#osp.features.append(relativestrength_lag(1))
-#osp.features.append(simplema_lag(1))
-osp.features.append(macd_lag(5))
 
+
+osp.features.append(pct_change_lag(1))
+osp.features.append(pct_change_lag(60))
+
+big_osp = ql.observationspace()
+big_osp.features.append(pct_change_lag(1))
+big_osp.features.append(pct_change_lag(60))
+big_osp.features.append(z_score_lag(20))
+big_osp.features.append(z_score_lag(60))
+osp.features.append(macd_lag(5))
 
 # Build q-environment
 env = ql.environment(osp, asp)
+big_env = ql.environment(big_osp, asp)
 
 # Build agent
 agent = ql.agent(env)
+agent2 = ql.agent(big_env)
 
 # setup simulator
 sim = simulator.simulator_environment()
+sim2 = simulator.simulator_environment()
+
 # link simulator to smartbalancer
 sim.initialize_decisionmaker(smartstrategies.smartbalancer)
+sim2.initialize_decisionmaker(smartstrategies.smartbalancer)
 
 # assign agent to smart balancer
 sim.decisionmaker.agent = agent
+sim2.decisionmaker.agent = agent2
 
 # read in data
 data = pd.read_csv("./Data/Dec19.csv")
 
 # start simulator
-sim.simulate_on_aggregate_data(data.dropna())
+sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
+sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
 
 
 # Show Portfolio Performance
 data.columns = ["time", "open","high","low","close","volume"]
-print("\n", sim.env.portfolio.portfolio_over_time)
+print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_over_time)
+print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_over_time)
