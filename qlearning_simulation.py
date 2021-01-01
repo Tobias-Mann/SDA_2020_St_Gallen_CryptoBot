@@ -199,6 +199,7 @@ def perform_single_simulation(env, data, repetitions = 1000):
     # the q_table is asigned with the random starting values when the agent is initialized,
     # thus the same ql.environment can be reused in the simulation but the agent needs to be initialized each time
     performance_aggregator = pd.DataFrame(index=data.index, columns=range(repetitions))
+    data = data.set_index("time")
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
@@ -212,7 +213,7 @@ def perform_single_simulation(env, data, repetitions = 1000):
             sim.initialize_decisionmaker(smartstrategies.smartbalancer)
             sim.decisionmaker.agent = agent
             sim.simulate_on_aggregate_data(data, verbose=False)
-            return_dict[i] = sim.env.portfolio.portfolio_repricing(data)["cumreturn"]
+            return_dict[i] = sim.env.portfolio.portfolio_repricing(data)["cumreturn"].values
             pbar.update(1)
     
     for i in range(repetitions):
@@ -226,9 +227,9 @@ def perform_single_simulation(env, data, repetitions = 1000):
     print(f"\nDone with Generating Paths!\nAppending...\n")
     for i, cumreturn in return_dict.items():
         performance_aggregator[i] = cumreturn
-    
+    performance_aggregator.index = data.index
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
 
-monti = perform_single_simulation(big_env, data.dropna(), 100)
+monti = perform_single_simulation(big_env, data.dropna(), 2)
         
