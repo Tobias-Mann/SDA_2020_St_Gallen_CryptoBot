@@ -1,5 +1,3 @@
-
-from __future__ import division
 import numpy as np
 import pandas as pd
 import qlearning as ql
@@ -8,8 +6,7 @@ import smartstrategies
 import matplotlib.pyplot as plt 
 from matplotlib import style
 from tqdm import tqdm
-import multiprocessing as mp
-import sys
+import multiprocessing as mp 
 
 style.use("seaborn")
 plt.close("all")
@@ -195,7 +192,7 @@ def save_plot(name, portfolios, data):
 
     
 
-def perform_single_simulation(env, data, repetitions = 1000):
+def perform_mc_simulation(env, data, repetitions = 1000):
     # the q_table is asigned with the random starting values when the agent is initialized,
     # thus the same ql.environment can be reused in the simulation but the agent needs to be initialized each time
     performance_aggregator = pd.DataFrame(index=data.index, columns=range(repetitions))
@@ -233,5 +230,5 @@ def perform_single_simulation(env, data, repetitions = 1000):
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
 
-monti = perform_single_simulation(big_env, data.dropna(), 100)
-        
+monti = perform_mc_simulation(big_env, data.dropna(), 100)
+
