@@ -4,7 +4,7 @@ from tqdm import tqdm
 import warnings
 
 class orderbook:
-    def __init__(self):
+    def __init__(self, memorize = False):
         # The all_orders dict associates an order with its id
         # Each order itself is a dict with keys
         # - type: {market, limit}
@@ -14,15 +14,21 @@ class orderbook:
         # - and for limit orders with a limit value
         self.all_orders = dict()
         self.__last_id__ = 0
+        self._memorize = memorize
     
     def __assign_id__(self):
         self.__last_id__+=1
         return self.__last_id__
     
     def __new__order__(self):
+        old = []
         for key, order in self.all_orders.items():
             if order["status"] == "active":
                 self.all_orders[key]["status"]="canceled"
+            elif not self._memorize:
+                old.append(key)
+        for key in old:
+            del self.all_orders[key]
         
     def orders_by_status(self, status):
         return dict([x for x in self.all_orders.items() if x[1]["status"]==status])
@@ -46,10 +52,11 @@ class orderbook:
         self.all_orders[id] = {"type": "limit", "is_buy":is_buy, "quantity":quantity, "status":"active", "id":id, "limit": price}
     
 class transactionbook:
-    def __init__(self):
+    def __init__(self, memorize = False):
         # The Transaction book is based on a dictionary of transactions
         # each transaction contains a quantity {int}, price:{decimal}, time:{datetime}, is_buy{True, False}, id: {int}, origin{int}
         self.transactions = dict()
+        self.memorize = memorize
         self.__last_id__ = 0
     
     def __assign_id__(self):
@@ -58,15 +65,13 @@ class transactionbook:
     
     def process(self, transaction, origin):
         id = self.__assign_id__()
-        transaction["id"] = id
-        transaction["origin"] = origin
-        self.transactions[id] = transaction
+        if self.memorize:
+            transaction["id"] = id
+            transaction["origin"] = origin
+            self.transactions[id] = transaction
 
 class simulator_environment:
     def __init__(self):
-        #self.orderbook = orderbook()
-        #self.transactionbook = transactionbook()
-        #self.portfolio = portfolio()
         self.env = environment()
         self.decisionmaker = None
     
