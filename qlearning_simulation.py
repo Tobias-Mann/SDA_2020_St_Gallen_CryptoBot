@@ -199,7 +199,6 @@ def perform_single_simulation(env, data, repetitions = 1000):
     # the q_table is asigned with the random starting values when the agent is initialized,
     # thus the same ql.environment can be reused in the simulation but the agent needs to be initialized each time
     performance_aggregator = pd.DataFrame(index=data.index, columns=range(repetitions))
-    data = data.set_index("time")
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
@@ -227,6 +226,7 @@ def perform_single_simulation(env, data, repetitions = 1000):
     print(f"\nDone with Generating Paths!\nAppending...\n")
     for i, cumreturn in return_dict.items():
         performance_aggregator[i] = cumreturn
+    data = data.set_index()
     performance_aggregator.index = data.index
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
