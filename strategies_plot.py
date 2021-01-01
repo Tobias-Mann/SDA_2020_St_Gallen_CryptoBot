@@ -1,15 +1,10 @@
-import matplotlib as plt
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import matplotlib.font_manager as font_manager
-import matplotlib.dates as mdates
-
 import matplotlib.pyplot as plt
-from mplfinance.original_flavor import candlestick_ohlc
+import matplotlib.dates as mdates
+import matplotlib.gridspec as gridspec
 from matplotlib.pylab import date2num
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
+from mplfinance.original_flavor import candlestick_ohlc
 
 
 # Data Import --------------------------
@@ -23,7 +18,7 @@ df['close'] = df1['close']
 df['volume'] = df1['volume']
 df['time'] = pd.to_datetime(df['time'])
 df.set_index('time', inplace=True, drop=True)
-cols = ['open', 'high', 'low', 'close', 'macd', 'signal', 'short_ma', 'long_ma',
+cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 'long_ma',
     'z_value', 'rsi']
 df = df[cols]
 df = df.head(1000)
@@ -79,7 +74,7 @@ ax1.set_title('Simple MA')
 
 #ax1.margins(x=-0.4, y=--0.4)
 # Plot the closing price
-df['price'].plot(ax=ax1, color='black', lw=2.)
+df['close'].plot(ax=ax1, color='black', lw=2.)
 
 # Plot the short and long moving averages
 df[['short_ma', 'long_ma']].plot(ax=ax1, lw=2.)
@@ -124,8 +119,8 @@ df.loc[df['positions'] == -1]
 fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 15), sharex = True)
 plt.subplots_adjust(wspace=0, hspace=0)
 ax1.set_title('BTC Price and MACD')
-ax1.plot(df.index, df['price'], color = 'black')
-ax1.set_ylabel('Price')
+ax1.plot(df.index, df['close'], color = 'black')
+ax1.set_ylabel('close')
 
 # Lower Subplot
 ax2.plot(df.index, df['signal'], color='orange', label = 'signal')
@@ -136,14 +131,14 @@ ax2.set_xlabel('Time')
 # PRICE PLOT ---
 # Plot the Buy Signals
 ax1.plot(df.loc[df.positions == 1.0].index,
-         df.price[df.positions == 1.0],
+         df.close[df.positions == 1.0],
          '^',
          markersize=10,
          color='g')
 
 # Plot the sell signals
 ax1.plot(df.loc[df.positions == -1.0].index,
-         df.price[df.positions == -1.0],
+         df.close[df.positions == -1.0],
          'v',
          markersize=10,
          color='r')
@@ -176,7 +171,7 @@ FILLCOLOR = 'darkgoldenrod'
 
 # Define variables
 textsize = 16
-prices = df['price']
+prices = df['close']
 rsi = df['rsi']
 
 # Set up plot
@@ -191,7 +186,7 @@ ax2.xaxis.set_major_formatter(mdates.DateFormatter("%d-%m-%Y"))
 
 
 # Plot the Price
-ax1.plot(df.index, df['price'], color='black')
+ax1.plot(df.index, df['close'], color='black')
 ax1.set_ylabel('Price')
 
 # Plot the MA
@@ -201,9 +196,9 @@ linema20, = ax1.plot(df.index, ma1, color='blue', lw=2, label='MA (20)')
 linema200, = ax1.plot(df.index, ma2, color='red', lw=2, label='MA (200)')
 
 # Plot the volume
-volume = (df.price * df.volume) / 1e6  # dollar volume in millions
+volume = (df.close * df.volume) / 1e6  # dollar volume in millions
 vmax = volume.max()
-poly = ax2t.fill_between(df.index, volume, label='Volume', facecolor=FILLCOLOR, edgecolor=FILLCOLOR)
+ax2t.fill_between(df.index, volume, label='Volume', facecolor=FILLCOLOR, edgecolor=FILLCOLOR)
 ax2t.set_ylim(0, 5 * vmax)
 ax2t.set_yticks([]) # sets secondary axis = 0
 # ax2t.set_ylabel("Volume")
@@ -248,7 +243,7 @@ df.loc[df['positions_buy'] == -1]
 fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 15), sharex=True)
 plt.subplots_adjust(wspace=0, hspace=0)
 ax1.set_title('BTC Price and Z-Value')
-ax1.plot(df.index, df['price'], color='black')
+ax1.plot(df.index, df['close'], color='black')
 ax1.set_ylabel('Price')
 
 # Lower Subplot
@@ -292,18 +287,20 @@ ax2.plot(df.loc[df.positions_sell == -1.0].index,
 """
 
 
-# OTHER PLOTS --------------------
+# ALL TOGETHER PLOTS --------------------
 
 # Create figure and set axes for subplots
-fig = plt.figure()
-fig.set_size_inches((20, 16))
-ax_candle = fig.add_axes((0, 0.72, 1, 0.32))
-ax_macd = fig.add_axes((0, 0.48, 1, 0.2), sharex=ax_candle)
-ax_rsi = fig.add_axes((0, 0.24, 1, 0.2), sharex=ax_candle)
-ax_vol = fig.add_axes((0, 0, 1, 0.2), sharex=ax_candle)
+fig = plt.figure(figsize=FIGSIZE)
+gs = gridspec.GridSpec(nrows = 4, ncols =1, height_ratios=[2, 1, 1, 1])
+ax_candle = plt.subplot(gs[0])
+ax_candle.set_xticks(df.index)
+ax_candle.xaxis.set_major_formatter(mdates.DateFormatter("%d-%m-%Y"))
+ax_macd = plt.subplot(gs[1], sharex = ax_candle)
+ax_rsi = plt.subplot(gs[2], sharex = ax_candle)
+ax_vol = plt.subplot(gs[3], sharex = ax_candle)
 
 # Format x-axis ticks as dates
-ax_candle.xaxis_date()
+# ax_candle.xaxis_date()
 
 # Get nested list of date, open, high, low and close prices
 ohlc = []
@@ -314,7 +311,8 @@ for date, row in df.iterrows():
 # Plot candlestick chart
 ax_candle.plot(df.index, df["short_ma"], label="MA 12")
 ax_candle.plot(df.index, df["long_ma"], label="MA 26")
-candlestick_ohlc(ax_candle, ohlc, colorup="g", colordown="r", width=0.8)
+candlestick_ohlc(ax_candle, ohlc, colorup="g", colordown="r", width=0.001,)
+ax_candle.set_title('Candlestick (OHLC)')
 ax_candle.legend()
 
 # Plot MACD
@@ -325,17 +323,22 @@ ax_macd.legend()
 
 # Plot RSI
 # Above 70% = overbought, below 30% = oversold
-ax_rsi.set_ylabel("(%)")
+ax_rsi.set_ylabel("(RSI %)")
 ax_rsi.plot(df.index, [70] * len(df.index), label="overbought")
 ax_rsi.plot(df.index, [30] * len(df.index), label="oversold")
 ax_rsi.plot(df.index, df["rsi"], label="rsi")
 ax_rsi.legend()
 
 # Show volume in millions
-ax_vol.bar(df.index, df["volume"] / 1000000)
+volume = df['volume'] / 1e6
+ax_vol.fill_between(df.index, volume, label='Volume in Mio.', facecolor=FILLCOLOR, edgecolor=FILLCOLOR)
 ax_vol.set_ylabel("(Million)")
-
-# Save the chart as PNG
-fig.savefig("charts/" + ticker + ".png", bbox_inches="tight")
+vmax = volume.max()
+ax_vol.set_ylim(0, 1.2 * vmax)
+ax_vol.legend()
 
 plt.show()
+
+
+# Save the chart as PNG
+#fig.savefig("charts/" + ticker + ".png", bbox_inches="tight")
