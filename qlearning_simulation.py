@@ -212,7 +212,7 @@ def perform_single_simulation(env, data, repetitions = 1000):
             sim.initialize_decisionmaker(smartstrategies.smartbalancer)
             sim.decisionmaker.agent = agent
             sim.simulate_on_aggregate_data(data, verbose=False)
-            return_dict[i] = sim.env.portfolio.portfolio_repricing(data)["cumreturn"]
+            return_dict[i] = sim.env.portfolio.portfolio_repricing(data)["cumreturn"].values
             pbar.update(1)
     
     for i in range(repetitions):
@@ -226,7 +226,8 @@ def perform_single_simulation(env, data, repetitions = 1000):
     print(f"\nDone with Generating Paths!\nAppending...\n")
     for i, cumreturn in return_dict.items():
         performance_aggregator[i] = cumreturn
-    
+    data = data.set_index("time")
+    performance_aggregator.index = data.index
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
 
