@@ -231,5 +231,5 @@ def perform_single_simulation(env, data, repetitions = 1000):
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
 
-monti = perform_single_simulation(big_env, data.dropna(), 2)
+monti = perform_single_simulation(big_env, data.dropna(), 100)
         
