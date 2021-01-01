@@ -22,7 +22,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     portfolios[name] = sim.env.portfolio
     memories[name] = sim.decisionmaker
 
-"""
+
 data.columns = ["time", "open","high","low","close","volume"]
 
 def dataframebycolumn(column):
@@ -42,7 +42,7 @@ def merge_basedonlength(df1, df2, column_name):
     df1[column_name][-len2:] = df2.iloc[:, 0]
 
 # create dataframes
-df = pd.DataFrame(memories['MACD'].memory, columns=['price'])
+df = pd.DataFrame(memories['SimpleMA'].memory, columns=['price'])
 df['time'] = data['time']
 df_macd = pd.DataFrame(memories['MACD'].macd_memory, columns=['macd'])
 df_signal = pd.DataFrame(memories['MACD'].signal_memory, columns=['signal'])
@@ -64,4 +64,3 @@ print(df)
 
 # save dataframe
 df.to_csv('Data/strategies.csv')
-"""
