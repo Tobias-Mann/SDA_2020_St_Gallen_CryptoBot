@@ -207,6 +207,8 @@ def perform_single_simulation(env, data, repetitions = 1000):
     pbar = tqdm(total=repetitions)
     # define function for one simulation
     def simple_simulation(i, env, data, return_dict):
+            # each simulation enforces the process to use a different seed, otherwise the random numbers in use will be the same for each simulation
+            np.random.seed(i)
             agent = ql.agent(env)
             sim = simulator.simulator_environment()
             sim.initialize_decisionmaker(smartstrategies.smartbalancer)
