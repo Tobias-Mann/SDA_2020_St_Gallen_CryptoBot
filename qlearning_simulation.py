@@ -226,7 +226,7 @@ def perform_single_simulation(env, data, repetitions = 1000):
     print(f"\nDone with Generating Paths!\nAppending...\n")
     for i, cumreturn in return_dict.items():
         performance_aggregator[i] = cumreturn
-    data = data.set_index()
+    data = data.set_index("time")
     performance_aggregator.index = data.index
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
