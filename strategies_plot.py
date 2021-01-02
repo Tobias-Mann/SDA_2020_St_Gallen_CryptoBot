@@ -11,11 +11,11 @@ import os
 
 # DATA IMPORT  --------------------------
 
-TIMEPERIOD = 'Dec19'
+TIMEPERIOD = 'Nov17'
 PATH_PLOTS = './Images/'
 
-df = pd.read_csv('Data/Strategies/Strategies_Dec19.csv')
-df1 = pd.read_csv('Data/BTC_USD/Dec19.csv')
+df = pd.read_csv('Data/Strategies/Strategies_Nov17.csv')
+df1 = pd.read_csv('Data/BTC_USD/Nov17.csv')
 
 df['open'] = df1['open']
 df['high'] = df1['high']
@@ -31,7 +31,7 @@ cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 
 
 df = df[cols]
 df_long = df
-df = df.head(1000)
+#df = df.head(1000)
 
 # Set overall Plots ---------------------
 
@@ -76,6 +76,7 @@ def find_csv_filenames(path_to_dir, suffix=".csv"):
     filenames = listdir(path_to_dir)
     return [filename for filename in filenames if filename.endswith(suffix)]
 
+'''
 # SIMPLE MOVING AVERAGES --------------------------
 
 short_window = 12
@@ -425,7 +426,7 @@ for i in df_mc.columns:
         if counter % 2 == 0:
             ax.plot(df_mc.time, df_mc[i], alpha = 0.2, linewidth = 1)
 
-ax.plot(df_long.index, df_long.cumreturn, label = 'BUY AND HODL', linewidth = 2)
+ax.plot(df_long.index, df_long.cumreturn, label = 'BUY AND HOLD', linewidth = 2)
 plt.ylabel('Returns (in %)', fontsize = 16)
 plt.legend()
 
@@ -433,7 +434,7 @@ plt.legend()
 plt.show()
 fig.savefig(PATH_PLOTS + 'MONTECARLO_' + 'TIMEPERIOD' + '.png')
 
-
+'''
 # PLOTTING THE PORTFOLIOS ----------------------------------------------
 
 df_pfs = pd.read_csv('./Data/Portfolios/Dec19/merged_cumreturn.csv')
@@ -458,7 +459,7 @@ ax.xaxis.set_major_formatter(formatter)
 ax.set_ylabel('Cumulative Returns')
 
 # plot the values
-ax.plot(df_long.index, df_long.cumreturn, label = 'Buy and Hodl', color = 'red')
+ax.plot(df_long.index, df_long.cumreturn, label = 'Buy and Hold', color = 'red')
 ax.plot(df_pfs.time, df_pfs.MACD, label='MACD')
 ax.plot(df_pfs.time, df_pfs.SimpleMA, label='SimpleMA')
 ax.plot(df_pfs.time, df_pfs.meanreversion, label='MeanRev')
