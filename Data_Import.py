@@ -2,6 +2,8 @@ import pandas as pd
 # from ta import add_all_ta_features
 import os
 import datetime
+import matplotlib.pyplot as plt
+import numpy as np
 
 """
 ### DATA SOURCE 1: KAGGLE ------------------------------
@@ -53,8 +55,7 @@ df_merged['Time'] = pd.to_datetime(df_merged['Time'], unit = 'ms')
 
 # reset index and sort values according to Time
 df_merged = df_merged.sort_values(by=['Time'], ascending = True, na_position = 'last')
-df_merged = df_merged.reset_index(level = None, drop = False, inplace = False, col_level = 0, col_fill='')
-df_merged = df_merged.rename(columns = {"index": "old_index"})
+df_merged = df_merged.reset_index(level = None, drop = True, inplace = False, col_level = 0, col_fill='')
 df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'High': 'high', 'Low': 'low', 'Volume': 'volume'}, inplace = True)
 
 #print output
@@ -63,18 +64,55 @@ print(df_merged.info())
 # save the new file under the folder Data
 df_merged.to_csv('Data/BTC_USD/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
-# save a subset of December 2019:
-mask = df_merged['time'].between('2019-12-01 00:00:00', '2019-12-31 23:59:00')
-Dec19 = df_merged[mask]
-Dec19.reset_index(drop = True, inplace = True)
-Dec19.to_csv('Data/BTC_USD/Dec19.csv')
+# create and save subsets of Decembers
+def make_subset (df, start_window, end_window, name):
+    folder = './Data/BTC_USD/'
+    if os.path.isdir(folder):
+        pass
+    else:
+        os.mkdir(folder)
+    mask = df['time'].between(start_window, end_window)
+    df = df_merged[mask]
+    df.reset_index(drop = True, inplace = True)
+    name_temp = name + '.csv'
+    df.to_csv(folder + name_temp)
+    return df
 
-import matplotlib.pyplot as plt
-figure = plt.figure(num=None,
-                 figsize=(10, 10),
-                 dpi=80,
-                 facecolor='w',
-                 edgecolor='k')
-# Add a subplot and label for y-axis
+# create subsets
+Nov17 = make_subset(df_merged, '2017-11-01 00:00:00', '2017-11-30 23:59:00', 'Nov17')
+Dec17 = make_subset(df_merged, '2017-12-01 00:00:00', '2017-12-31 23:59:00', 'Dec17')
+Nov18 = make_subset(df_merged, '2018-11-01 00:00:00', '2018-11-30 23:59:00', 'Nov18')
+Dec18 = make_subset(df_merged, '2018-12-01 00:00:00', '2018-12-31 23:59:00', 'Dec18')
+Nov19 = make_subset(df_merged, '2019-11-01 00:00:00', '2019-11-30 23:59:00', 'Nov19')
+Dec19 = make_subset(df_merged, '2019-12-01 00:00:00', '2019-12-31 23:59:00', 'Dec19')
+
+# plot the full timeframe
+figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
 ax1 = figure.add_subplot(111, ylabel='Price in USD')
 ax1.plot(df_merged.time, df_merged.close)
+ax1.plot(df_merged.time, df_merged.close)
+ax1.set_title('BTC PRICE OVER ALL DATA')
+
+# plot the price
+figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
+ax1 = figure.add_subplot(111, ylabel='Price in USD')
+ax1.plot(Nov17.index,
+         np.log(1 + Nov17['close'].pct_change()).cumsum(),
+         label='Nov17')
+ax1.plot(Dec17.index,
+         np.log(1 + Dec17['close'].pct_change()).cumsum(),
+         label='Dec17')
+ax1.plot(Nov18.index,
+         np.log(1 + Nov18['close'].pct_change()).cumsum(),
+         label='Nov18')
+ax1.plot(Dec18.index,
+         np.log(1 + Dec18['close'].pct_change()).cumsum(),
+         label='Dec18')
+ax1.plot(Nov19.index,
+         np.log(1 + Nov19['close'].pct_change()).cumsum(),
+         label='Nov19')
+ax1.plot(Dec19.index,
+         np.log(1 + Dec19['close'].pct_change()).cumsum(),
+         label='Dec19')
+ax1.set_title('BTC PRICE OVER DIFFERENT DECEMBER PERIODS')
+plt.legend()

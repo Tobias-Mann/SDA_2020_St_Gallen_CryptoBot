@@ -46,7 +46,7 @@ def merge_basedonlength(df1, df2, column_name):
 
 # Save Tearsheets
 for name, strategy in STRATEGIESCOLLECTION.items():
-    folder = 'Data/Tearsheets/'
+    folder = './Data/Tearsheets/'
     if os.path.isdir(folder):
         pass
     else:
@@ -58,7 +58,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
 
 # Save Portfolios
 for name, strategy in STRATEGIESCOLLECTION.items():
-    folder = 'Data/Portfolios/'
+    folder = './Data/Portfolios/'
     if os.path.isdir(folder):
         pass
     else:
