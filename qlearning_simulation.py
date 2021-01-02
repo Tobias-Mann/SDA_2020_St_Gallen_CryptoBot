@@ -187,10 +187,9 @@ def save_plot(name, portfolios, data):
 
 #save_plot("Q_Learning", {"Sim":sim.env.portfolio,"Sim2":sim.env.portfolio}, data)
 
-# perform montecarlo simulation
+'''
+# perform montecarlo simulation ----------------------------
 # to speed up the mc simulation multiprocessing is used
-
-    
 
 def perform_mc_simulation(env, data, repetitions = 1000):
     # the q_table is asigned with the random starting values when the agent is initialized,
@@ -229,6 +228,5 @@ def perform_mc_simulation(env, data, repetitions = 1000):
     performance_aggregator.index = data.index
     performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
     return performance_aggregator
-
-monti = perform_mc_simulation(big_env, data.dropna(), 100)
-
+'''
+#monti = perform_mc_simulation(big_env, data.dropna(), 100)

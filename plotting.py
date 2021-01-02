@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
-monti = pd.read_csv("./mcdata/lastmontecarlosimulation.csv")
-data = pd.read_csv("./Data/Dec19.csv")
+monti = pd.read_csv("./Data/lastmontecarlosimulation.csv")
+data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
 data.columns = ["time", "open","high","low","close","volume"]
 
 def create_mc_dist_plot(paths, data, quantiles):
