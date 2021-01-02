@@ -16,7 +16,8 @@ df['high'] = df1['high']
 df['low'] = df1['low']
 df['close'] = df1['close']
 df['volume'] = df1['volume']
-df['CumReturn'] = df['close'].pct_change().cumsum()
+np.log(1 + data.set_index("time")["close"].pct_change()).cumsum()
+df['CumReturn'] = np.log(1+df['close'].pct_change()).cumsum()
 df['time'] = pd.to_datetime(df['time'])
 df.set_index('time', inplace=True, drop=True)
 cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 'long_ma',
@@ -250,7 +251,7 @@ plt.subplots_adjust(wspace=0, hspace=0)
 ax1.set_title('Mean Reversion: BTC Price and Z-Value')
 candlestick_ohlc(ax1, ohlc, colorup="g", colordown="r", width=0.001,)
 
-ax1.plot(df.index, df['close'], color='black')
+#ax1.plot(df.index, df['close'], color='black')
 ax1.set_ylabel('Price in USD')
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 ax1.xaxis.grid(color='gray', linestyle='dashed')
