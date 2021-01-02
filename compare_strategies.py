@@ -68,8 +68,11 @@ def merge_basedonlength(df1, df2, column_name):
 def merge_dfs(path, filenames, column):
     count = 0
     df = None
+#    filenames = filenames_ts
+#    column = 'Performance Summary'
+#    path = (PATH_TEARSHEETS + TIMEPERIOD + '/')
     for name in filenames:
-        if filenames[count] == 'merged_cumreturn.csv' or filenames[count] == 'merged_tearsheets.csv':
+        if filenames[count] == 'merged_cumreturn.csv' or filenames[count] == 'merged_tearsheet.csv':
             count += 1
         else:
             df1 = pd.read_csv(path + filenames[count])
@@ -85,7 +88,7 @@ def merge_dfs(path, filenames, column):
 # Tearsheets: Save Signle
 def save_tearsheets (folder_time_name):
     for name, strategy in STRATEGIESCOLLECTION.items():
-        folder = './Data/Tearsheets/' + folder_time_name + '/'
+        folder = PATH_TEARSHEETS + folder_time_name + '/'
         if os.path.isdir(folder):
             pass
         else:
@@ -97,7 +100,7 @@ def save_tearsheets (folder_time_name):
 save_tearsheets(TIMEPERIOD)
 
 # Tearsheets: Merge and savll all in one
-filenames_ts = find_csv_filenames(PATH_TEARSHEETS + TIMEPERIOD + '/')
+filenames_ts = find_csv_filenames(PATH_TEARSHEETS + TIMEPERIOD + '/') 
 merged_tearsheets = merge_dfs((PATH_TEARSHEETS + TIMEPERIOD + '/'), filenames_ts , 'Performance Summary')
 merged_tearsheets.to_csv(PATH_TEARSHEETS + TIMEPERIOD + '/merged_tearsheet.csv')
 
@@ -116,12 +119,11 @@ def save_portfolios (folder_time_name):
 save_portfolios(TIMEPERIOD)
 
 
-# Porfolios: Merge and save all in one 
+# Porfolios: Merge and save all in one
 filenames_pfs = find_csv_filenames(PATH_PFS + TIMEPERIOD + '/')
 merged_cumreturns = merge_dfs((PATH_PFS + TIMEPERIOD + '/'), filenames_pfs, 'cumreturn')
 merged_cumreturns['time'] = data['time']
 merged_cumreturns.to_csv(PATH_PFS + TIMEPERIOD + '/merged_cumreturn.csv')
-
 
 
 # Strategies: save merged df
