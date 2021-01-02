@@ -1,8 +1,4 @@
-sys
-pandas
+tqdm
 numpy
-datetime
 matplotlib
-
-# the following are for q-learning
-gym 
+pandas
