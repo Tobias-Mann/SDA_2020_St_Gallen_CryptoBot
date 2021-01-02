@@ -193,12 +193,12 @@ save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2', 'Dec19')
 
 
 # define function for performance plot
-def save_plot(name, portfolios, data):
+def save_plot(file, portfolios, data):
     rep = pd.DataFrame(index=data.index, columns=portfolios.keys())
     for name, portfolio in portfolios.items():
         rep[name] = portfolio.portfolio_repricing(data)
     rep["BTC_Returns"] = np.log(1+data.set_index("time")["close"].pct_change()).cumsum()
-    rep.plot().get_figure().savefig(name)
+    rep.plot().get_figure().savefig(file)
 
 save_plot("Q_Learning", {"Sim":sim.env.portfolio,"Sim2":sim.env.portfolio}, data)
 
