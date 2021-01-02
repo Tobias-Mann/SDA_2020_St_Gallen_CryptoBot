@@ -459,7 +459,7 @@ ax.xaxis.set_major_formatter(formatter)
 ax.set_ylabel('Cumulative Returns')
 
 # plot the values
-ax.plot(df_long.index, df_long.cumreturn, label = 'Buy and Hold', color = 'red')
+ax.plot(df_pfs.time, df_pfs.BuyAndHold, label = 'Buy and Hold', color = 'red')
 ax.plot(df_pfs.time, df_pfs.MACD, label='MACD')
 ax.plot(df_pfs.time, df_pfs.SimpleMA, label='SimpleMA')
 ax.plot(df_pfs.time, df_pfs.meanreversion, label='MeanRev')
