@@ -27,7 +27,7 @@ if __name__ == "__main__":
             data = pd.read_csv(file)
             paths = pd.read_csv(paths_file ).set_index("time")
             test_average_performance(paths, data, verbose=True)
-            plotting.create_mc_dist_plot(paths.reset_index(), data, (.9, .6), output="./Images/Nov17.png")
+            plotting.create_mc_dist_plot(paths.reset_index(), data, (.9, .6), output="./Images/Nov17.png", title="Qlearning Monte Carlo Simulation vs BTC Nov17")
         else:
             print(f"File is mising: {file}")
     else:
