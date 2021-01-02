@@ -17,8 +17,10 @@ def create_mc_dist_plot(paths, data, quantiles):
     graph["Mean"] = paths.mean(axis=1).values *100
     quantile_packages = [(1-q, q, ((q+1)/(len(quantiles)+2)/2)) for q in quantiles]
     for q in quantile_packages:
-        graph[q[0]] = paths.quantile(q[0], axis=1).values * 100
-        graph[q[1]] = paths.quantile(q[1], axis=1).values * 100
+        # Center Confidence interval
+        adjust = (1-q[1])/2
+        graph[q[0]] = paths.quantile(q[0]-adjust, axis=1).values * 100
+        graph[q[1]] = paths.quantile(q[1]+adjust, axis=1).values * 100
     
     fig, ax = plt.subplots(1,1)
     
@@ -42,7 +44,7 @@ def create_mc_dist_plot(paths, data, quantiles):
     plt.autoscale(tight=True)
     plt.setp(ax, xticks=ticks, xticklabels=pd.to_datetime(paths["time"]).agg(lambda x: x.date())[ticks])
     fig.suptitle("Qlearning Monte Carlo Simulation vs BTC")
-    plt.savefig("./MonteCarloDistribution.png")
+    plt.savefig("./Images/MonteCarloDistribution.png")
     plt.close("all")
 
-mg = create_mc_dist_plot(monti, data, (.95, .80))
+mg = create_mc_dist_plot(monti, data, (.90, .60))
