@@ -1,11 +1,13 @@
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 import simulator
 import strategies
+import os
+
 
 STRATEGIESCOLLECTION = {"SimpleMA":strategies.SimpleMA, "MACD":strategies.MACD,
     "RSI":strategies.relativestrength, "meanreversion":strategies.meanreversion}
-
 
 # read in data
 data = pd.read_csv("./Data/Dec19.csv")
@@ -25,6 +27,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
 
 data.columns = ["time", "open","high","low","close","volume"]
 
+
 def dataframebycolumn(column):
     colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
     columns, colvals = list(zip(*colzip))
@@ -41,7 +44,31 @@ def merge_basedonlength(df1, df2, column_name):
     df1[column_name] = np.NaN
     df1[column_name][-len2:] = df2.iloc[:, 0]
 
-# create dataframes
+# Save Tearsheets
+for name, strategy in STRATEGIESCOLLECTION.items():
+    folder = 'Data/Tearsheet/'
+    if os.path.isdir(folder):
+        pass
+    else:
+        print("Doesn't exist")
+        os.mkdir(folder)
+    name_temp = name + '.csv'
+    df = pd.DataFrame(portfolios[name].tearsheet(data))
+    df.to_csv(folder + name_temp)
+
+# Save Portfolios
+for name, strategy in STRATEGIESCOLLECTION.items():
+    folder = 'Data/Portfolios/'
+    if os.path.isdir(folder):
+        pass
+    else:
+        print("Doesn't exist")
+        os.mkdir(folder)
+    name_temp = name + '.csv'
+    df = pd.DataFrame(portfolios[name].portfolio_repricing(data))
+    df.to_csv(folder + name_temp)
+
+# create dataframes from memories
 df = pd.DataFrame(memories['SimpleMA'].memory, columns=['price'])
 df['time'] = data['time']
 df_macd = pd.DataFrame(memories['MACD'].macd_memory, columns=['macd'])
@@ -62,5 +89,5 @@ merge_basedonlength(df, df_rsi, 'rsi')
 
 print(df)
 
-# save dataframe
+# save dataframes
 df.to_csv('Data/strategies.csv')
