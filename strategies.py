@@ -2,6 +2,20 @@ import numpy as np
 import pandas as pd
 import simulator
 
+
+class buyandhold(simulator.decisionmaker):
+    def __init__(self, environment):
+        super(buyandhold, self).__init__(environment)
+        self.memory = []
+    
+    def make_decision(self, row):
+        closing_price = row[-1]
+        if self.env.portfolio.usd>=closing_price and self.env.portfolio.btc == 0:
+        # The BTC == 0 restriction ensures no additional BTC will be bought after the initial buying decision is made
+            quantity = self.env.portfolio.usd//closing_price
+            self.env.orderbook.new_marketorder(quantity)
+    
+
 class meanreversion(simulator.decisionmaker):
     def __init__(self, environment):
         super(meanreversion, self).__init__(environment)

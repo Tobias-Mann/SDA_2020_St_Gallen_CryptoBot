@@ -25,7 +25,8 @@ STRATEGIESCOLLECTION = {
     "SimpleMA": strategies.SimpleMA,
     "MACD": strategies.MACD,
     "RSI": strategies.relativestrength,
-    "meanreversion": strategies.meanreversion
+    "meanreversion": strategies.meanreversion,
+    "BuyAndHold":strategies.buyandhold
 }
 
 # SIMULATE MULTIPLE STRATEGIES --------------------------
