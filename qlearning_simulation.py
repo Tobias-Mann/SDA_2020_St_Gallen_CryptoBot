@@ -9,10 +9,6 @@ from tqdm import tqdm
 import multiprocessing as mp
 import os
 
-style.use("seaborn")
-plt.close("all")
-
-
 # set random seed to allow reproducable results
 np.random.seed(0)
 
