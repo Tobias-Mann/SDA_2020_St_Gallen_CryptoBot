@@ -226,7 +226,8 @@ def perform_mc_simulation(env, data, repetitions = 1000):
         performance_aggregator[i] = cumreturn
     data = data.set_index("time")
     performance_aggregator.index = data.index
-    performance_aggregator.to_csv("./lastmontecarlosimulation.csv")
+    performance_aggregator.to_csv("./Data/lastmontecarlosimulation.csv")
     return performance_aggregator
+
+monti = perform_mc_simulation(big_env, data.dropna(), 100)
 '''
-#monti = perform_mc_simulation(big_env, data.dropna(), 100)
