@@ -11,11 +11,10 @@ from os.path import isfile, join
 
 # SETUP ---------------------------------------------
 # Read in data
-data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
-data = data.dropna().head(200000)
+data = pd.read_csv("./Data/BTC_USD/df_raw.csv")
 
 # Define variables
-TIMEPERIOD = 'Dec19'
+TIMEPERIOD = '2013-2019'
 PATH_PFS = './Data/Portfolios/'
 PATH_STRATEGIES = './Data/Strategies/'
 PATH_TEARSHEETS = './Data/Tearsheets/'
