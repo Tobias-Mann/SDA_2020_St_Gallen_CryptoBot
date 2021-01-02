@@ -10,16 +10,17 @@ from mplfinance.original_flavor import candlestick_ohlc
 # Data Import --------------------------
 
 df = pd.read_csv('Data/strategies.csv')
-df1 = pd.read_csv('Data/Dec19.csv')
+df1 = pd.read_csv('Data/BTC_USD/Dec19.csv')
 df['open'] = df1['open']
 df['high'] = df1['high']
 df['low'] = df1['low']
 df['close'] = df1['close']
 df['volume'] = df1['volume']
+df['CumReturn'] = df['close'].pct_change().cumsum()
 df['time'] = pd.to_datetime(df['time'])
 df.set_index('time', inplace=True, drop=True)
 cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 'long_ma',
-    'z_value', 'rsi']
+    'z_value', 'rsi', 'CumReturn']
 df = df[cols]
 #df = df.head(1000)
 
@@ -70,7 +71,7 @@ fig = plt.figure(num=None,
                  facecolor='w',
                  edgecolor='k')
 # Add a subplot and label for y-axis
-ax1 = fig.add_subplot(111, ylabel='Price in $')
+ax1 = fig.add_subplot(111, ylabel='Price in USD')
 ax1.set_title('Simple MA')
 
 #ax1.margins(x=-0.4, y=--0.4)
@@ -84,14 +85,14 @@ df[['short_ma', 'long_ma']].plot(ax=ax1, lw=2.)
 ax1.plot(df.loc[df.positions == 1.0].index,
          df.short_ma[df.positions == 1.0],
          '^',
-         markersize=10,
+         markersize=4,
          color='g')
 
 # Plot the sell signals
 ax1.plot(df.loc[df.positions == -1.0].index,
          df.short_ma[df.positions == -1.0],
          'v',
-         markersize=10,
+         markersize=4,
          color='r')
 
 # Show the plot
@@ -99,15 +100,18 @@ plt.show()
 
 # MACD --------------------------
 
-fast = 12
-slow = 26
-signal = 9
+FAST = 12
+SLOW = 26
+SIGNAL = 9
+MACD_NAME = 'MACD (Fast:' + str(FAST) + ', Slow:' + str(SLOW) + ')'
+SIGNAL_NAME = 'SIGNAL (' + str(SIGNAL) + ')'
+MARKERSIZE = 4
 
 df['signal_point'] = 0.0
 
 # Create signals, 1.0 = Signal, 0.0 = No signal
-df['signal_point'][slow:] = np.where(
-    df['signal'][slow:] > df['macd'][slow:], 1.0, 0.0)
+df['signal_point'][SLOW:] = np.where(
+    df['signal'][SLOW:] > df['macd'][SLOW:], 1.0, 0.0)
 
 # Generate trading orders
 df['positions'] = df['signal_point'].diff()
@@ -121,27 +125,30 @@ fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 15), sharex = True)
 plt.subplots_adjust(wspace=0, hspace=0)
 ax1.set_title('BTC Price and MACD')
 ax1.plot(df.index, df['close'], color = 'black')
-ax1.set_ylabel('close')
+ax1.set_ylabel('Price in USD')
+ax1.yaxis.grid(color='gray', linestyle='dashed')
+ax1.xaxis.grid(color='gray', linestyle='dashed')
 
 # Lower Subplot
-ax2.plot(df.index, df['signal'], color='orange', label = 'signal')
-ax2.plot(df.index, df['macd'], color='blue', label = 'macd')
+ax2.plot(df.index, df['signal'], color='orange', label = SIGNAL_NAME)
+ax2.plot(df.index, df['macd'], color='blue', label = MACD_NAME)
 ax2.set_ylabel('MACD')
-ax2.set_xlabel('Time')
+ax2.yaxis.grid(color='gray', linestyle='dashed')
+ax2.xaxis.grid(color='gray', linestyle='dashed')
 
 # PRICE PLOT ---
 # Plot the Buy Signals
 ax1.plot(df.loc[df.positions == 1.0].index,
          df.close[df.positions == 1.0],
          '^',
-         markersize=10,
+         markersize=MARKERSIZE,
          color='g')
 
 # Plot the sell signals
 ax1.plot(df.loc[df.positions == -1.0].index,
          df.close[df.positions == -1.0],
          'v',
-         markersize=10,
+         markersize=MARKERSIZE,
          color='r')
 
 # MACD PLOT ---
@@ -149,14 +156,14 @@ ax1.plot(df.loc[df.positions == -1.0].index,
 ax2.plot(df.loc[df.positions == 1.0].index,
          df.signal[df.positions == 1.0],
          '^',
-         markersize=10,
+         markersize=MARKERSIZE,
          color='g')
 
 # Plot the sell signals
 ax2.plot(df.loc[df.positions == -1.0].index,
          df.signal[df.positions == -1.0],
          'v',
-         markersize=10,
+         markersize=MARKERSIZE,
          color='r')
 
 # add legend
@@ -169,9 +176,9 @@ plt.legend()
 # Configure variables
 FIGSIZE = (15, 15)
 FILLCOLOR = 'darkgoldenrod'
+TEXTSIZE = 16
 
 # Define variables
-textsize = 16
 prices = df['close']
 rsi = df['rsi']
 
@@ -185,10 +192,11 @@ plt.subplots_adjust(wspace=0, hspace=0.01)
 ax1.set_title('BTC PRICE, MA, RSI')
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%d-%m-%Y"))
 
-
 # Plot the Price
 ax1.plot(df.index, df['close'], color='black')
-ax1.set_ylabel('Price')
+ax1.set_ylabel('Price in USD')
+ax1.yaxis.grid(color='gray', linestyle='dashed')
+ax1.xaxis.grid(color='gray', linestyle='dashed')
 
 # Plot the MA
 ma1 = moving_average(prices, 20, type='simple')
@@ -208,11 +216,13 @@ ax2t.set_yticks([]) # sets secondary axis = 0
 ax2.plot(df.index, rsi, color='orange')
 ax2.axhline(70, color='orange')
 ax2.axhline(30, color='orange')
-ax2.text(0.8, 0.9,'>70 = overbought', va='top', transform=ax2.transAxes, fontsize=textsize-2)
-ax2.text(0.8, 0.1,'<30 = oversold', transform=ax2.transAxes, fontsize=textsize-2)
-ax2.set_ylim(0, 100)
+ax2.text(0.8, 0.9,'>70 = overbought', va='top', transform=ax2.transAxes, fontsize=TEXTSIZE-2)
+ax2.text(0.8, 0.1,'<30 = oversold', transform=ax2.transAxes, fontsize=TEXTSIZE-2)
+ax2.set_ylim(-20, 120)
 ax2.set_yticks([30, 70])
-ax2.text(0.025, 0.95, 'RSI', va='top',transform=ax2.transAxes,fontsize=textsize)
+ax2.text(0.025, 0.95, 'RSI', va='top',transform=ax2.transAxes,fontsize=TEXTSIZE)
+ax2.yaxis.grid(color='gray', linestyle='dashed')
+ax2.xaxis.grid(color='gray', linestyle='dashed')
 
 # add legend
 ax1.legend()
@@ -223,69 +233,37 @@ plt.show()
 
 # MEAN REVERSION -------------------------------------------
 
+TEXTSIZE = 16
+
 df['signal_point'] = 0.0
 z_values = df['z_value']
 
-"""
-# Create signals, 1.0 = Signal, 0.0 = No signal
-df['signal_point_buy'] = np.where((df['z_value'] < -2), 1.0, 0.0)
-df['signal_point_sell'] = np.where((df['z_value'] > 2), 1.0, 0.0)
+# Get nested list of date, open, high, low and close prices
+ohlc = []
+for date, row in df.iterrows():
+    openp, highp, lowp, closep = row[:4]
+    ohlc.append([date2num(date), openp, highp, lowp, closep])
 
-# Generate trading orders
-df['positions_buy'] = df['signal_point_buy'].diff()
-df['positions_sell'] = df['signal_point_sell'].diff()
-
-df.loc[df['positions_buy'] == 1]
-df.loc[df['positions_buy'] == 0]
-df.loc[df['positions_buy'] == -1]
-# 0 = do nothing, 1 = Buy, 2 = Sell
-"""
 # Upper Subplot
 fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 15), sharex=True)
 plt.subplots_adjust(wspace=0, hspace=0)
-ax1.set_title('BTC Price and Z-Value')
+ax1.set_title('Mean Reversion: BTC Price and Z-Value')
+candlestick_ohlc(ax1, ohlc, colorup="g", colordown="r", width=0.001,)
+
 ax1.plot(df.index, df['close'], color='black')
-ax1.set_ylabel('Price')
+ax1.set_ylabel('Price in USD')
+ax1.yaxis.grid(color='gray', linestyle='dashed')
+ax1.xaxis.grid(color='gray', linestyle='dashed')
 
 # Lower Subplot
 ax2.plot(df.index, z_values, color='orange', label='Z-Value')
 ax2.axhline(2, color=FILLCOLOR)
 ax2.axhline(-2, color=FILLCOLOR)
 ax2.set_ylabel('Z-Value')
-ax2.text(0.8, 0.9,'>2 = overvalued: SELL', va='top', transform=ax2.transAxes, fontsize=textsize-2)
-ax2.text(0.8, 0.1,'<2 = undervalued: BUY', transform=ax2.transAxes, fontsize=textsize-2)
-
-"""
-# PRICE PLOT ---
-# Plot the Buy Signals
-ax1.plot(df.loc[df.positions_buy == 1.0].index,
-         df.price[df.positions_buy == 1.0],
-         '^',
-         markersize=10,
-         color='g')
-
-# Plot the sell signals
-ax1.plot(df.loc[df.positions_sell == -1.0].index,
-         df.price[df.positions_sell == -1.0],
-         'v',
-         markersize=10,
-         color='r')
-
-# Z-Value PLOT ---
-# Plot the Buy Signals
-ax2.plot(df.loc[df.positions_buy == 1.0].index,
-         df.z_value[df.positions_buy == 1.0],
-         '^',
-         markersize=10,
-         color='g')
-
-# Plot the sell signals
-ax2.plot(df.loc[df.positions_sell == -1.0].index,
-         df.z_value[df.positions_sell == -1.0],
-         'v',
-         markersize=10,
-         color='r')
-"""
+ax2.text(0.8, 0.9,'>2 = overvalued: SELL', va='top', transform=ax2.transAxes, fontsize=TEXTSIZE-2)
+ax2.text(0.8, 0.1,'<2 = undervalued: BUY', transform=ax2.transAxes, fontsize=TEXTSIZE-2)
+ax2.yaxis.grid(color='gray', linestyle='dashed')
+ax2.xaxis.grid(color='gray', linestyle='dashed')
 
 
 # ALL TOGETHER PLOTS ----------------------------------------------
@@ -376,8 +354,7 @@ for i in df_mc.columns:
         if counter % 2 == 0:
             ax.plot(df_mc.time, df_mc[i], alpha = 0.2)
 
-ax.plot(df.index, df.CumulativeReturn, label = 'BUY AND HODL', linewidth = 1)
-plt.xlabel('Time', fontsize = 16)
+ax.plot(df.index, df.CumReturn, label = 'BUY AND HODL', linewidth = 1)
 plt.ylabel('Returns (in %)', fontsize = 16)
 plt.legend()
 
@@ -392,7 +369,7 @@ df_pf_simplema = pd.read_csv('./Data/Portfolios/SimpleMA.csv')
 df_pf_meanrev = pd.read_csv('./Data/Portfolios/meanreversion.csv')
 df_pf_rsi = pd.read_csv('./Data/Portfolios/RSI.csv')
 
-df['value'] = 1e6 * (1+df['CumulativeReturn'])
+df['value'] = 1e6 * (1+df['CumReturn'])
 
 #convert to datetime and drop other value
 df_pf_macd['time'] = pd.to_datetime(df_pf_macd.iloc[:, 0])
