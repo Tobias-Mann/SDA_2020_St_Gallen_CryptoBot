@@ -18,6 +18,7 @@ data = data.dropna().head(200000)
 TIMEPERIOD = 'Dec19'
 PATH_PFS = './Data/Portfolios/'
 PATH_STRATEGIES = './Data/Strategies/'
+PATH_TEARSHEETS = './Data/Tearsheets/'
 
 # Define stregies to be tested
 STRATEGIESCOLLECTION = {
@@ -37,7 +38,6 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     portfolios[name] = sim.env.portfolio
     memories[name] = sim.decisionmaker
 
-
 data.columns = ["time", "open","high","low","close","volume"]
 
 def dataframebycolumn(column):
@@ -48,9 +48,40 @@ def dataframebycolumn(column):
 df_cumulative = dataframebycolumn("cumreturn")
 df_Absolute = dataframebycolumn("value")
 
+
+# GENERAL FUNCTIONS ------------------------------------
+# get files with a .csv ending
+def find_csv_filenames(path_to_dir, suffix=".csv"):
+    filenames = listdir(path_to_dir)
+    return [filename for filename in filenames if filename.endswith(suffix)]
+
+
+# merge function to get NaN at the beginning
+def merge_basedonlength(df1, df2, column_name):
+    len1 = len(df1)
+    len2 = len(df2)
+    df1[column_name] = np.NaN
+    df1[column_name][-len2:] = df2.iloc[:, 0]
+
+# merge dfs
+def merge_dfs(path, filenames, column):
+    count = 0
+    df = None
+    for name in filenames:
+        if filenames[count] == 'merged_cumreturn.csv' or filenames[count] == 'merged_tearsheets.csv':
+            count += 1
+        else:
+            df1 = pd.read_csv(path + filenames[count])
+            if df is None:
+                df = pd.DataFrame(index = df1.iloc[:, 0], columns = None)
+            name = name.rstrip('.csv')
+            df[name] = df1[column].values
+            count += 1
+    return df
+
 ### SAVE SHEETS FOR LATER ---------------------------------
 
-# Save Tearsheets
+# Tearsheets: Save Signle
 def save_tearsheets (folder_time_name):
     for name, strategy in STRATEGIESCOLLECTION.items():
         folder = './Data/Tearsheets/' + folder_time_name + '/'
@@ -64,7 +95,12 @@ def save_tearsheets (folder_time_name):
 
 save_tearsheets(TIMEPERIOD)
 
-# Save Portfolios
+# Tearsheets: Merge and savll all in one
+filenames_ts = find_csv_filenames(PATH_TEARSHEETS + TIMEPERIOD + '/')
+merged_tearsheets = merge_dfs((PATH_TEARSHEETS + TIMEPERIOD + '/'), filenames_ts , 'Performance Summary')
+merged_tearsheets.to_csv(PATH_TEARSHEETS + TIMEPERIOD + '/merged_tearsheet.csv')
+
+# Porfolios: Save Single
 def save_portfolios (folder_time_name):
     for name, strategy in STRATEGIESCOLLECTION.items():
         folder = './Data/Portfolios/' + folder_time_name + '/'
@@ -78,42 +114,17 @@ def save_portfolios (folder_time_name):
 
 save_portfolios(TIMEPERIOD)
 
-# get files with a .csv ending
-def find_csv_filenames(path_to_dir, suffix=".csv"):
-    filenames = listdir(path_to_dir)
-    return [filename for filename in filenames if filename.endswith(suffix)]
 
-filenames = find_csv_filenames(PATH_PFS + TIMEPERIOD + '/')
-
-# merge all files to one sheet
-def merge_cum_returns(path, filenames):
-    df = pd.DataFrame(index = data.index, columns = None)
-    df['time'] = data.time
-    count = 0
-    for name in filenames:
-        if filenames[count] == 'merged_cumreturn.csv':
-            count += 1
-        else:
-            df1 = pd.read_csv(path + filenames[count])
-            df[name] = df1['cumreturn']
-            count += 1
-    return df
-
-merged_cumreturns = merge_cum_returns(
-    (PATH_PFS + TIMEPERIOD + '/'), filenames)
-
+# Porfolios: Merge and save all in one 
+filenames_pfs = find_csv_filenames(PATH_PFS + TIMEPERIOD + '/')
+merged_cumreturns = merge_dfs((PATH_PFS + TIMEPERIOD + '/'), filenames_pfs, 'cumreturn')
+merged_cumreturns['time'] = data['time']
 merged_cumreturns.to_csv(PATH_PFS + TIMEPERIOD + '/merged_cumreturn.csv')
 
 
-# merge function to get NaN at the beginning
-def merge_basedonlength(df1, df2, column_name):
-    len1 = len(df1)
-    len2 = len(df2)
-    df1[column_name] = np.NaN
-    df1[column_name][-len2:] = df2.iloc[:, 0]
 
-# create dataframes from memories
-def save_strategies (name, folder_time_name):
+# Strategies: save merged df
+def save_strategies (name):
 
     # get values
     df = pd.DataFrame(memories['SimpleMA'].memory, columns=['price'])
@@ -134,7 +145,7 @@ def save_strategies (name, folder_time_name):
     merge_basedonlength(df, df_rsi, 'rsi')
 
     # save dataframe
-    folder = './Data/Strategies/' + folder_time_name + '/'
+    folder = './Data/Strategies/'
     name_temp = name + '.csv'
 
     if os.path.isdir(folder):
@@ -145,4 +156,4 @@ def save_strategies (name, folder_time_name):
     df.to_csv(folder + name_temp)
 
 strategies_name = 'Strategies_' + TIMEPERIOD
-save_strategies(strategies_name, TIMEPERIOD)
+save_strategies(strategies_name)

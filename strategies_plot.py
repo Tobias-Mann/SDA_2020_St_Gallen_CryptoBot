@@ -5,33 +5,48 @@ import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 from matplotlib.pylab import date2num
 from mplfinance.original_flavor import candlestick_ohlc
+import os
 
 
-# Data Import --------------------------
+# DATA IMPORT  --------------------------
 
-df = pd.read_csv('Data/strategies.csv')
+TIMEPERIOD = 'Dec19'
+PATH_PLOTS = './Images/'
+
+df = pd.read_csv('Data/Strategies/Strategies_Dec19.csv')
 df1 = pd.read_csv('Data/BTC_USD/Dec19.csv')
+
 df['open'] = df1['open']
 df['high'] = df1['high']
 df['low'] = df1['low']
 df['close'] = df1['close']
 df['volume'] = df1['volume']
-np.log(1 + data.set_index("time")["close"].pct_change()).cumsum()
 df['CumReturn'] = np.log(1+df['close'].pct_change()).cumsum()
 df['time'] = pd.to_datetime(df['time'])
 df.set_index('time', inplace=True, drop=True)
 cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 'long_ma',
     'z_value', 'rsi', 'CumReturn']
+
 df = df[cols]
-#df = df.head(1000)
+df = df.head(1000)
 
 # Set overall Plots ---------------------
 
-style.use("seaborn")
+plt.style.use("seaborn")
+
+FONTSIZE_TITLES = 16
+FIGSIZE = (10, 5)
+MARKERSIZE = 8
+
+if os.path.isdir(PATH_PLOTS):
+    pass
+else:
+    os.mkdir(PATH_PLOTS)
+
 plt.close("all")
 
 
-# Functions --------------------
+# FUNCTIONS --------------------
 
 def moving_average(x, n, type='simple'):
     """
@@ -53,7 +68,7 @@ def moving_average(x, n, type='simple'):
     return a
 
 
-# Simple Moving Averages--------------------------
+# SIMPLE MOVING AVERAGES --------------------------
 
 short_window = 12
 long_window = 26
@@ -72,13 +87,13 @@ df.loc[df['positions'] == -1]
 
 # Initialize the plot figure
 fig = plt.figure(num=None,
-                 figsize=(10, 10),
+                 figsize= FIGSIZE,
                  dpi=80,
                  facecolor='w',
                  edgecolor='k')
 # Add a subplot and label for y-axis
-ax1 = fig.add_subplot(111, ylabel='Price in USD')
-ax1.set_title('Simple MA')
+ax1 = fig.add_subplot(111, ylabel='Price in USD', xlabel = None)
+ax1.set_title('Simple MA', fontsize = FONTSIZE_TITLES)
 
 #ax1.margins(x=-0.4, y=--0.4)
 # Plot the closing price
@@ -91,18 +106,19 @@ df[['short_ma', 'long_ma']].plot(ax=ax1, lw=2.)
 ax1.plot(df.loc[df.positions == 1.0].index,
          df.short_ma[df.positions == 1.0],
          '^',
-         markersize=4,
+         markersize=MARKERSIZE,
          color='g')
 
 # Plot the sell signals
 ax1.plot(df.loc[df.positions == -1.0].index,
          df.short_ma[df.positions == -1.0],
          'v',
-         markersize=4,
+         markersize=MARKERSIZE,
          color='r')
 
-# Show the plot
+# Show and save the plot
 plt.show()
+plt.savefig(PATH_PLOTS + 'simpleMA_' + TIMEPERIOD + '.png')
 
 # MACD --------------------------
 
@@ -111,7 +127,6 @@ SLOW = 26
 SIGNAL = 9
 MACD_NAME = 'MACD (Fast:' + str(FAST) + ', Slow:' + str(SLOW) + ')'
 SIGNAL_NAME = 'SIGNAL (' + str(SIGNAL) + ')'
-MARKERSIZE = 4
 
 df['signal_point'] = 0.0
 
@@ -127,20 +142,16 @@ df.loc[df['positions'] == -1]
 # 0 = do nothing, 1 = Buy, 2 = Sell
 
 # Upper Subplot
-fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 15), sharex = True)
+fig, (ax1, ax2) = plt.subplots(2, figsize= FIGSIZE, sharex = True)
 plt.subplots_adjust(wspace=0, hspace=0)
-ax1.set_title('BTC Price and MACD')
+ax1.set_title('BTC Price and MACD', fontsize = FONTSIZE_TITLES)
 ax1.plot(df.index, df['close'], color = 'black')
 ax1.set_ylabel('Price in USD')
-ax1.yaxis.grid(color='gray', linestyle='dashed')
-ax1.xaxis.grid(color='gray', linestyle='dashed')
 
 # Lower Subplot
 ax2.plot(df.index, df['signal'], color='orange', label = SIGNAL_NAME)
 ax2.plot(df.index, df['macd'], color='blue', label = MACD_NAME)
 ax2.set_ylabel('MACD')
-ax2.yaxis.grid(color='gray', linestyle='dashed')
-ax2.xaxis.grid(color='gray', linestyle='dashed')
 
 # PRICE PLOT ---
 # Plot the Buy Signals
@@ -172,15 +183,17 @@ ax2.plot(df.loc[df.positions == -1.0].index,
          markersize=MARKERSIZE,
          color='r')
 
-# add legend
 plt.legend()
+
+# plot and save
+plt.show
+plt.savefig(PATH_PLOTS + 'MACD_' + 'TIMEPERIOD' + '.png')
 
 
 
 # RSI -----------------------------------
 
 # Configure variables
-FIGSIZE = (15, 15)
 FILLCOLOR = 'darkgoldenrod'
 TEXTSIZE = 16
 
@@ -195,14 +208,12 @@ ax1 = plt.subplot(gs[0])
 ax2 = plt.subplot(gs[1])
 ax2t = ax1.twinx()  # Create a new Axes instance with an invisible x-axis and an independent y-axis positioned opposite to the original one (i.e. at right)
 plt.subplots_adjust(wspace=0, hspace=0.01)
-ax1.set_title('BTC PRICE, MA, RSI')
+ax1.set_title('BTC PRICE, MA, RSI', fontsize = FONTSIZE_TITLES)
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%d-%m-%Y"))
 
 # Plot the Price
 ax1.plot(df.index, df['close'], color='black')
 ax1.set_ylabel('Price in USD')
-ax1.yaxis.grid(color='gray', linestyle='dashed')
-ax1.xaxis.grid(color='gray', linestyle='dashed')
 
 # Plot the MA
 ma1 = moving_average(prices, 20, type='simple')
@@ -227,14 +238,14 @@ ax2.text(0.8, 0.1,'<30 = oversold', transform=ax2.transAxes, fontsize=TEXTSIZE-2
 ax2.set_ylim(-20, 120)
 ax2.set_yticks([30, 70])
 ax2.text(0.025, 0.95, 'RSI', va='top',transform=ax2.transAxes,fontsize=TEXTSIZE)
-ax2.yaxis.grid(color='gray', linestyle='dashed')
-ax2.xaxis.grid(color='gray', linestyle='dashed')
 
 # add legend
 ax1.legend()
 
-# show plot
+# show and save plot
 plt.show()
+plt.savefig(PATH_PLOTS + 'RSI_' + 'TIMEPERIOD' + '.png')
+
 
 
 # MEAN REVERSION -------------------------------------------
@@ -251,15 +262,13 @@ for date, row in df.iterrows():
     ohlc.append([date2num(date), openp, highp, lowp, closep])
 
 # Upper Subplot
-fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 15), sharex=True)
+fig, (ax1, ax2) = plt.subplots(2, figsize = FIGSIZE, sharex = True)
 plt.subplots_adjust(wspace=0, hspace=0)
-ax1.set_title('Mean Reversion: BTC Price and Z-Value')
-candlestick_ohlc(ax1, ohlc, colorup="g", colordown="r", width=0.001,)
+ax1.set_title('Mean Reversion: BTC Price and Z-Value', fontsize = FONTSIZE_TITLES)
+candlestick_ohlc(ax1, ohlc, colorup="g", colordown="r", width=0.005,)
 
 #ax1.plot(df.index, df['close'], color='black')
 ax1.set_ylabel('Price in USD')
-ax1.yaxis.grid(color='gray', linestyle='dashed')
-ax1.xaxis.grid(color='gray', linestyle='dashed')
 
 # Lower Subplot
 ax2.plot(df.index, z_values, color='orange', label='Z-Value')
@@ -268,14 +277,15 @@ ax2.axhline(-2, color=FILLCOLOR)
 ax2.set_ylabel('Z-Value')
 ax2.text(0.8, 0.9,'>2 = overvalued: SELL', va='top', transform=ax2.transAxes, fontsize=TEXTSIZE-2)
 ax2.text(0.8, 0.1,'<2 = undervalued: BUY', transform=ax2.transAxes, fontsize=TEXTSIZE-2)
-ax2.yaxis.grid(color='gray', linestyle='dashed')
-ax2.xaxis.grid(color='gray', linestyle='dashed')
+
+plt.show()
+plt.savefig(PATH_PLOTS + 'MEANREVERSION_' + 'TIMEPERIOD' + '.png')
 
 
 # ALL TOGETHER PLOTS ----------------------------------------------
 
 # Create figure and set axes for subplots
-fig = plt.figure(figsize=FIGSIZE)
+fig = plt.figure(figsize = (10,10))
 gs = gridspec.GridSpec(nrows = 4, ncols =1, height_ratios=[2, 1, 1, 1])
 ax_candle = plt.subplot(gs[0])
 ax_candle.set_xticks(df.index)
@@ -296,7 +306,7 @@ for date, row in df.iterrows():
 # Plot candlestick chart
 ax_candle.plot(df.index, df["short_ma"], label="MA 12")
 ax_candle.plot(df.index, df["long_ma"], label="MA 26")
-candlestick_ohlc(ax_candle, ohlc, colorup="g", colordown="r", width=0.001,)
+candlestick_ohlc(ax_candle, ohlc, colorup="g", colordown="r", width=0.005,)
 ax_candle.set_title('Candlestick (OHLC)')
 ax_candle.legend()
 
@@ -322,10 +332,9 @@ vmax = volume.max()
 ax_vol.set_ylim(0, 1.2 * vmax)
 ax_vol.legend()
 
+# Show and plot
 plt.show()
-
-# Save the chart as PNG
-#fig.savefig("charts/" + ticker + ".png", bbox_inches="tight")
+plt.savefig(PATH_PLOTS + 'OVERVIEW_' + 'TIMEPERIOD' + '.png')
 
 
 # MONTE CARLO SIMULATION PLOT ----------------------------------------------
@@ -336,7 +345,7 @@ df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
 
 # initiliaze figure
 fig = plt.figure(num=None,
-                 figsize=(10, 10),
+                 figsize = FIGSIZE,
                  dpi=80,
                  facecolor='w',
                  edgecolor='k')
@@ -358,11 +367,15 @@ for i in df_mc.columns:
         pass
     else:
         if counter % 2 == 0:
-            ax.plot(df_mc.time, df_mc[i], alpha = 0.2)
+            ax.plot(df_mc.time, df_mc[i], alpha = 0.2, linewidth = 1)
 
-ax.plot(df.index, df.CumReturn, label = 'BUY AND HODL', linewidth = 1)
+ax.plot(df.index, df.CumReturn, label = 'BUY AND HODL', linewidth = 2)
 plt.ylabel('Returns (in %)', fontsize = 16)
 plt.legend()
+
+# show and plot
+plt.show()
+plt.savefig(PATH_PLOTS + 'MONTECARLO_' + 'TIMEPERIOD' + '.png')
 
 
 # PLOTTING THE PORTFOLIOS ----------------------------------------------
@@ -383,7 +396,7 @@ df_pf_macd.drop(columns = 'Unnamed: 0', inplace = True)
 
 # initiliaze figure
 fig = plt.figure(num=None,
-                 figsize=(10, 10),
+                 figsize = FIGSIZE,
                  dpi=80,
                  facecolor='w',
                  edgecolor='k')
@@ -403,7 +416,10 @@ ax.plot(df_pf_macd.time, df_pf_macd.value, label = 'MACD')
 ax.plot(df_pf_macd.time, df_pf_simplema.value, label = 'SimpleMA')
 ax.plot(df_pf_macd.time, df_pf_meanrev.value, label = 'MeanRev')
 ax.plot(df_pf_macd.time, df_pf_rsi.value, label =  'RSI')
-ax.set_title('Portfolios over Time')
+ax.set_title('Portfolios over Time', fontsize = FONTSIZE_TITLES)
 
 plt.legend()
+
+# Show and plot
 plt.show()
+plot.savefig(PATH_PLOTS + 'PORTFOLIOS_' + 'TIMEPERIOD' + '.png')
