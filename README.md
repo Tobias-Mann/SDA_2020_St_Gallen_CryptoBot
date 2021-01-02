@@ -21,6 +21,7 @@ The Agent accessess all previously observed prices and chooses an action based o
 - a minimum of observations required to calculate the feature, 
 - logical restictions of maximum and minimum values (neccessary to define the q-table)
 - the logic to caluclate the feature value at any given point in time given a sufficent number of past observations
+
 The Q agent class has an environment which is the collection of its possible actions and an observationspace. The observationspace is a class which represents in turn a collection of features. Due to this construction model it is possible to dynamically define an observationspace and an actionspace, which is used by the agent to initialize its q-table.
 After knowing its observationspace and actionspace, the agent can be assigend to a decisionmaker (e.g. smartbalancer). The decisionmaker then waits until enough prices have been observed to calculate all features that the agent requires and when the agent is ready to act it enteres new orders according to the portfolio weightings suggested by the agent.
 
