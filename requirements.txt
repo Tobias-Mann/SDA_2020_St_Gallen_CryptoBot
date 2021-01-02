@@ -2,3 +2,4 @@ tqdm
 numpy
 matplotlib
 pandas
+scipy
