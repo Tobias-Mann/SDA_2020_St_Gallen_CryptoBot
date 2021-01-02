@@ -5,7 +5,7 @@ import simulator
 import smartstrategies
 import qlearning as ql
 from tqdm import tqdm
-
+import features
 
 
 def perform_mc_simulation(env, data, repetitions = 100, output="./Data/lastmontecarlosimulation.csv"):
@@ -45,3 +45,21 @@ def perform_mc_simulation(env, data, repetitions = 100, output="./Data/lastmonte
         performance_aggregator.to_csv(output)
         print(f"Saved the Paths in: {output}")
     return performance_aggregator
+
+if __name__ == "__main__":
+    data = pd.read_csv("./Data/BTC_USD/Nov17.csv")
+    data.columns = ["time", "open","high","low","close","volume"]
+    np.random.seed(0)
+    # actionspace
+    n = 3
+    asp = ql.actionspace([1/(n-1)*x for x in range(n)])
+    # observationspace
+    big_osp = ql.observationspace()
+    big_osp.features.append(features.pct_change_lag(1))
+    big_osp.features.append(features.pct_change_lag(60))
+    big_osp.features.append(features.z_score_lag(20))
+    big_osp.features.append(features.z_score_lag(60))
+    big_osp.features.append(features.rsi(14))
+    big_env = ql.environment(big_osp, asp)
+
+    monti = perform_mc_simulation(big_env, data.dropna(), 100, output="./Data/Nov17_Paths.csv")
