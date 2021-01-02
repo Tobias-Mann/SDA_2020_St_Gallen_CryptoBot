@@ -3,11 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
-monti = pd.read_csv("./Data/lastmontecarlosimulation.csv")
-data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
-data.columns = ["time", "open","high","low","close","volume"]
-
-def create_mc_dist_plot(paths, data, quantiles):
+def create_mc_dist_plot(paths, data, quantiles, output="./Images/LastMonteCarloDistribution.png"):
     quantiles = set(list(quantiles) + [1])
     paths["BTC"] = np.log(data.loc[data.index[data["time"].isin(paths["time"].values)] ,["close"]].pct_change()+1).cumsum()
     paths = paths.iloc[63:,:]
@@ -40,11 +36,16 @@ def create_mc_dist_plot(paths, data, quantiles):
     ax.yaxis.grid(color='gray', linestyle='dashed')
     ax.set_xlabel("Date")
     ax.set_ylabel("Cumulative Return (%)")
-    ticks = monti.iloc[::int(monti.index.size/5),:].index[1:].values
+    ticks = paths.iloc[::int(paths.index.size/5),:].index[1:].values
     plt.autoscale(tight=True)
     plt.setp(ax, xticks=ticks, xticklabels=pd.to_datetime(paths["time"]).agg(lambda x: x.date())[ticks])
     fig.suptitle("Qlearning Monte Carlo Simulation vs BTC")
-    plt.savefig("./Images/MonteCarloDistribution.png")
+    plt.savefig(output)
     plt.close("all")
 
-mg = create_mc_dist_plot(monti, data, (.90, .60))
+
+if __name__ == "__main__":
+    monti = pd.read_csv("./Data/lastmontecarlosimulation.csv")
+    data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
+    data.columns = ["time", "open","high","low","close","volume"]
+    mg = create_mc_dist_plot(monti, data, (.90, .60))

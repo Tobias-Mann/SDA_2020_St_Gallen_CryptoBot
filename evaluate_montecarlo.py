@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from scipy import stats
+import plotting
 
 
 def test_average_performance(paths, data, threshold = .01, verbose = False):
@@ -19,12 +20,15 @@ def test_average_performance(paths, data, threshold = .01, verbose = False):
     return (t, p)
 
 if __name__ == "__main__":
-    if os.path.exists("./Data/lastmontecarlosimulation.csv"):
-        if os.path.exists("./Data/BTC_USD/Dec19.csv"):
-            data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
-            paths = pd.read_csv("./Data/lastmontecarlosimulation.csv").set_index("time")
+    file = "./Data/BTC_USD/Nov17.csv"
+    paths_file = "./Data/Nov17_Paths.csv"
+    if os.path.exists(paths_file ):
+        if os.path.exists(file):
+            data = pd.read_csv(file)
+            paths = pd.read_csv(paths_file ).set_index("time")
             test_average_performance(paths, data, verbose=True)
+            plotting.create_mc_dist_plot(paths.reset_index(), data, (.9, .6), output="./Images/Nov17.png")
         else:
-            print("File is mising: ./Data/BTC_USD/Dec19.csv")
+            print(f"File is mising: {file}")
     else:
         print("There is no data fo a previous Monte Carlo Simulation. Please run first the simulation to generate the data")

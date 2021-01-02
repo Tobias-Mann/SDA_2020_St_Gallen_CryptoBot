@@ -149,11 +149,11 @@ class relativestrength(simulator.decisionmaker):
             rs =  U/D if (D != 0) else 1
             rsi = 100 - (100 / (1 + rs))
             self.rsi_memory.append(rsi)
-            if rsi >= self.overbought:
+            if rsi >= self.overbought and self.env.portfolio.btc>0:
                 # sell at market
                 quantity = self.env.portfolio.btc
                 self.env.orderbook.new_marketorder(quantity, False)
-            elif rsi <= self.oversold:
+            elif rsi <= self.oversold and closing_price<=self.env.portfolio.usd:
                 # buy at market
                 quantity = self.env.portfolio.usd//closing_price
                 self.env.orderbook.new_marketorder(quantity)
