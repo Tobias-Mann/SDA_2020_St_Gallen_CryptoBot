@@ -265,7 +265,6 @@ class environment:
         self. transactionbook = transactionbook()
         self.portfolio = portfolio()
 
-
 class decisionmaker:
     def __init__(self, environment):
         #The decisiomaker class is a generic class so its functions are meant to be overwritten by actual trading logic
