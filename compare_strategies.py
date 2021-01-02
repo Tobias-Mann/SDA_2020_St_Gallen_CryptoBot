@@ -10,7 +10,7 @@ STRATEGIESCOLLECTION = {"SimpleMA":strategies.SimpleMA, "MACD":strategies.MACD,
     "RSI":strategies.relativestrength, "meanreversion":strategies.meanreversion}
 
 # read in data
-data = pd.read_csv("./Data/Dec19.csv")
+data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
 data = data.dropna().head(200000)
 data.rename(columns = {'datetime': 'time'}, inplace = True)
 
