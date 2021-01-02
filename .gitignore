@@ -4,7 +4,6 @@ Data/.DS_Store
 __pycache__
 q-learning
 q-learning2
-*.ipynb
 Data/.DS_Store
 Data/.DS_Store
 .vscode/settings.json
