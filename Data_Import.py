@@ -75,7 +75,7 @@ def make_subset (df, start_window, end_window, name):
     df = df_merged[mask]
     df.reset_index(drop = True, inplace = True)
     name_temp = name + '.csv'
-    df.to_csv(folder + name_temp)
+    df.to_csv(folder + name_temp, index = False)
     return df
 
 # create subsets
@@ -92,10 +92,11 @@ ax1 = figure.add_subplot(111, ylabel='Price in USD')
 ax1.plot(df_merged.time, df_merged.close)
 ax1.plot(df_merged.time, df_merged.close)
 ax1.set_title('BTC PRICE OVER ALL DATA')
+plt.show()
 
-# plot the price
+# plot the different timeframes
 figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
-ax1 = figure.add_subplot(111, ylabel='Price in USD')
+ax1 = figure.add_subplot(111, ylabel='Returns in %', xlabel = 'Time in Minutes')
 ax1.plot(Nov17.index,
          np.log(1 + Nov17['close'].pct_change()).cumsum(),
          label='Nov17')
@@ -114,5 +115,6 @@ ax1.plot(Nov19.index,
 ax1.plot(Dec19.index,
          np.log(1 + Dec19['close'].pct_change()).cumsum(),
          label='Dec19')
-ax1.set_title('BTC PRICE OVER DIFFERENT DECEMBER PERIODS')
+ax1.set_title('BTC RETURNS OVER DIFFERENT PERIODS')
 plt.legend()
+plt.show()
