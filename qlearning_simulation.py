@@ -180,8 +180,8 @@ print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_repricing(data))
 print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_repricing(data))
 
 # save Portfolios Performance and Tearsheet of Q-Learning Agents:
-def save_df(df, folder_path, name):
-    folder = folder_path
+def save_df(df, folder_path, name, folder_time_name):
+    folder = folder_path + folder_time_name + '/'
     if os.path.isdir(folder):
         pass
     else:
@@ -189,10 +189,10 @@ def save_df(df, folder_path, name):
     name_temp = name + '.csv'
     df.to_csv(folder + name_temp)
 
-save_df(sim.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL1')
-save_df(sim2.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL2')
-save_df(sim.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL1')
-save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2')
+save_df(sim.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL1', 'Dec19')
+save_df(sim2.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL2', 'Dec19')
+save_df(sim.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL1', 'Dec19')
+save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2', 'Dec19')
 
 
 

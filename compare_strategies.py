@@ -26,7 +26,6 @@ for name, strategy in STRATEGIESCOLLECTION.items():
 
 data.columns = ["time", "open","high","low","close","volume"]
 
-
 def dataframebycolumn(column):
     colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
     columns, colvals = list(zip(*colzip))
@@ -44,49 +43,63 @@ def merge_basedonlength(df1, df2, column_name):
     df1[column_name][-len2:] = df2.iloc[:, 0]
 
 # Save Tearsheets
-for name, strategy in STRATEGIESCOLLECTION.items():
-    folder = './Data/Tearsheets/'
-    if os.path.isdir(folder):
-        pass
-    else:
-        print("Doesn't exist")
-        os.mkdir(folder)
-    name_temp = name + '.csv'
-    df = pd.DataFrame(portfolios[name].tearsheet(data))
-    df.to_csv(folder + name_temp)
+def save_tearsheets (folder_time_name):
+    for name, strategy in STRATEGIESCOLLECTION.items():
+        folder = './Data/Tearsheets/' + folder_time_name + '/'
+        if os.path.isdir(folder):
+            pass
+        else:
+            os.mkdir(folder)
+        name_temp = name + '.csv'
+        df = pd.DataFrame(portfolios[name].tearsheet(data))
+        df.to_csv(folder + name_temp)
+
+save_tearsheets('Dec19')
 
 # Save Portfolios
-for name, strategy in STRATEGIESCOLLECTION.items():
-    folder = './Data/Portfolios/'
+def save_portfolios (folder_time_name):
+    for name, strategy in STRATEGIESCOLLECTION.items():
+        folder = './Data/Portfolios/' + folder_time_name + '/'
+        if os.path.isdir(folder):
+            pass
+        else:
+            os.mkdir(folder)
+        name_temp = name + '.csv'
+        df = pd.DataFrame(portfolios[name].portfolio_repricing(data))
+        df.to_csv(folder + name_temp)
+
+save_portfolios('Dec19')
+
+# create dataframes from memories
+def save_strategies (name):
+
+    # get values
+    df = pd.DataFrame(memories['SimpleMA'].memory, columns=['price'])
+    df['time'] = data['time']
+    df_macd = pd.DataFrame(memories['MACD'].macd_memory, columns=['macd'])
+    df_signal = pd.DataFrame(memories['MACD'].signal_memory, columns=['signal'])
+    df_short = pd.DataFrame(memories['SimpleMA'].short_memory, columns=['short_ma'])
+    df_long = pd.DataFrame(memories['SimpleMA'].long_memory, columns=['long_ma'])
+    df_rsi = pd.DataFrame(memories['RSI'].rsi_memory, columns=['rsi'])
+    df_z = pd.DataFrame(memories['meanreversion'].z_memory, columns=['z_value'])
+
+    # merge dataframes and save them
+    merge_basedonlength(df, df_macd, 'macd')
+    merge_basedonlength(df, df_signal, 'signal')
+    merge_basedonlength(df, df_short, 'short_ma')
+    merge_basedonlength(df, df_long, 'long_ma')
+    merge_basedonlength(df, df_z, 'z_value')
+    merge_basedonlength(df, df_rsi, 'rsi')
+
+    # save dataframe
+    folder = './Data/Strategies/' 
+    name_temp = name + '.csv'
+
     if os.path.isdir(folder):
         pass
     else:
-        print("Doesn't exist")
-        os.mkdir(folder)
-    name_temp = name + '.csv'
-    df = pd.DataFrame(portfolios[name].portfolio_repricing(data))
+        os.mkdir('./Data/Strategies')
+
     df.to_csv(folder + name_temp)
 
-# create dataframes from memories
-df = pd.DataFrame(memories['SimpleMA'].memory, columns=['price'])
-df['time'] = data['time']
-df_macd = pd.DataFrame(memories['MACD'].macd_memory, columns=['macd'])
-df_signal = pd.DataFrame(memories['MACD'].signal_memory, columns=['signal'])
-df_short = pd.DataFrame(memories['SimpleMA'].short_memory,
-                        columns=['short_ma'])
-df_long = pd.DataFrame(memories['SimpleMA'].long_memory, columns=['long_ma'])
-df_rsi = pd.DataFrame(memories['RSI'].rsi_memory, columns=['rsi'])
-df_z = pd.DataFrame(memories['meanreversion'].z_memory, columns=['z_value'])
-
-# merge dataframes and save them
-merge_basedonlength(df, df_macd, 'macd')
-merge_basedonlength(df, df_signal, 'signal')
-merge_basedonlength(df, df_short, 'short_ma')
-merge_basedonlength(df, df_long, 'long_ma')
-merge_basedonlength(df, df_z, 'z_value')
-merge_basedonlength(df, df_rsi, 'rsi')
-
-print(df)
-
-# save dataframes
-df.to_csv('Data/strategies.csv')
+save_strategies('Strategies_Dec19')
