@@ -21,7 +21,7 @@ df.set_index('time', inplace=True, drop=True)
 cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 'long_ma',
     'z_value', 'rsi']
 df = df[cols]
-df = df.head(1000)
+#df = df.head(1000)
 
 
 # Functions --------------------
@@ -44,6 +44,7 @@ def moving_average(x, n, type='simple'):
     a = np.convolve(x, weights, mode='full')[:len(x)]
     a[:n] = a[n]
     return a
+
 
 # Simple Moving Averages--------------------------
 
@@ -287,7 +288,7 @@ ax2.plot(df.loc[df.positions_sell == -1.0].index,
 """
 
 
-# ALL TOGETHER PLOTS --------------------
+# ALL TOGETHER PLOTS ----------------------------------------------
 
 # Create figure and set axes for subplots
 fig = plt.figure(figsize=FIGSIZE)
@@ -339,6 +340,87 @@ ax_vol.legend()
 
 plt.show()
 
-
 # Save the chart as PNG
 #fig.savefig("charts/" + ticker + ".png", bbox_inches="tight")
+
+
+# MONTE CARLO SIMULATION PLOT ----------------------------------------------
+
+df_mc = pd.read_csv('Data/lastmontecarlosimulation.csv')
+df_mc['time'] = pd.to_datetime(df_mc['time'])
+df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
+
+# initiliaze figure
+fig = plt.figure(num=None,
+                 figsize=(10, 10),
+                 dpi=80,
+                 facecolor='w',
+                 edgecolor='k')
+plt.style.use('seaborn-darkgrid')
+
+# create a color palette
+palette = plt.get_cmap('Set1')
+
+# format x axis
+ax = plt.gca()
+formatter = mdates.DateFormatter("%d-%m-%Y")
+ax.xaxis.set_major_formatter(formatter)
+
+# plot every X
+counter = 0
+for i in df_mc.columns:
+    counter += 1
+    if counter == 0:
+        pass
+    else:
+        if counter % 2 == 0:
+            ax.plot(df_mc.time, df_mc[i], alpha = 0.2)
+
+ax.plot(df.index, df.CumulativeReturn, label = 'BUY AND HODL', linewidth = 1)
+plt.xlabel('Time', fontsize = 16)
+plt.ylabel('Returns (in %)', fontsize = 16)
+plt.legend()
+
+
+# PLOTTING THE PORTFOLIOS ----------------------------------------------
+
+#check the data
+#os.listdir('./Data/Portfolios/')
+
+df_pf_macd = pd.read_csv('./Data/Portfolios/MACD.csv')
+df_pf_simplema = pd.read_csv('./Data/Portfolios/SimpleMA.csv')
+df_pf_meanrev = pd.read_csv('./Data/Portfolios/meanreversion.csv')
+df_pf_rsi = pd.read_csv('./Data/Portfolios/RSI.csv')
+
+df['value'] = 1e6 * (1+df['CumulativeReturn'])
+
+#convert to datetime and drop other value
+df_pf_macd['time'] = pd.to_datetime(df_pf_macd.iloc[:, 0])
+df_pf_macd.drop(columns = 'Unnamed: 0', inplace = True)
+
+# initiliaze figure
+fig = plt.figure(num=None,
+                 figsize=(10, 10),
+                 dpi=80,
+                 facecolor='w',
+                 edgecolor='k')
+plt.style.use('seaborn-darkgrid')
+
+# create a color palette
+palette = plt.get_cmap('Set1')
+
+# format x axis
+ax = plt.gca()
+formatter = mdates.DateFormatter("%d-%m-%Y")
+ax.xaxis.set_major_formatter(formatter)
+
+# plot the values
+ax.plot(df.index, df.value, label = 'Buy and Hodl')
+ax.plot(df_pf_macd.time, df_pf_macd.value, label = 'MACD')
+ax.plot(df_pf_macd.time, df_pf_simplema.value, label = 'SimpleMA')
+ax.plot(df_pf_macd.time, df_pf_meanrev.value, label = 'MeanRev')
+ax.plot(df_pf_macd.time, df_pf_rsi.value, label =  'RSI')
+ax.set_title('Portfolios over Time')
+
+plt.legend()
+plt.show()
