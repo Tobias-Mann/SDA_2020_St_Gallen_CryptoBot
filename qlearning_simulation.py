@@ -165,7 +165,7 @@ sim.decisionmaker.agent = agent
 sim2.decisionmaker.agent = agent2
 
 # read in data
-data = pd.read_csv("./Data/Dec19.csv")
+data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
 
 # start simulator
 #sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
