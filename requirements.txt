@@ -1,12 +1,8 @@
-backtrader
+
 pandas
-pandas_ta
 numpy
 datetime
 matplotlib
-sklearn
-xgboost
-#test
 
 # the following are for q-learning
 gym 
