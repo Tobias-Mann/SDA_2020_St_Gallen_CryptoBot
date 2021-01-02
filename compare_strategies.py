@@ -12,7 +12,6 @@ STRATEGIESCOLLECTION = {"SimpleMA":strategies.SimpleMA, "MACD":strategies.MACD,
 # read in data
 data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
 data = data.dropna().head(200000)
-data.rename(columns = {'datetime': 'time'}, inplace = True)
 
 # simulate multiple strategies
 portfolios = {}
