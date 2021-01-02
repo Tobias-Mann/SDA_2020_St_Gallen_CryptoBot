@@ -3,10 +3,11 @@ import pandas as pd
 import qlearning as ql
 import simulator
 import smartstrategies
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 from matplotlib import style
 from tqdm import tqdm
-import multiprocessing as mp 
+import multiprocessing as mp
+import os
 
 style.use("seaborn")
 plt.close("all")
@@ -70,7 +71,7 @@ class rsi(ql.feature):
         self.min_observations = max(1, abs(periods+1))
         self.low = 0
         self.high = 100
-    
+
     def calculate(self, observations):
         values = observations[-(self.periods+1):]
         U, D = zip(*[(max(0, values[i+1]-values[i]), max(0, values[i]-values[i+1])) for i in range(len(values)-1)])
@@ -131,13 +132,14 @@ class macd_lag(ql.feature):
 
 # define observationspace
 osp = ql.observationspace()
+big_osp = ql.observationspace()
 
-
+# define features for small obsverationspace
 osp.features.append(pct_change_lag(1))
 osp.features.append(pct_change_lag(60))
 osp.features.append(macd_lag(5))
 
-big_osp = ql.observationspace()
+# define features for large obsverationspace
 big_osp.features.append(pct_change_lag(1))
 big_osp.features.append(pct_change_lag(60))
 big_osp.features.append(z_score_lag(20))
@@ -168,14 +170,31 @@ sim2.decisionmaker.agent = agent2
 data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
 
 # start simulator
-#sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
-#sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
+sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
+sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
 
 
 # Show Portfolio Performance
 data.columns = ["time", "open","high","low","close","volume"]
-#print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_over_time)
-#print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_over_time)
+print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_repricing(data))
+print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_repricing(data))
+
+# save Portfolios Performance and Tearsheet of Q-Learning Agents:
+def save_df(df, folder_path, name):
+    folder = folder_path
+    if os.path.isdir(folder):
+        pass
+    else:
+        os.mkdir(folder)
+    name_temp = name + '.csv'
+    df.to_csv(folder + name_temp)
+
+save_df(sim.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL1')
+save_df(sim2.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL2')
+save_df(sim.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL1')
+save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2')
+
+
 
 # define function for performance plot
 def save_plot(name, portfolios, data):
@@ -185,7 +204,7 @@ def save_plot(name, portfolios, data):
     rep["BTC_Returns"] = np.log(1+data.set_index("time")["close"].pct_change()).cumsum()
     rep.plot().get_figure().savefig(name)
 
-#save_plot("Q_Learning", {"Sim":sim.env.portfolio,"Sim2":sim.env.portfolio}, data)
+save_plot("Q_Learning", {"Sim":sim.env.portfolio,"Sim2":sim.env.portfolio}, data)
 
 '''
 # perform montecarlo simulation ----------------------------

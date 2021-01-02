@@ -25,6 +25,11 @@ cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 
 df = df[cols]
 #df = df.head(1000)
 
+# Set overall Plots ---------------------
+
+style.use("seaborn")
+plt.close("all")
+
 
 # Functions --------------------
 

@@ -1,7 +1,7 @@
 import pandas as pd
 # from ta import add_all_ta_features
 import os
-
+import datetime
 
 """
 ### DATA SOURCE 1: KAGGLE ------------------------------
@@ -55,12 +55,26 @@ df_merged['Time'] = pd.to_datetime(df_merged['Time'], unit = 'ms')
 df_merged = df_merged.sort_values(by=['Time'], ascending = True, na_position = 'last')
 df_merged = df_merged.reset_index(level = None, drop = False, inplace = False, col_level = 0, col_fill='')
 df_merged = df_merged.rename(columns = {"index": "old_index"})
-df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'High': 'high', 'Low': 'low', 'Volume': 'volume'})
-
+df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'High': 'high', 'Low': 'low', 'Volume': 'volume'}, inplace = True)
 
 #print output
 print(df_merged.info())
 
 # save the new file under the folder Data
-df_merged.to_csv('Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
+df_merged.to_csv('Data/BTC_USD/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
+# save a subset of December 2019:
+mask = df_merged['time'].between('2019-12-01 00:00:00', '2019-12-31 23:59:00')
+Dec19 = df_merged[mask]
+Dec19.reset_index(drop = True, inplace = True)
+Dec19.to_csv('Data/BTC_USD/Dec19.csv')
+
+import matplotlib.pyplot as plt
+figure = plt.figure(num=None,
+                 figsize=(10, 10),
+                 dpi=80,
+                 facecolor='w',
+                 edgecolor='k')
+# Add a subplot and label for y-axis
+ax1 = figure.add_subplot(111, ylabel='Price in USD')
+ax1.plot(df_merged.time, df_merged.close)
