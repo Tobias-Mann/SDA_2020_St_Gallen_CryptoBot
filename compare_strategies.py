@@ -12,6 +12,7 @@ from os.path import isfile, join
 # SETUP ---------------------------------------------
 # Read in data
 data = pd.read_csv("./Data/BTC_USD/df_raw.csv")
+data = data[["time", "open","high","low","close","volume"]]
 
 # Define variables
 TIMEPERIOD = '2013-2019'
@@ -38,7 +39,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     portfolios[name] = sim.env.portfolio
     memories[name] = sim.decisionmaker
 
-data.columns = ["time", "open","high","low","close","volume"]
+
 
 def dataframebycolumn(column):
     colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
