@@ -13,6 +13,6 @@ See also: SDA_2020_St_Gallen_02_Simulations, SDA_2020_St_Gallen_03_VisualizeSimu
 
 Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
-Datafile: '../Data/Dec19.csv', 
+Datafile: ../Data/Dec19.csv 
 
-Output:  '../Data/Dec19.csv'
+Output:  ../Data/Dec19.csv, ../Data/Nov18.csv, ../Data/Nov17.csv, ../Data/df_raw.csv
