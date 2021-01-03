@@ -19,6 +19,9 @@ PATH_PLOTS = './Outputs/'
 df = pd.read_csv('../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/strategies_indicators.csv')
 df1 = pd.read_csv('../Data/Dec19.csv')
 df1 = df1[pd.to_datetime(df1.time).agg(lambda x: x.year != 2013).values]
+df['time'] = pd.to_datetime(df['time'])
+df1['cumreturn'] = np.log(1 + df1['close'].pct_change()).cumsum()
+
 
 # feature engineering
 df['open'] = df1['open']
@@ -34,7 +37,6 @@ cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 
     'z_value', 'rsi', 'cumreturn', 'value']
 
 df = df[cols]
-df_long = df
 df = df.head(1000)
 
 # Set overall Plots ---------------------
@@ -471,7 +473,7 @@ ax.set_ylabel('Portfolio Value in Mio. USD')
 
 # plot the values
 ax.plot(df_pfs.time, (1 + df_pfs.cumreturn) * INITIAL_CAPITAL, label='Q-Learning')
-ax.plot(df_long.index, (1 + df_long.cumreturn) * INITIAL_CAPITAL, label='Buy and Hold')
+ax.plot(df_pfs.time, (1 + df1.cumreturn) * INITIAL_CAPITAL, label='Buy and Hold')
 ax.set_title('Portfolios over ' + TIMEPERIOD, fontsize=FONTSIZE_TITLES)
 plt.legend()
 
