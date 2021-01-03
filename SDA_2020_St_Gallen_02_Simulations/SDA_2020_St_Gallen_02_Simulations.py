@@ -11,7 +11,7 @@ from os.path import isfile, join
 
 # SETUP ---------------------------------------------
 # Read in data
-data = pd.read_csv("./Data/df_raw.csv")
+data = pd.read_csv("../Data/Dec19.csv")
 data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
