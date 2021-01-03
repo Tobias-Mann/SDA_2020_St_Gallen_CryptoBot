@@ -4,7 +4,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
-### DATA SOURCE: GITHUB  ------------------------------
+### FETCH DATA FROM GITHUB  ------------------------------
 #https://github.com/Zombie-3000/Bitfinex-historical-data
 
 headers = ['Time', 'Open', 'Close', 'High', 'Low', 'Volume']
@@ -38,6 +38,8 @@ print(df_merged.info())
 # save the new file under the folder Data
 df_merged.to_csv('../Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
+### MAKE SUBSETS OF DATA  ------------------------------
+
 # create and save subsets of Decembers
 def make_subset (df, start_window, end_window, name):
     folder = '../Data/'
@@ -56,6 +58,9 @@ def make_subset (df, start_window, end_window, name):
 Nov17 = make_subset(df_merged, '2017-11-01 00:00:00', '2017-11-30 23:59:00', 'Nov17')
 Nov18 = make_subset(df_merged, '2018-11-01 00:00:00', '2018-11-30 23:59:00', 'Nov18')
 Dec19 = make_subset(df_merged, '2019-12-01 00:00:00', '2019-12-31 23:59:00', 'Dec19')
+
+
+### MAKE PLOTS FROM THE DATA  ------------------------------
 
 # plot the full timeframe
 fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
@@ -83,7 +88,7 @@ plt.legend()
 plt.show()
 fig.savefig('3PERIODS_BTC_USD.png', dpi=1200)
 
-
+# plot every year
 for i in (data_frames):
     i['Time'] = pd.to_datetime(i['Time'], unit = 'ms')
     fig = plt.figure(num=None,
