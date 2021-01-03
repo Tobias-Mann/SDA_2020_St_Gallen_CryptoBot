@@ -33,3 +33,48 @@ if __name__ == "__main__":
             print(f"File is mising: {file}")
     else:
         print("There is no data from a previous Monte Carlo Simulation. Please run first the simulation to generate the data")
+
+
+# MONTE CARLO SIMULATION PLOT ----------------------------------------------
+
+PATH_PLOTS = './Outputs'
+TIMEPERIOD = 'Dec_2019'
+
+# change the folder where the input is
+df_mc = pd.read_csv('./Data/lastmontecarlosimulation.csv')
+df_mc['time'] = pd.to_datetime(df_mc['time'])
+df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
+
+# initiliaze figure
+fig = plt.figure(num=None,
+                 figsize=FIGSIZE,
+                 dpi=80,
+                 facecolor='w',
+                 edgecolor='k')
+plt.style.use('seaborn-darkgrid')
+
+# create a color palette
+palette = plt.get_cmap('Set1')
+
+# format x axis
+ax = plt.gca()
+formatter = mdates.DateFormatter("%d-%m-%Y")
+ax.xaxis.set_major_formatter(formatter)
+
+# plot every X
+counter = 0
+for i in df_mc.columns:
+    counter += 1
+    if counter == 0:
+        pass
+    else:
+        if counter % 2 == 0:
+            ax.plot(df_mc.time, df_mc[i], alpha=0.2, linewidth=1)
+
+ax.plot(df_long.index, df_long.cumreturn, label='BUY AND HOLD', linewidth=2)
+plt.ylabel('Returns (in %)', fontsize=16)
+plt.legend()
+
+# show and plot
+plt.show()
+fig.savefig(PATH_PLOTS + 'MONTECARLO_' + TIMEPERIOD + '.png', dpi=1000)
