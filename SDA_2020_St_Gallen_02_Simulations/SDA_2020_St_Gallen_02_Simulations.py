@@ -69,9 +69,6 @@ def merge_basedonlength(df1, df2, column_name):
 def merge_dfs(path, filenames, column):
     count = 0
     df = None
-    #    filenames = filenames_ts
-    #    column = 'Performance Summary'
-    #    path = (PATH_TEARSHEETS + TIMEPERIOD + '/')
     for name in filenames:
         if filenames[count] == 'merged_cumreturn.csv' or filenames[count] == 'merged_tearsheet.csv' or 'strategies' in filenames[count]:
             count += 1
