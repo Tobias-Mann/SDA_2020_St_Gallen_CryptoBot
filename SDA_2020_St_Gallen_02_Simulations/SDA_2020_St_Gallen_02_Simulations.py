@@ -221,7 +221,7 @@ sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
 
 
 # Show Portfolio Performance
-data = data["time", "open","high","low","close","volume"]
+data = data[["time", "open","high","low","close","volume"]]
 print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_repricing(data))
 print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_repricing(data))
 
