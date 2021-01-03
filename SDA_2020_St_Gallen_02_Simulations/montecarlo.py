@@ -2,10 +2,10 @@ import multiprocessing as mp
 import pandas as pd 
 import numpy as np
 
-import SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.qlearning as ql
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.smartstrategies as smartstrategies
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.features as features
+import simulator
+import qlearning as ql
+import smartstrategies
+import features
 
 from tqdm import tqdm
 
