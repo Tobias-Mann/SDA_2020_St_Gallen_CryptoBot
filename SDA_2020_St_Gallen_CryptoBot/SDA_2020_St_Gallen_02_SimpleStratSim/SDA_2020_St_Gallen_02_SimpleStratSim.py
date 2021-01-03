@@ -11,15 +11,15 @@ from os.path import isfile, join
 
 # SETUP ---------------------------------------------
 # Read in data
-data = pd.read_csv("./Data/BTC_USD/df_raw.csv")
+data = pd.read_csv("../Data/Dec19.csv")
 data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
-TIMEPERIOD = '2014-2019'
-PATH_PFS = './Data/Portfolios/'
-PATH_STRATEGIES = './Data/Strategies/'
-PATH_TEARSHEETS = './Data/Tearsheets/'
+TIMEPERIOD = 'Dec 2019'
+PATH_PFS = './'
+PATH_STRATEGIES = './'
+PATH_TEARSHEETS = './'
 
 # Define stregies to be tested
 STRATEGIESCOLLECTION = {
@@ -107,7 +107,7 @@ merged_tearsheets.to_csv(PATH_TEARSHEETS + TIMEPERIOD + '/merged_tearsheet.csv')
 # Porfolios: Save signle sheets
 def save_portfolios (folder_time_name):
     for name, strategy in STRATEGIESCOLLECTION.items():
-        folder = './Data/Portfolios/' + folder_time_name + '/'
+        folder = PATH_STRATEGIES + folder_time_name + '/'
         if os.path.isdir(folder):
             pass
         else:
@@ -148,7 +148,7 @@ def save_strategies (name):
     merge_basedonlength(df, df_rsi, 'rsi')
 
     # save dataframe
-    folder = './Data/Strategies/'
+    folder = PATH_STRATEGIES 
     name_temp = name + '.csv'
 
     if os.path.isdir(folder):
