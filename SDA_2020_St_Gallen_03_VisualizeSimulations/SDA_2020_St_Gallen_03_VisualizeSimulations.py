@@ -74,7 +74,7 @@ def find_csv_filenames(path_to_dir, suffix=".csv"):
     filenames = listdir(path_to_dir)
     return [filename for filename in filenames if filename.endswith(suffix)]
 
-"""
+
 # SIMPLE MOVING AVERAGES --------------------------
 
 short_window = 12
@@ -443,7 +443,7 @@ else:
 # save plot
 fig.savefig(PATH_PLOTS + 'PORFOLIOS_' + TIMEPERIOD + '.png', dpi = 1000)
 
-"""
+
 # PLOTTING THE Q_LEARNING PORTFOLIO ----------------------------------------------
 
 # Please change the input variables to get the wanted Porfolio
