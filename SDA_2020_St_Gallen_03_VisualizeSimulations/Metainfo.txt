@@ -3,7 +3,7 @@ Name of Quantlet: SDA_2020_St_Gallen_03_VisualizeSimulations
 
 Published in: SDA_2020_St_Gallen_CryptoBot
 
-Description: Plotting various perfomance graphes for simulated technical trading strategies
+Description: Plotting various perfomance graphes for simulated technical trading strategies. This quantlet should ideally be executed after SDA_2020_St_Gallen_01_DataImport.
 
 Keywords: QLearning, Trading Bot, BTC, Bitcoin, Timeseries, Technical Indicators
 
@@ -15,4 +15,4 @@ Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
 Datafile: '../Data/Dec19.csv', 
 
-Output:  ./Q_LEARNING_Dec_2019.png, ./simpeMA_Dec19.png
+Output:  ./Outputs/Q_LEARNING_Dec_2019.png, ./Outputs/simpeMA_Dec_2019.png, ./Outputs/MACD_Dec_2019.png, ./Outputs/RSI_Dec_2019.png, ./Outputs/MEANREVERSION_Dec_2019.png, ./Outputs/MEANREVERSION_Dec_2019.png, ./Outputs/PORTFOLIOS_Dec_2019.png, ./Outputs/OVERVIEW_Dec_2019.png
