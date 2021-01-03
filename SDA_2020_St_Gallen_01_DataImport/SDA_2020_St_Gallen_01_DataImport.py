@@ -36,12 +36,12 @@ df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'Hig
 print(df_merged.info())
 
 # save the new file under the folder Data
-df_merged.to_csv('./Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
+df_merged.to_csv('../Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
 ### MAKE SUBSETS OF DATA  ------------------------------
 # create and save subsets of Decembers
 def make_subset (df, start_window, end_window, name):
-    folder = './Data/'
+    folder = '../Data/'
     if os.path.isdir(folder):
         pass
     else:
@@ -60,7 +60,7 @@ Dec19 = make_subset(df_merged, '2019-12-01 00:00:00', '2019-12-31 23:59:00', 'De
 
 
 ### MAKE PLOTS FROM THE DATA  ------------------------------
-PATHNAME = './SDA_2020_St_Gallen_01_DataImport/'
+PATHNAME = './'
 
 # plot the full timeframe
 fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
