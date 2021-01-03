@@ -3,7 +3,7 @@ Name of Quantlet: SDA_2020_St_Gallen_01_DataImport
 
 Published in: SDA_2020_St_Gallen_CryptoBot
 
-Description: This Quantle is part of other quantlets and represents the first step: Fetching, Preprocessing and Plotting data. The overall goal is to build a trading bot, which analyzes a single timeseries of crypto currency prices (BTC/USD) to identify optimal conditions for entry and exit trades in real-time. This quantlet retrieves data from a github repository, which is minutely data of BTC/USD from Binance of the years 2013 to 2019. 
+Description: Fetching, Preprocessing and Plotting data. This Quantle is part of other quantlets and represents the first step. The overall goal is to build a trading bot, which analyzes a single timeseries of crypto currency prices (BTC/USD) to identify optimal conditions for entry and exit trades in real-time. This quantlet retrieves data from a github repository, which is minutely data of BTC/USD from Binance of the years 2013 to 2019. 
 
 Keywords: QLearning, Trading Bot, BTC, Bitcoin, Timeseries, Technical Indicators
 
