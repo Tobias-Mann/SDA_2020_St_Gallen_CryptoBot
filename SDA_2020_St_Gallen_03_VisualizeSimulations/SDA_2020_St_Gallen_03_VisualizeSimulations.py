@@ -16,8 +16,8 @@ TIMEPERIOD = 'Dec_2019'
 PATH_PLOTS = './Outputs/'
 
 # define the inputs
-df = pd.read_csv('./SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/strategies_indicators.csv')
-df1 = pd.read_csv('./Data/Dec19.csv')
+df = pd.read_csv('../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/strategies_indicators.csv')
+df1 = pd.read_csv('../Data/Dec19.csv')
 df1 = df1[pd.to_datetime(df1.time).agg(lambda x: x.year != 2013).values]
 
 # feature engineering
@@ -74,7 +74,7 @@ def find_csv_filenames(path_to_dir, suffix=".csv"):
     filenames = listdir(path_to_dir)
     return [filename for filename in filenames if filename.endswith(suffix)]
 
-
+"""
 # SIMPLE MOVING AVERAGES --------------------------
 
 short_window = 12
@@ -128,7 +128,7 @@ ax1.xaxis.set_major_formatter(TIME_FMT)
 
 # Show and save the plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'simpleMA_' + TIMEPERIOD + '.png', dpi = 1000)
+fig.savefig(PATH_PLOTS + 'SIMPLEMA_' + TIMEPERIOD + '.png', dpi = 1000)
 
 # MACD --------------------------
 
@@ -391,55 +391,14 @@ ax_candle.xaxis.set_major_formatter(TIME_FMT)
 plt.show()
 fig.savefig(PATH_PLOTS + 'OVERVIEW_' + TIMEPERIOD + '.png', dpi = 1200)
 
-
-# MONTE CARLO SIMULATION PLOT ----------------------------------------------
-
-df_mc = pd.read_csv('Data/lastmontecarlosimulation.csv')
-df_mc['time'] = pd.to_datetime(df_mc['time'])
-df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
-
-# initiliaze figure
-fig = plt.figure(num=None,
-                 figsize = FIGSIZE,
-                 dpi=80,
-                 facecolor='w',
-                 edgecolor='k')
-plt.style.use('seaborn-darkgrid')
-
-# create a color palette
-palette = plt.get_cmap('Set1')
-
-# format x axis
-ax = plt.gca()
-formatter = mdates.DateFormatter("%d-%m-%Y")
-ax.xaxis.set_major_formatter(formatter)
-
-# plot every X
-counter = 0
-for i in df_mc.columns:
-    counter += 1
-    if counter == 0:
-        pass
-    else:
-        if counter % 2 == 0:
-            ax.plot(df_mc.time, df_mc[i], alpha = 0.2, linewidth = 1)
-
-ax.plot(df_long.index, df_long.cumreturn, label = 'BUY AND HOLD', linewidth = 2)
-plt.ylabel('Returns (in %)', fontsize = 16)
-plt.legend()
-
-# show and plot
-plt.show()
-fig.savefig(PATH_PLOTS + 'MONTECARLO_' + TIMEPERIOD + '.png', dpi=1000)
-
-
+"""
 # PLOTTING THE PORTFOLIOS OF SIMPLE TRADING STRATEGIES ----------------------------------------------
 
 # Please change the input variables to get the wanted Porfolio
 TIMEPERIOD = 'Dec_2019'
 TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
 INITIAL_CAPITAL = 1
-df_pfs = pd.read_csv('./SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/merged_cumreturn.csv')
+df_pfs = pd.read_csv('../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/merged_cumreturn.csv')
 
 df_pfs.drop(columns = 'time', inplace = True)
 df_pfs.rename(columns = {'Unnamed: 0': 'time'}, inplace = True)
@@ -470,18 +429,19 @@ ax.plot(df_pfs.time, (1+df_pfs.RSI) * INITIAL_CAPITAL, label='RSI')
 #ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
 
 ax.set_title('Portfolios over ' + TIMEPERIOD, fontsize = FONTSIZE_TITLES)
-
 plt.legend()
 
 # Show and plot
 plt.show()
 
+# create folder
 if os.path.isdir(PATH_PLOTS + TIMEPERIOD):
     pass
 else:
     os.mkdir(PATH_PLOTS + TIMEPERIOD)
 
-fig.savefig(PATH_PLOTS + TIMEPERIOD + '.png', dpi = 1000)
+# save plot
+fig.savefig(PATH_PLOTS + 'PORFOLIOS_' + TIMEPERIOD + '.png', dpi = 1000)
 
 
 # PLOTTING THE Q_LEARNING PORTFOLIO ----------------------------------------------
@@ -490,8 +450,7 @@ fig.savefig(PATH_PLOTS + TIMEPERIOD + '.png', dpi = 1000)
 TIMEPERIOD = 'Dec_2019'
 TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
 INITIAL_CAPITAL = 1
-df_pfs = pd.read_csv(
-    './SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/cum_returns_ql2.csv')
+df_pfs = pd.read_csv('../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/cum_returns_ql2.csv')
 
 df_pfs.drop(columns='time', inplace=True)
 df_pfs.rename(columns={'Unnamed: 0': 'time'}, inplace=True)
@@ -512,16 +471,9 @@ ax = plt.gca()
 ax.xaxis.set_major_formatter(TIME_FMT)
 ax.set_ylabel('Portfolio Value in Mio. USD')
 
-print((1 + df_pfs.BuyAndHold) * INITIAL_CAPITAL)
 # plot the values
-ax.plot(df_pfs.time, (1 + df_pfs.BuyAndHold) * INITIAL_CAPITAL,
-        label='Buy and Hold',
-        color='red')
-ax.plot(df_pfs.time, (1 + df_pfs.MACD) * INITIAL_CAPITAL, label='MACD')
-ax.plot(df_pfs.time, (1 + df_pfs.SimpleMA) * INITIAL_CAPITAL, label='SimpleMA')
-ax.plot(df_pfs.time, (1 + df_pfs.meanreversion) * INITIAL_CAPITAL,
-        label='MeanRev')
-ax.plot(df_pfs.time, (1 + df_pfs.RSI) * INITIAL_CAPITAL, label='RSI')
+ax.plot(df_pfs.time, (1 + df_pfs.cumreturn) * INITIAL_CAPITAL, label='Q-Learning')
+ax.plot(df_long.rim, (1 + df_long.cumreturn) * INITIAL_CAPITAL, label='Buy and Hold')
 #ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
 
 ax.set_title('Portfolios over ' + TIMEPERIOD, fontsize=FONTSIZE_TITLES)
@@ -536,4 +488,4 @@ if os.path.isdir(PATH_PLOTS + TIMEPERIOD):
 else:
     os.mkdir(PATH_PLOTS + TIMEPERIOD)
 
-fig.savefig(PATH_PLOTS + TIMEPERIOD + '.png', dpi=1000)
+fig.savefig(PATH_PLOTS + 'Q_LEARNING' + TIMEPERIOD + '.png', dpi=1000)
