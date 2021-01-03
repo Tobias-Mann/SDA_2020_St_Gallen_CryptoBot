@@ -94,6 +94,7 @@ ax1.plot(df_merged.time, df_merged.close)
 ax1.set_title('BTC PRICE OVER ALL DATA')
 plt.show()
 
+"""
 # plot the different timeframes
 figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
 ax1 = figure.add_subplot(111, ylabel='Returns', xlabel = 'Time in Minutes')
@@ -118,6 +119,7 @@ ax1.plot(Dec19.index,
 ax1.set_title('BTC RETURNS OVER DIFFERENT PERIODS')
 plt.legend()
 plt.show()
+"""
 
 # plot all single years
 PATH_PLOTS = './Images/Yearly_Prices/'

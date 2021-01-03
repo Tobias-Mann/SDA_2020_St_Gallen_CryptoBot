@@ -11,11 +11,12 @@ import os
 
 # DATA IMPORT  --------------------------
 
-TIMEPERIOD = '2013-2019'
+TIMEPERIOD = '2014-2019'
 PATH_PLOTS = './Images/'
 
-df = pd.read_csv('Data/Strategies/Strategies_2013-2019.csv')
-df1 = pd.read_csv('Data/BTC_USD/2013-2019.csv')
+df = pd.read_csv('Data/Strategies/Strategies_2014-2019.csv')
+df1 = pd.read_csv('Data/BTC_USD/df_raw.csv')
+df1 = df1[pd.to_datetime(df1.time).agg(lambda x: x.year != 2013).values]
 
 df['open'] = df1['open']
 df['high'] = df1['high']
@@ -41,7 +42,8 @@ TEXTSIZE = 10
 FONTSIZE_TITLES = 16
 FIGSIZE = (10, 5)
 MARKERSIZE = 8
-TIME_FMT = mdates.DateFormatter('%H:%M')
+# TIME_FMT = mdates.DateFormatter('%H:%M')
+TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
 
 if os.path.isdir(PATH_PLOTS):
     pass

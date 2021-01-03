@@ -52,11 +52,11 @@ sim.initialize_decisionmaker(smartstrategies.smartbalancer)
 sim2.initialize_decisionmaker(smartstrategies.smartbalancer)
 
 # assign agent to smart balancer
-sim.decisionmaker.agent = agent
+# sim.decisionmaker.agent = agent
 sim2.decisionmaker.agent = agent2
 
 # read in data
-data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
+data = pd.read_csv("./Data/BTC_USD/df_raw.csv")
 
 # start simulator
 sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
@@ -78,10 +78,11 @@ def save_df(df, folder_path, name, folder_time_name):
     name_temp = name + '.csv'
     df.to_csv(folder + name_temp)
 
-save_df(sim.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL1', 'Dec19')
-save_df(sim2.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL2', 'Dec19')
-save_df(sim.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL1', 'Dec19')
-save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2', 'Dec19')
+FOLDER_TIME_NAME = '2013-2019'
+save_df(sim.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL1', FOLDER_TIME_NAME)
+save_df(sim2.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL2', FOLDER_TIME_NAME)
+save_df(sim.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL1', FOLDER_TIME_NAME)
+save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2', FOLDER_TIME_NAME)
 
 
 
