@@ -118,3 +118,29 @@ ax1.plot(Dec19.index,
 ax1.set_title('BTC RETURNS OVER DIFFERENT PERIODS')
 plt.legend()
 plt.show()
+
+# plot all single years
+PATH_PLOTS = './Images/Yearly_Prices/'
+
+for i in (data_frames):
+    i['Time'] = pd.to_datetime(i['Time'], unit = 'ms')
+    fig = plt.figure(num=None,
+                    figsize=(10, 5),
+                    dpi=80,
+                    facecolor='w',
+                    edgecolor='k')
+    ax1 = fig.add_subplot(111, ylabel='BTC Price in USD')
+    ax1.yaxis.grid(color='gray', linestyle='dashed')
+    TIME = str(i['Time'][0])[:-15]
+    ax1.set_title('Timeframe: ' + TIME)
+    ax1.plot(i['Time'], i['Close'])
+    if os.path.isdir(PATH_PLOTS):
+        pass
+    else:
+        os.mkdir(PATH_PLOTS)
+
+    plt.show()
+    fig.savefig(PATH_PLOTS + TIME + '_BTC_USD.png', dpi=1200)
+
+Gap16 = make_subset(df_merged, '2016-03-01 00:00:00', '2017-06-30 23:59:00','Gap16')
+Gap16[20000:30000]
