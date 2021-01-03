@@ -11,4 +11,6 @@ Author: Tobias Mann, Tim Graf
 
 Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
-Datafile: './Data/BTC_USD/Dec19.csv', './Data/lastmontecarlosimulation.csv'
+Datafile: '../Data/Dec19.csv', 
+
+Output:  './Output/Dec19_Paths.csv'
