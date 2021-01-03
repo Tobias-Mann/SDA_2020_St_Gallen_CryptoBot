@@ -17,9 +17,9 @@ data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
 TIMEPERIOD = ' Dec 2019'
-PATH_PFS = './SDA_2020_St_Gallen_02_SimpleStratSim/'
-PATH_STRATEGIES = './SDA_2020_St_Gallen_02_SimpleStratSim/'
-PATH_TEARSHEETS = './SDA_2020_St_Gallen_02_SimpleStratSim/'
+PATH_PFS = './'
+PATH_STRATEGIES = './'
+PATH_TEARSHEETS = './'
 
 # Define stregies to be tested
 STRATEGIESCOLLECTION = {
