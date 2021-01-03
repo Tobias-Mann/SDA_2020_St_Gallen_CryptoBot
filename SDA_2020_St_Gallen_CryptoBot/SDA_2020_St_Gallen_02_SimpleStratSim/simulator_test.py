@@ -10,7 +10,7 @@ sim = simulator.simulator_environment()
 sim.initialize_decisionmaker(strategies.relativestrength)
 
 # read in data
-data = pd.read_csv("./Data/Dec19.csv")
+data = pd.read_csv("../Data/Dec19.csv")
 
 # start simulation --> This will take some time!!!
 sim.simulate_on_aggregate_data(data.dropna())
