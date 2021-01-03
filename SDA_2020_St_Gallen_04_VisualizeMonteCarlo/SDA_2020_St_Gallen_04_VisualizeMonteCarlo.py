@@ -22,7 +22,7 @@ def test_average_performance(paths, data, threshold = .01, verbose = False):
 
 if __name__ == "__main__":
     file = "../Data/Dec19.csv"
-    paths_file = "../Data/lastmontecarlosimulation.csv"
+    paths_file = "../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/Dec19_MC_Paths.csv"
     if os.path.exists(paths_file ):
         if os.path.exists(file):
             data = pd.read_csv(file)
