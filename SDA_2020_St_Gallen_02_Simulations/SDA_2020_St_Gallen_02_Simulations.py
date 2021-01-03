@@ -236,7 +236,7 @@ def save_df(df, folder_path, name, folder_time_name):
     df.to_csv(folder + name_temp)
 
 FOLDER_TIME_NAME = 'Dec2019'
-save_df(sim.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL1', FOLDER_TIME_NAME)
-save_df(sim2.env.portfolio.portfolio_repricing(data), 'Data/Portfolios/', 'QL2', FOLDER_TIME_NAME)
-save_df(sim.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL1', FOLDER_TIME_NAME)
-save_df(sim2.env.portfolio.tearsheet(data), 'Data/Tearsheets/', 'QL2', FOLDER_TIME_NAME)
+save_df(sim.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'QL1', FOLDER_TIME_NAME)
+save_df(sim2.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'QL2', FOLDER_TIME_NAME)
+save_df(sim.env.portfolio.tearsheet(data), TIMEPERIOD, 'QL1', FOLDER_TIME_NAME)
+save_df(sim2.env.portfolio.tearsheet(data), TIMEPERIOD, 'QL2', FOLDER_TIME_NAME)
