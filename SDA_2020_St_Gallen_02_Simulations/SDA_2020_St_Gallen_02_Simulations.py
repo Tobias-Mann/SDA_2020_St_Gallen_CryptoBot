@@ -79,7 +79,7 @@ def merge_dfs(path, filenames, column):
     count = 0
     df = None
     for name in filenames:
-        if filenames[count] == 'merged_cumreturn.csv' or filenames[count] == 'merged_tearsheet.csv' or 'strategies' in filenames[count]:
+        if 'merged' in filenames[count] or 'strategies' in filenames[count] or 'ql' in filenames[count]:
             count += 1
         else:
             df1 = pd.read_csv(path + filenames[count])
