@@ -59,8 +59,8 @@ def find_csv_filenames(path_to_dir, suffix=".csv"):
 
 # merge function to get NaN at the beginning
 def merge_basedonlength(df1, df2, column_name):
-    len1 = len(df1)
-    len2 = len(df2)
+    len1 = df1.shape[0]
+    len2 = df2.shape[0]
     df1[column_name] = np.NaN
     df1[column_name][-len2:] = df2.iloc[:, 0]
 
