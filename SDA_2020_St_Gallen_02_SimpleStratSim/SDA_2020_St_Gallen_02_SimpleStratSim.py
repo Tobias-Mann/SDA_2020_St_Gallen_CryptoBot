@@ -16,7 +16,7 @@ data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
-TIMEPERIOD = 'Dec 2019'
+TIMEPERIOD = 'Dec_2019'
 PATH_PFS = './'
 PATH_STRATEGIES = './'
 PATH_TEARSHEETS = './'
@@ -68,9 +68,9 @@ def merge_basedonlength(df1, df2, column_name):
 def merge_dfs(path, filenames, column):
     count = 0
     df = None
-#    filenames = filenames_ts
-#    column = 'Performance Summary'
-#    path = (PATH_TEARSHEETS + TIMEPERIOD + '/')
+    #    filenames = filenames_ts
+    #    column = 'Performance Summary'
+    #    path = (PATH_TEARSHEETS + TIMEPERIOD + '/')
     for name in filenames:
         if filenames[count] == 'merged_cumreturn.csv' or filenames[count] == 'merged_tearsheet.csv':
             count += 1
@@ -100,7 +100,7 @@ def save_tearsheets (folder_time_name):
 save_tearsheets(TIMEPERIOD)
 
 # Tearsheets: Merge and save all in one
-filenames_ts = find_csv_filenames(PATH_TEARSHEETS + TIMEPERIOD + '/') 
+filenames_ts = find_csv_filenames(PATH_TEARSHEETS + TIMEPERIOD + '/')
 merged_tearsheets = merge_dfs((PATH_TEARSHEETS + TIMEPERIOD + '/'), filenames_ts , 'Performance Summary')
 merged_tearsheets.to_csv(PATH_TEARSHEETS + TIMEPERIOD + '/merged_tearsheet.csv')
 
@@ -125,7 +125,7 @@ merged_cumreturns = merge_dfs((PATH_PFS + TIMEPERIOD + '/'), filenames_pfs, 'cum
 merged_cumreturns['time'] = data['time']
 merged_cumreturns.to_csv(PATH_PFS + TIMEPERIOD + '/merged_cumreturn.csv')
 
-
+"""
 # Strategies: save merged df
 def save_strategies (name):
 
@@ -148,7 +148,7 @@ def save_strategies (name):
     merge_basedonlength(df, df_rsi, 'rsi')
 
     # save dataframe
-    folder = PATH_STRATEGIES 
+    folder = PATH_STRATEGIES + TIMEPERIOD + '/'
     name_temp = name + '.csv'
 
     if os.path.isdir(folder):
@@ -160,3 +160,4 @@ def save_strategies (name):
 
 strategies_name = 'Strategies_' + TIMEPERIOD
 save_strategies(strategies_name)
+"""
