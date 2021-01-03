@@ -36,10 +36,11 @@ memories = {}
 for name, strategy in STRATEGIESCOLLECTION.items():
     sim = simulator.simulator_environment()
     sim.initialize_decisionmaker(strategy)
+    print("\n",name,"\n")
     sim.simulate_on_aggregate_data(data)
     portfolios[name] = sim.env.portfolio
     memories[name] = sim.decisionmaker
-
+print()
 
 def dataframebycolumn(column):
     colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
