@@ -51,7 +51,7 @@ else:
 
 plt.close("all")
 
-"""
+
 # FUNCTIONS --------------------
 
 def moving_average(x, n, type='simple'):
@@ -429,21 +429,23 @@ plt.legend()
 plt.show()
 fig.savefig(PATH_PLOTS + 'MONTECARLO_' + TIMEPERIOD + '.png', dpi=1000)
 
-"""
+
 # PLOTTING THE PORTFOLIOS ----------------------------------------------
 
-TIMEPERIOD = '2014-2019'
+TIMEPERIOD = 'Dec19'
 TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
+INITIAL_CAPITAL = 1
 
-df_pfs = pd.read_csv('./SDA_2020_St_Gallen_02_SimpleStratSim/2014-2019/merged_cumreturn.csv')
+df_pfs = pd.read_csv('./SDA_2020_St_Gallen_02_SimpleStratSim/Dec_2019/merged_cumreturn.csv')
 df_pfs.drop(columns = 'time', inplace = True)
 df_pfs.rename(columns = {'Unnamed: 0': 'time'}, inplace = True)
 df_pfs['time'] = pd.to_datetime(df_pfs['time'])
+df_pfs = df_pfs.head(500000) 
 
 # initilaize the plot
 fig = plt.figure(num=None,
                  figsize=FIGSIZE,
-                 dpi=80,
+                 dpi=120,
                  facecolor='w',
                  edgecolor='k')
 
@@ -452,16 +454,16 @@ palette = plt.get_cmap('Set1')
 
 # format x axis
 ax = plt.gca()
-formatter = mdates.DateFormatter("%d-%m-%Y")
-ax.xaxis.set_major_formatter(formatter)
-ax.set_ylabel('Cumulative Returns')
+ax.xaxis.set_major_formatter(TIME_FMT)
+ax.set_ylabel('Portfolio Value in Mio. USD')
 
+print((1+df_pfs.BuyAndHold)*INITIAL_CAPITAL)
 # plot the values
-ax.plot(df_pfs.time, df_pfs.BuyAndHold, label = 'Buy and Hold', color = 'red')
-ax.plot(df_pfs.time, df_pfs.MACD, label='MACD')
-ax.plot(df_pfs.time, df_pfs.SimpleMA, label='SimpleMA')
-ax.plot(df_pfs.time, df_pfs.meanreversion, label='MeanRev')
-ax.plot(df_pfs.time, df_pfs.RSI, label='RSI')
+ax.plot(df_pfs.time, (1+df_pfs.BuyAndHold) * INITIAL_CAPITAL, label = 'Buy and Hold', color = 'red')
+ax.plot(df_pfs.time, (1+df_pfs.MACD) * INITIAL_CAPITAL, label='MACD')
+ax.plot(df_pfs.time, (1+df_pfs.SimpleMA) * INITIAL_CAPITAL, label='SimpleMA')
+ax.plot(df_pfs.time, (1+df_pfs.meanreversion) * INITIAL_CAPITAL, label='MeanRev')
+ax.plot(df_pfs.time, (1+df_pfs.RSI) * INITIAL_CAPITAL, label='RSI')
 #ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
 
 ax.set_title('Portfolios over ' + TIMEPERIOD, fontsize = FONTSIZE_TITLES)

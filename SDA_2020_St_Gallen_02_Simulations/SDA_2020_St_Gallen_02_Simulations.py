@@ -23,10 +23,17 @@ data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
+<<<<<<< Updated upstream:SDA_2020_St_Gallen_02_Simulations/SDA_2020_St_Gallen_02_Simulations.py
 TIMEPERIOD = ' Dec 2019'
 PATH_PFS = './'
 PATH_STRATEGIES = './'
 PATH_TEARSHEETS = './'
+=======
+TIMEPERIOD = '2014-2019_with_commissions'
+PATH_PFS = './SDA_2020_St_Gallen_02_SimpleStratSim/'
+PATH_STRATEGIES = './SDA_2020_St_Gallen_02_SimpleStratSim/'
+PATH_TEARSHEETS = './SDA_2020_St_Gallen_02_SimpleStratSim/'
+>>>>>>> Stashed changes:SDA_2020_St_Gallen_02_SimpleStratSim/SDA_2020_St_Gallen_02_SimpleStratSim.py
 
 # Define stregies to be tested
 STRATEGIESCOLLECTION = {
@@ -132,6 +139,10 @@ merged_cumreturns = merge_dfs((PATH_PFS + TIMEPERIOD + '/'), filenames_pfs, 'cum
 merged_cumreturns['time'] = data['time']
 merged_cumreturns.to_csv(PATH_PFS + TIMEPERIOD + '/merged_cumreturn.csv')
 
+<<<<<<< Updated upstream:SDA_2020_St_Gallen_02_Simulations/SDA_2020_St_Gallen_02_Simulations.py
+=======
+
+>>>>>>> Stashed changes:SDA_2020_St_Gallen_02_SimpleStratSim/SDA_2020_St_Gallen_02_SimpleStratSim.py
 # Strategies: save merged df
 def save_strategies (name):
 

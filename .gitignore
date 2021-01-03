@@ -1,19 +1,16 @@
-
 .DS_Store
 Data/.DS_Store
 __pycache__
-q-learning
-q-learning2
-Data/.DS_Store
+
 Data/.DS_Store
 .vscode/settings.json
-lastmontecarlosimulation.csv
-lastmontecarlosimulation.csv
-Data/df_raw.csv
 .vscode/
 Icon
 
-SDA_2020_St_Gallen_02_SimpleStratSim/Nov_2017/
-SDA_2020_St_Gallen_02_SimpleStratSim/Nov_2018/
-SDA_2020_St_Gallen_02_SimpleStratSim/2014-2019/
-SDA_2020_St_Gallen_02_SimpleStratSim/2014-2019_with_comissions/
+lastmontecarlosimulation.csv
+Data/df_raw.csv
+
+SDA_2020_St_Gallen_02_Simulations/Nov_2017/
+SDA_2020_St_Gallen_02_Simulations/Nov_2018/
+SDA_2020_St_Gallen_02_Simulations/2014-2019/
+SDA_2020_St_Gallen_02_Simulations/2014-2019_with_commissions/
