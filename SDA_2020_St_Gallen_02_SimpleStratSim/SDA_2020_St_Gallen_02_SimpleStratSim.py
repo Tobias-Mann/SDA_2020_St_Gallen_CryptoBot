@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.strategies as strategies
+import simulator
+import strategies
 import os
 from os import listdir
 from os.path import isfile, join
@@ -11,7 +11,7 @@ from os.path import isfile, join
 
 # SETUP ---------------------------------------------
 # Read in data
-data = pd.read_csv("../Data/Dec19.csv")
+data = pd.read_csv("./Data/Dec19.csv")
 data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
