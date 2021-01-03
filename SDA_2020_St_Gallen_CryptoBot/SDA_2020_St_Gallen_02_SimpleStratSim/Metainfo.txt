@@ -7,7 +7,7 @@ Description: Trading bot, which analysis a single timeseries of crypto currency 
 
 Keywords: QLearning, Trading Bot, BTC, Bitcoin, Timeseries, Technical Indicators
 
-Author: Tobias Mann
+Author: Tobias Mann, Tim Graf
 
 Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
