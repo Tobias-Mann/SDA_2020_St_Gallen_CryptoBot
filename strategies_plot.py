@@ -11,11 +11,11 @@ import os
 
 # DATA IMPORT  --------------------------
 
-TIMEPERIOD = 'Nov17'
+TIMEPERIOD = '2013-2019'
 PATH_PLOTS = './Images/'
 
-df = pd.read_csv('Data/Strategies/Strategies_Nov17.csv')
-df1 = pd.read_csv('Data/BTC_USD/Nov17.csv')
+df = pd.read_csv('Data/Strategies/Strategies_2013-2019.csv')
+df1 = pd.read_csv('Data/BTC_USD/2013-2019.csv')
 
 df['open'] = df1['open']
 df['high'] = df1['high']
@@ -76,7 +76,7 @@ def find_csv_filenames(path_to_dir, suffix=".csv"):
     filenames = listdir(path_to_dir)
     return [filename for filename in filenames if filename.endswith(suffix)]
 
-'''
+
 # SIMPLE MOVING AVERAGES --------------------------
 
 short_window = 12
@@ -130,7 +130,7 @@ ax1.xaxis.set_major_formatter(TIME_FMT)
 
 # Show and save the plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'simpleMA_' + TIMEPERIOD + '.png')
+fig.savefig(PATH_PLOTS + 'simpleMA_' + TIMEPERIOD + '.png', dpi = 1000)
 
 # MACD --------------------------
 
@@ -202,7 +202,7 @@ plt.legend()
 
 # plot and save
 plt.show
-fig.savefig(PATH_PLOTS + 'MACD_' + 'TIMEPERIOD' + '.png')
+fig.savefig(PATH_PLOTS + 'MACD_' + 'TIMEPERIOD' + '.png', dpi = 1000)
 
 
 
@@ -262,7 +262,7 @@ ax2.xaxis.set_major_formatter(TIME_FMT)
 
 # show and save plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'RSI_' + 'TIMEPERIOD' + '.png')
+fig.savefig(PATH_PLOTS + 'RSI_' + 'TIMEPERIOD' + '.png', dpi=1000)
 
 
 
@@ -298,7 +298,7 @@ ax2.locator_params(axis='x', nbins=10)
 ax2.xaxis.set_major_formatter(TIME_FMT)
 
 plt.show()
-fig.savefig(PATH_PLOTS + 'MEANREVERSION_' + 'TIMEPERIOD' + '.png')
+fig.savefig(PATH_PLOTS + 'MEANREVERSION_' + 'TIMEPERIOD' + '.png', dpi=1000)
 
 
 # ALL TOGETHER PLOTS ----------------------------------------------
@@ -391,7 +391,7 @@ ax_candle.xaxis.set_major_formatter(TIME_FMT)
 
 # Show and plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'OVERVIEW_' + 'TIMEPERIOD' + '.png')
+fig.savefig(PATH_PLOTS + 'OVERVIEW_' + 'TIMEPERIOD' + '.png', dpi = 1200)
 
 
 # MONTE CARLO SIMULATION PLOT ----------------------------------------------
@@ -432,12 +432,14 @@ plt.legend()
 
 # show and plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'MONTECARLO_' + 'TIMEPERIOD' + '.png')
+fig.savefig(PATH_PLOTS + 'MONTECARLO_' + 'TIMEPERIOD' + '.png', dpi=1000)
 
-'''
+
 # PLOTTING THE PORTFOLIOS ----------------------------------------------
 
-df_pfs = pd.read_csv('./Data/Portfolios/Dec19/merged_cumreturn.csv')
+TIMEPERIOD = '2013-2019'
+
+df_pfs = pd.read_csv('./Data/Portfolios/2013-2019/merged_cumreturn.csv')
 df_pfs.drop(columns = 'time', inplace = True)
 df_pfs.rename(columns = {'Unnamed: 0': 'time'}, inplace = True)
 df_pfs['time'] = pd.to_datetime(df_pfs['time'])
@@ -463,8 +465,8 @@ ax.plot(df_pfs.time, df_pfs.BuyAndHold, label = 'Buy and Hold', color = 'red')
 ax.plot(df_pfs.time, df_pfs.MACD, label='MACD')
 ax.plot(df_pfs.time, df_pfs.SimpleMA, label='SimpleMA')
 ax.plot(df_pfs.time, df_pfs.meanreversion, label='MeanRev')
-ax.plot(df_pfs.time, df_pfs.RSI, label='RSI')
-ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
+#ax.plot(df_pfs.time, df_pfs.RSI, label='RSI')
+#ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
 
 ax.set_title('Portfolios over Time', fontsize = FONTSIZE_TITLES)
 
@@ -472,4 +474,10 @@ plt.legend()
 
 # Show and plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'PORTFOLIOS_' + 'TIMEPERIOD' + '.png')
+
+if os.path.isdir(PATH_PLOTS + TIMEPERIOD):
+    pass
+else:
+    os.mkdir(PATH_PLOTS + TIMEPERIOD)
+
+fig.savefig(PATH_PLOTS + TIMEPERIOD + '/PORTFOLIOS_' + 'TIMEPERIOD' + '.png', dpi = 1000)
