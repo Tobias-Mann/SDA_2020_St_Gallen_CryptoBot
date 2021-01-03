@@ -16,6 +16,5 @@ data = pd.read_csv("../Data/Dec19.csv")
 sim.simulate_on_aggregate_data(data.dropna())
 
 # retrieve Portfolio performance over simulated time
-print(sim.env.portfolio.portfolio_over_time)
-print(sim.decisionmaker.rsi_memory)
+print(sim.env.portfolio.portfolio_repricing(data))
 
