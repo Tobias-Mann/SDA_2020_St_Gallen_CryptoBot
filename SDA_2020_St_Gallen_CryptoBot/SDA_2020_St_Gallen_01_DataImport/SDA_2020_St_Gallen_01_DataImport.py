@@ -1,5 +1,4 @@
 import pandas as pd
-# from ta import add_all_ta_features
 import os
 import datetime
 import matplotlib.pyplot as plt
@@ -69,7 +68,7 @@ fig.savefig('FULL_BTC_USD.png', dpi=1200)
 
 # plot the different timeframes
 fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
-ax1 = fig.add_subplot(111, ylabel='Returns', xlabel = 'Time in Minutes')
+ax1 = fig.add_subplot(111, ylabel='Returns', xlabel = 'Observation Steps')
 ax1.plot(Nov17.index,
          np.log(1 + Nov17['close'].pct_change()).cumsum(),
          label='Nov17')
