@@ -212,13 +212,9 @@ sim2.initialize_decisionmaker(smartstrategies.smartbalancer)
 sim.decisionmaker.agent = agent
 sim2.decisionmaker.agent = agent2
 
-# # read in data
-# data = pd.read_csv("./Data/BTC_USD/Dec.csv")
-
 # start simulator
 sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
 sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
-
 
 # Show Portfolio Performance
 data = data[["time", "open","high","low","close","volume"]]
@@ -226,8 +222,8 @@ print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_repricing(data))
 print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_repricing(data))
 
 # save Portfolios Performance and Tearsheet of Q-Learning Agents:
-def save_df(df, folder_path, name, folder_time_name):
-    folder = folder_path + folder_time_name + '/'
+def save_df(df, folder_path, name):
+    folder = folder_path + '/'
     if os.path.isdir(folder):
         pass
     else:
@@ -235,8 +231,7 @@ def save_df(df, folder_path, name, folder_time_name):
     name_temp = name + '.csv'
     df.to_csv(folder + name_temp)
 
-FOLDER_TIME_NAME = 'Dec2019'
-save_df(sim.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'QL1', FOLDER_TIME_NAME)
-save_df(sim2.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'QL2', FOLDER_TIME_NAME)
-save_df(sim.env.portfolio.tearsheet(data), TIMEPERIOD, 'QL1', FOLDER_TIME_NAME)
-save_df(sim2.env.portfolio.tearsheet(data), TIMEPERIOD, 'QL2', FOLDER_TIME_NAME)
+save_df(sim.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns_ql1')
+save_df(sim2.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns:ql2')
+save_df(sim.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql1')
+save_df(sim2.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql2')
