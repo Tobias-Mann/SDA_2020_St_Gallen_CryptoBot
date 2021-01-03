@@ -125,7 +125,6 @@ merged_cumreturns = merge_dfs((PATH_PFS + TIMEPERIOD + '/'), filenames_pfs, 'cum
 merged_cumreturns['time'] = data['time']
 merged_cumreturns.to_csv(PATH_PFS + TIMEPERIOD + '/merged_cumreturn.csv')
 
-"""
 # Strategies: save merged df
 def save_strategies (name):
 
@@ -160,4 +159,3 @@ def save_strategies (name):
 
 strategies_name = 'Strategies_' + TIMEPERIOD
 save_strategies(strategies_name)
-"""
