@@ -9,6 +9,7 @@ numpy = "*"
 matplotlib = "*"
 tqdm = "*"
 scipy = "*"
+mplfinance = "*"
 
 [dev-packages]
 
