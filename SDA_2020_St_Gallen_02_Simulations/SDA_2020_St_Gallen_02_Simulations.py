@@ -16,7 +16,7 @@ data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
-TIMEPERIOD = '2014-2019'
+TIMEPERIOD = ' Dec 2019'
 PATH_PFS = './SDA_2020_St_Gallen_02_SimpleStratSim/'
 PATH_STRATEGIES = './SDA_2020_St_Gallen_02_SimpleStratSim/'
 PATH_TEARSHEETS = './SDA_2020_St_Gallen_02_SimpleStratSim/'
