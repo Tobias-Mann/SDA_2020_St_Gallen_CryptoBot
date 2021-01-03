@@ -13,9 +13,10 @@ from os.path import isfile, join
 # Read in data
 data = pd.read_csv("./Data/BTC_USD/df_raw.csv")
 data = data[["time", "open","high","low","close","volume"]]
+data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
-TIMEPERIOD = '2013-2019'
+TIMEPERIOD = '2014-2019'
 PATH_PFS = './Data/Portfolios/'
 PATH_STRATEGIES = './Data/Strategies/'
 PATH_TEARSHEETS = './Data/Tearsheets/'
@@ -44,7 +45,7 @@ for name, strategy in STRATEGIESCOLLECTION.items():
 def dataframebycolumn(column):
     colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
     columns, colvals = list(zip(*colzip))
-    return pd.DataFrame(zip(*colvals), columns=columns, index=data["time"])
+    return pd.DataFrame(list(zip(*colvals)), columns=columns, index=data["time"])
 
 df_cumulative = dataframebycolumn("cumreturn")
 df_Absolute = dataframebycolumn("value")
