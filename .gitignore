@@ -1,17 +1,14 @@
-
 .DS_Store
 Data/.DS_Store
 __pycache__
-q-learning
-q-learning2
-Data/.DS_Store
+
 Data/.DS_Store
 .vscode/settings.json
-lastmontecarlosimulation.csv
-lastmontecarlosimulation.csv
-Data/df_raw.csv
 .vscode/
 Icon
+
+lastmontecarlosimulation.csv
+Data/df_raw.csv
 
 SDA_2020_St_Gallen_02_Simulations/Nov_2017/
 SDA_2020_St_Gallen_02_Simulations/Nov_2018/
