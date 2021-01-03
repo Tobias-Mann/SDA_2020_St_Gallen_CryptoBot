@@ -1,7 +1,8 @@
 import os
 import pandas as pd
 from scipy import stats
-import plotting
+
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_07_MonteCarloVis.plotting as plotting
 
 
 def test_average_performance(paths, data, threshold = .01, verbose = False):

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-import qlearning
-import simulator
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.qlearning as ql
 
 class smartbalancer(simulator.decisionmaker):
     def __init__(self, environment):

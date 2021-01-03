@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-import simulator 
-import strategies
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.strategies as strategies
 
 
 # create simulator
