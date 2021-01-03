@@ -218,12 +218,12 @@ sim2.decisionmaker.agent = agent2
 # start simulator
 print("\nQLearning Agent 1\n")
 sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
+print("\nQLearning Agent 2\n")
 sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
 
 # Show Portfolio Performance
 data = data[["time", "open","high","low","close","volume"]]
 print("\nPortfolio 1:\n", sim.env.portfolio.portfolio_repricing(data))
-print("\nQLearning Agent 2\n")
 print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_repricing(data))
 
 
