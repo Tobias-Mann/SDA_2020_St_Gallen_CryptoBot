@@ -11,11 +11,11 @@ import os
 
 # DATA IMPORT  --------------------------
 
-TIMEPERIOD = '2014-2019'
-PATH_PLOTS = './Images/'
+TIMEPERIOD = '01.12.2019'
+PATH_PLOTS = './SDA_2020_St_Gallen_03_SimpleStratVis/Images/'
 
-df = pd.read_csv('SDA_2020_St_Gallen_02_SimpleStratSim/2014-2019/Strategies_2014-2019.csv')
-df1 = pd.read_csv('SDA_2020_St_Gallen_02_SimpleStratSim/df_raw.csv')
+df = pd.read_csv('./SDA_2020_St_Gallen_02_SimpleStratSim/Dec_2019/Strategies_Dec_2019.csv')
+df1 = pd.read_csv('./Data/Dec19.csv')
 df1 = df1[pd.to_datetime(df1.time).agg(lambda x: x.year != 2013).values]
 
 df['open'] = df1['open']
@@ -31,8 +31,8 @@ cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 
     'z_value', 'rsi', 'cumreturn', 'value']
 
 df = df[cols]
+df = df.head(1000)
 df_long = df
-#df = df.head(1000)
 
 # Set overall Plots ---------------------
 
@@ -42,8 +42,7 @@ TEXTSIZE = 10
 FONTSIZE_TITLES = 16
 FIGSIZE = (10, 5)
 MARKERSIZE = 8
-# TIME_FMT = mdates.DateFormatter('%H:%M')
-TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
+TIME_FMT = mdates.DateFormatter('%H:%M')
 
 if os.path.isdir(PATH_PLOTS):
     pass
@@ -52,16 +51,10 @@ else:
 
 plt.close("all")
 
-
+"""
 # FUNCTIONS --------------------
 
 def moving_average(x, n, type='simple'):
-    """
-    compute an n period moving average.
-
-    type is 'simple' | 'exponential'
-
-    """
     x = np.asarray(x)
     if type == 'simple':
         weights = np.ones(n)
@@ -104,7 +97,7 @@ fig = plt.figure(num=None,
                  edgecolor='k')
 # Add a subplot and label for y-axis
 ax1 = fig.add_subplot(111, ylabel='Price in USD', xlabel = None)
-ax1.set_title('Simple MA', fontsize = FONTSIZE_TITLES)
+ax1.set_title(TIMEPERIOD + ': Simple MA', fontsize = FONTSIZE_TITLES)
 
 #ax1.margins(x=-0.4, y=--0.4)
 # Plot the closing price
@@ -158,7 +151,7 @@ df.loc[df['positions'] == -1]
 # Upper Subplot
 fig, (ax1, ax2) = plt.subplots(2, figsize= FIGSIZE, sharex = True)
 plt.subplots_adjust(wspace=0, hspace=0.1)
-ax1.set_title('BTC Price and MACD', fontsize = FONTSIZE_TITLES)
+ax1.set_title(TIMEPERIOD + ': BTC Price and MACD', fontsize=FONTSIZE_TITLES)
 ax1.plot(df.index, df['close'], color = 'black')
 ax1.set_ylabel('Price in USD')
 
@@ -204,7 +197,7 @@ plt.legend()
 
 # plot and save
 plt.show
-fig.savefig(PATH_PLOTS + 'MACD_' + 'TIMEPERIOD' + '.png', dpi = 1000)
+fig.savefig(PATH_PLOTS + 'MACD_' + TIMEPERIOD + '.png', dpi = 1000)
 
 
 
@@ -225,7 +218,7 @@ ax1 = plt.subplot(gs[0])
 ax2 = plt.subplot(gs[1])
 ax2t = ax1.twinx()  # Create a new Axes instance with an invisible x-axis and an independent y-axis positioned opposite to the original one (i.e. at right)
 plt.subplots_adjust(wspace=0, hspace=0.01)
-ax1.set_title('BTC PRICE, MA, RSI', fontsize = FONTSIZE_TITLES)
+ax1.set_title(TIMEPERIOD + ': BTC PRICE, MA, RSI', fontsize=FONTSIZE_TITLES)
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%d-%m-%Y"))
 
 # Plot the Price
@@ -264,7 +257,7 @@ ax2.xaxis.set_major_formatter(TIME_FMT)
 
 # show and save plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'RSI_' + 'TIMEPERIOD' + '.png', dpi=1000)
+fig.savefig(PATH_PLOTS + 'RSI_' + TIMEPERIOD + '.png', dpi=1000)
 
 
 
@@ -282,7 +275,7 @@ for date, row in df.iterrows():
 # Upper Subplot
 fig, (ax1, ax2) = plt.subplots(2, figsize = FIGSIZE, sharex = True)
 plt.subplots_adjust(wspace=0, hspace=0.1)
-ax1.set_title('Mean Reversion: BTC Price and Z-Value', fontsize = FONTSIZE_TITLES)
+ax1.set_title(TIMEPERIOD +': Mean Reversion: BTC Price and Z-Value', fontsize = FONTSIZE_TITLES)
 candlestick_ohlc(ax1, ohlc, colorup="g", colordown="r", width=0.005,)
 
 #ax1.plot(df.index, df['close'], color='black')
@@ -300,7 +293,7 @@ ax2.locator_params(axis='x', nbins=10)
 ax2.xaxis.set_major_formatter(TIME_FMT)
 
 plt.show()
-fig.savefig(PATH_PLOTS + 'MEANREVERSION_' + 'TIMEPERIOD' + '.png', dpi=1000)
+fig.savefig(PATH_PLOTS + 'MEANREVERSION_' + TIMEPERIOD + '.png', dpi=1000)
 
 
 # ALL TOGETHER PLOTS ----------------------------------------------
@@ -335,7 +328,7 @@ for date, row in df.iterrows():
 ax_candle.plot(df.index, df["short_ma"], label="MA 12")
 ax_candle.plot(df.index, df["long_ma"], label="MA 26")
 candlestick_ohlc(ax_candle, ohlc, colorup="g", colordown="r", width=0.005,)
-ax_candle.set_title('Candlestick (OHLC)')
+ax_candle.set_title(TIMEPERIOD + ': Candlestick (OHLC)')
 ax_candle.legend()
 ax_candle.set_ylabel('Price in USD')
 
@@ -393,7 +386,7 @@ ax_candle.xaxis.set_major_formatter(TIME_FMT)
 
 # Show and plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'OVERVIEW_' + 'TIMEPERIOD' + '.png', dpi = 1200)
+fig.savefig(PATH_PLOTS + 'OVERVIEW_' + TIMEPERIOD + '.png', dpi = 1200)
 
 
 # MONTE CARLO SIMULATION PLOT ----------------------------------------------
@@ -434,14 +427,15 @@ plt.legend()
 
 # show and plot
 plt.show()
-fig.savefig(PATH_PLOTS + 'MONTECARLO_' + 'TIMEPERIOD' + '.png', dpi=1000)
+fig.savefig(PATH_PLOTS + 'MONTECARLO_' + TIMEPERIOD + '.png', dpi=1000)
 
-
+"""
 # PLOTTING THE PORTFOLIOS ----------------------------------------------
 
-TIMEPERIOD = '2013-2019'
+TIMEPERIOD = '2014-2019'
+TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
 
-df_pfs = pd.read_csv('./Data/Portfolios/2013-2019/merged_cumreturn.csv')
+df_pfs = pd.read_csv('./SDA_2020_St_Gallen_02_SimpleStratSim/2014-2019/merged_cumreturn.csv')
 df_pfs.drop(columns = 'time', inplace = True)
 df_pfs.rename(columns = {'Unnamed: 0': 'time'}, inplace = True)
 df_pfs['time'] = pd.to_datetime(df_pfs['time'])
@@ -467,10 +461,10 @@ ax.plot(df_pfs.time, df_pfs.BuyAndHold, label = 'Buy and Hold', color = 'red')
 ax.plot(df_pfs.time, df_pfs.MACD, label='MACD')
 ax.plot(df_pfs.time, df_pfs.SimpleMA, label='SimpleMA')
 ax.plot(df_pfs.time, df_pfs.meanreversion, label='MeanRev')
-#ax.plot(df_pfs.time, df_pfs.RSI, label='RSI')
+ax.plot(df_pfs.time, df_pfs.RSI, label='RSI')
 #ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
 
-ax.set_title('Portfolios over Time', fontsize = FONTSIZE_TITLES)
+ax.set_title('Portfolios over ' + TIMEPERIOD, fontsize = FONTSIZE_TITLES)
 
 plt.legend()
 
@@ -482,4 +476,4 @@ if os.path.isdir(PATH_PLOTS + TIMEPERIOD):
 else:
     os.mkdir(PATH_PLOTS + TIMEPERIOD)
 
-fig.savefig(PATH_PLOTS + TIMEPERIOD + '/PORTFOLIOS_' + 'TIMEPERIOD' + '.png', dpi = 1000)
+fig.savefig(PATH_PLOTS + TIMEPERIOD + '/PORTFOLIOS_' + TIMEPERIOD + '.png', dpi = 1000)
