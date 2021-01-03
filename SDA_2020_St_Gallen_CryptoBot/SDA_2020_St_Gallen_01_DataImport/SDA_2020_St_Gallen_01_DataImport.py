@@ -37,11 +37,11 @@ df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'Hig
 print(df_merged.info())
 
 # save the new file under the folder Data
-df_merged.to_csv('../Data/BTC_USD/df_raw.csv', sep = ',', na_rep = '.', index = False)
+df_merged.to_csv('../Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
 # create and save subsets of Decembers
 def make_subset (df, start_window, end_window, name):
-    folder = '../Data/BTC_USD/'
+    folder = '../Data/'
     if os.path.isdir(folder):
         pass
     else:
@@ -55,24 +55,21 @@ def make_subset (df, start_window, end_window, name):
 
 # create subsets
 Nov17 = make_subset(df_merged, '2017-11-01 00:00:00', '2017-11-30 23:59:00', 'Nov17')
-Dec17 = make_subset(df_merged, '2017-12-01 00:00:00', '2017-12-31 23:59:00', 'Dec17')
 Nov18 = make_subset(df_merged, '2018-11-01 00:00:00', '2018-11-30 23:59:00', 'Nov18')
-Dec18 = make_subset(df_merged, '2018-12-01 00:00:00', '2018-12-31 23:59:00', 'Dec18')
-Nov19 = make_subset(df_merged, '2019-11-01 00:00:00', '2019-11-30 23:59:00', 'Nov19')
 Dec19 = make_subset(df_merged, '2019-12-01 00:00:00', '2019-12-31 23:59:00', 'Dec19')
 
 # plot the full timeframe
-figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
-ax1 = figure.add_subplot(111, ylabel='Price in USD')
+fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
+ax1 = fig.add_subplot(111, ylabel='BTC Price in USD')
 ax1.plot(df_merged.time, df_merged.close)
 ax1.plot(df_merged.time, df_merged.close)
 ax1.set_title('BTC PRICE OVER ALL DATA')
 plt.show()
-
+fig.savefig('FULL_BTC_USD.png', dpi=1200)
 
 # plot the different timeframes
-figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
-ax1 = figure.add_subplot(111, ylabel='Returns', xlabel = 'Time in Minutes')
+fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
+ax1 = fig.add_subplot(111, ylabel='Returns', xlabel = 'Time in Minutes')
 ax1.plot(Nov17.index,
          np.log(1 + Nov17['close'].pct_change()).cumsum(),
          label='Nov17')
@@ -85,10 +82,8 @@ ax1.plot(Dec19.index,
 ax1.set_title('BTC RETURNS OVER DIFFERENT PERIODS')
 plt.legend()
 plt.show()
+fig.savefig('3PERIODS_BTC_USD.png', dpi=1200)
 
-
-# plot all single years and save the plots
-PATH_PLOTS = './Images/'
 
 for i in (data_frames):
     i['Time'] = pd.to_datetime(i['Time'], unit = 'ms')
@@ -102,11 +97,5 @@ for i in (data_frames):
     TIME = str(i['Time'][0])[:-15]
     ax1.set_title('Timeframe: ' + TIME)
     ax1.plot(i['Time'], i['Close'])
-    if os.path.isdir(PATH_PLOTS):
-        pass
-    else:
-        os.mkdir(PATH_PLOTS)
-
     plt.show()
-    fig.savefig(PATH_PLOTS + TIME + '_BTC_USD.png', dpi=1200)
-
+    fig.savefig(TIME + '_BTC_USD.png', dpi=1200)
