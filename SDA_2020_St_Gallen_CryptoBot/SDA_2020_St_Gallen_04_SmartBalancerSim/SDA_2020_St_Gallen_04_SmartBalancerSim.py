@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-import qlearning as ql
-import features
-import simulator
-import smartstrategies
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.qlearning as ql
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.features as features
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.smartstrategies as smartstrategies
 import matplotlib.pyplot as plt
 from matplotlib import style
 from tqdm import tqdm

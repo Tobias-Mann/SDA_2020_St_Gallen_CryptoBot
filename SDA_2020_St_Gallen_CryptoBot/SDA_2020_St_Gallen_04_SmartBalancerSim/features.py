@@ -1,4 +1,4 @@
-import qlearning as ql
+import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.qlearning as ql
 import numpy as np
 
 
