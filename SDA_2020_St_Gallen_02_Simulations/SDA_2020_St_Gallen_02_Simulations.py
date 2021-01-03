@@ -24,7 +24,7 @@ data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
 
-TIMEPERIOD = 'Dec 2019'
+TIMEPERIOD = 'Output Dec 2019'
 PATH_PFS = './'
 PATH_STRATEGIES = './'
 PATH_TEARSHEETS = './'
@@ -166,7 +166,7 @@ def save_strategies (name):
 
     df.to_csv(folder + name_temp)
 
-strategies_name = 'Strategies_' + TIMEPERIOD
+strategies_name = 'strategies_indicators'
 save_strategies(strategies_name)
 
 
