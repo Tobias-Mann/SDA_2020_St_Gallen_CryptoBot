@@ -41,7 +41,6 @@ for name, strategy in STRATEGIESCOLLECTION.items():
     memories[name] = sim.decisionmaker
 
 
-
 def dataframebycolumn(column):
     colzip = [(name, p.portfolio_repricing(data)[column].values) for name, p in portfolios.items()]
     columns, colvals = list(zip(*colzip))
@@ -86,7 +85,7 @@ def merge_dfs(path, filenames, column):
 
 ### SAVE SHEETS FOR LATER ---------------------------------
 
-# Tearsheets: Save Signle
+# Tearsheets: Save single sheets
 def save_tearsheets (folder_time_name):
     for name, strategy in STRATEGIESCOLLECTION.items():
         folder = PATH_TEARSHEETS + folder_time_name + '/'
@@ -100,12 +99,12 @@ def save_tearsheets (folder_time_name):
 
 save_tearsheets(TIMEPERIOD)
 
-# Tearsheets: Merge and savll all in one
+# Tearsheets: Merge and save all in one
 filenames_ts = find_csv_filenames(PATH_TEARSHEETS + TIMEPERIOD + '/') 
 merged_tearsheets = merge_dfs((PATH_TEARSHEETS + TIMEPERIOD + '/'), filenames_ts , 'Performance Summary')
 merged_tearsheets.to_csv(PATH_TEARSHEETS + TIMEPERIOD + '/merged_tearsheet.csv')
 
-# Porfolios: Save Single
+# Porfolios: Save signle sheets
 def save_portfolios (folder_time_name):
     for name, strategy in STRATEGIESCOLLECTION.items():
         folder = './Data/Portfolios/' + folder_time_name + '/'
