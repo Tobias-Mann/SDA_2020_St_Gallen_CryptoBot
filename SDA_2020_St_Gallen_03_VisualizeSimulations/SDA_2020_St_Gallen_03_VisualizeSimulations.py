@@ -34,8 +34,8 @@ cols = ['open', 'high', 'low', 'close', 'volume', 'macd', 'signal', 'short_ma', 
     'z_value', 'rsi', 'cumreturn', 'value']
 
 df = df[cols]
-df = df.head(1000)
 df_long = df
+df = df.head(1000)
 
 # Set overall Plots ---------------------
 
@@ -391,7 +391,7 @@ ax_candle.xaxis.set_major_formatter(TIME_FMT)
 plt.show()
 fig.savefig(PATH_PLOTS + 'OVERVIEW_' + TIMEPERIOD + '.png', dpi = 1200)
 
-"""
+
 # PLOTTING THE PORTFOLIOS OF SIMPLE TRADING STRATEGIES ----------------------------------------------
 
 # Please change the input variables to get the wanted Porfolio
@@ -443,7 +443,7 @@ else:
 # save plot
 fig.savefig(PATH_PLOTS + 'PORFOLIOS_' + TIMEPERIOD + '.png', dpi = 1000)
 
-
+"""
 # PLOTTING THE Q_LEARNING PORTFOLIO ----------------------------------------------
 
 # Please change the input variables to get the wanted Porfolio
@@ -451,8 +451,6 @@ TIMEPERIOD = 'Dec_2019'
 TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
 INITIAL_CAPITAL = 1
 df_pfs = pd.read_csv('../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/cum_returns_ql2.csv')
-
-df_pfs.drop(columns='time', inplace=True)
 df_pfs.rename(columns={'Unnamed: 0': 'time'}, inplace=True)
 df_pfs['time'] = pd.to_datetime(df_pfs['time'])
 
@@ -473,19 +471,11 @@ ax.set_ylabel('Portfolio Value in Mio. USD')
 
 # plot the values
 ax.plot(df_pfs.time, (1 + df_pfs.cumreturn) * INITIAL_CAPITAL, label='Q-Learning')
-ax.plot(df_long.rim, (1 + df_long.cumreturn) * INITIAL_CAPITAL, label='Buy and Hold')
-#ax.plot(df_pfs.time, df_pfs.QL2, label='Q-Learning',)
-
+ax.plot(df_long.index, (1 + df_long.cumreturn) * INITIAL_CAPITAL, label='Buy and Hold')
 ax.set_title('Portfolios over ' + TIMEPERIOD, fontsize=FONTSIZE_TITLES)
-
 plt.legend()
 
 # Show and plot
 plt.show()
 
-if os.path.isdir(PATH_PLOTS + TIMEPERIOD):
-    pass
-else:
-    os.mkdir(PATH_PLOTS + TIMEPERIOD)
-
-fig.savefig(PATH_PLOTS + 'Q_LEARNING' + TIMEPERIOD + '.png', dpi=1000)
+fig.savefig(PATH_PLOTS + 'Q_LEARNING_' + TIMEPERIOD + '.png', dpi=1000)
