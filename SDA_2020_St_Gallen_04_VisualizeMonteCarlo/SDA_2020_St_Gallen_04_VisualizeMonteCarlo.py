@@ -1,10 +1,13 @@
 import os
 import pandas as pd
+import numpy as np
 from scipy import stats
-
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.dates import DateFormatter
 import plotting
 
-
+"""
 def test_average_performance(paths, data, threshold = .01, verbose = False):
     # This functin calculates the avgerage cumulative BTC return, and calculates the p-Value that the true cumulative simulation return is equal or below to BTC performance
     cumreturn=lambda x: x[-1]/x[0]-1
@@ -33,17 +36,24 @@ if __name__ == "__main__":
             print(f"File is mising: {file}")
     else:
         print("There is no data from a previous Monte Carlo Simulation. Please run first the simulation to generate the data")
-
+"""
 
 # MONTE CARLO SIMULATION PLOT ----------------------------------------------
 
 PATH_PLOTS = './Outputs'
 TIMEPERIOD = 'Dec_2019'
+FIGSIZE = (10,10)
+TIME_FMT = mdates.DateFormatter('%d-%m-%Y')
+
 
 # change the folder where the input is
 df_mc = pd.read_csv('..//SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/Dec19_MC_Paths.csv.gzip',  compression='gzip')
 df_mc['time'] = pd.to_datetime(df_mc['time'])
 df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
+
+df = pd.read_csv('..//Data/Dec19.csv')
+df['cumreturn'] = np.log(1 + df['close'].pct_change()).cumsum()
+df['time'] = pd.to_datetime(df['time'])
 
 # initiliaze figure
 fig = plt.figure(num=None,
@@ -71,7 +81,7 @@ for i in df_mc.columns:
         if counter % 2 == 0:
             ax.plot(df_mc.time, df_mc[i], alpha=0.2, linewidth=1)
 
-ax.plot(df_long.index, df_long.cumreturn, label='BUY AND HOLD', linewidth=2)
+ax.plot(df.time, df.cumreturn, label='BUY AND HOLD', linewidth=2)
 plt.ylabel('Returns (in %)', fontsize=16)
 plt.legend()
 
