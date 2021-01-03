@@ -1,52 +1,34 @@
+import os
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
+from scipy import stats
+import plotting
 
-def create_mc_dist_plot(paths, data, quantiles, output="./Images/LastMonteCarloDistribution.png", title="Qlearning Monte Carlo Simulation vs BTC"):
-    quantiles = set(list(quantiles) + [1])
-    paths["BTC"] = np.log(data.loc[data.index[data["time"].isin(paths["time"].values)] ,["close"]].pct_change()+1).cumsum()
-    paths = paths.iloc[63:,:]
-    graph = pd.DataFrame(index=paths.index)
-    graph["time"] = paths["time"]
-    graph["BTC"] = paths["BTC"] * 100
-    graph["Mean"] = paths.mean(axis=1).values *100
-    quantile_packages = [(1-q, q, ((q+1)/(len(quantiles)+2)/2)) for q in quantiles]
-    for q in quantile_packages:
-        # Center Confidence interval
-        adjust = (1-q[1])/2
-        graph[q[0]] = paths.quantile(q[0]-adjust, axis=1).values * 100
-        graph[q[1]] = paths.quantile(q[1]+adjust, axis=1).values * 100
-    
-    plt.figure(dpi=1200)
-    fig, ax = plt.subplots(1,1)
-    
-    mean, = ax.plot(graph.index, graph["Mean"].values, 'k', linewidth=.5)
-    btc, = ax.plot(graph.index, graph["BTC"].values, 'r', linewidth=.25)
-    handles= [mean, btc]
-    labels = ["QLearning Performance", "BTC Performance"]
-    for q in quantile_packages:
-        ax.fill_between(graph.index, graph[q[0]], graph[q[1]], alpha=q[2], color="b")
-        h, = ax.fill(np.NaN, np.NaN, alpha=q[2], color="b")
-        handles.append(h)
-        labels.append(str(q[1]*100)+'% Confidence Interval')
-    
-    box = ax.get_position()
-    ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
-    ax.legend(handles=handles, labels=labels, loc='upper center', bbox_to_anchor=(.5, 1),ncol=3, fontsize='xx-small', framealpha=0)
-    ax.yaxis.grid(color='gray', linestyle='dashed')
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Cumulative Return (%)")
-    ticks = paths.iloc[::int(paths.index.size/5),:].index[1:].values
-    plt.autoscale(tight=True)
-    plt.setp(ax, xticks=ticks, xticklabels=pd.to_datetime(paths["time"]).agg(lambda x: x.date())[ticks])
-    fig.suptitle(title)
-    plt.savefig(output, dpi=1200)
-    plt.close("all")
 
+def test_average_performance(paths, data, threshold = .01, verbose = False):
+    # This functin calculates the avgerage cumulative BTC return, and calculates the p-Value that the true cumulative simulation return is equal or below to BTC performance
+    cumreturn=lambda x: x[-1]/x[0]-1
+    btc = cumreturn(data.close.values)
+    sumulation_cumreturns = paths.iloc[-1,:].values
+    t, p = stats.ttest_1samp(sumulation_cumreturns, btc)
+    if verbose:
+        if btc > sumulation_cumreturns.mean():
+            print(f"The strategy appears to perform worse on average than simply holding BTC")
+        elif p < threshold:
+            print(f"The t-Statistic for the simulations true cumulative return being identical to the the one of BTC is {round(t,4)}, the according p-Values is {round(p*100, 2)}% and below the {int(100*threshold)}% threshold!")
+        else:
+            print(f"The hypothesis of a significantly different performance is rejected at the {round(threshold*100,0)}% significance level")
+    return (t, p)
 
 if __name__ == "__main__":
-    monti = pd.read_csv("./Data/lastmontecarlosimulation.csv")
-    data = pd.read_csv("./Data/BTC_USD/Dec19.csv")
-    data.columns = ["time", "open","high","low","close","volume"]
-    mg = create_mc_dist_plot(monti, data, (.90, .60), title="Qlearning Monte Carlo Simulation vs BTC Nov17")
+    file = "./Data/BTC_USD/Nov17.csv"
+    paths_file = "./Data/Nov17_Paths.csv"
+    if os.path.exists(paths_file ):
+        if os.path.exists(file):
+            data = pd.read_csv(file)
+            paths = pd.read_csv(paths_file ).set_index("time")
+            test_average_performance(paths, data, verbose=True)
+            plotting.create_mc_dist_plot(paths.reset_index(), data, (.9, .6), output="./Images/Nov17.png", title="Qlearning Monte Carlo Simulation vs BTC Nov17")
+        else:
+            print(f"File is mising: {file}")
+    else:
+        print("There is no data fo a previous Monte Carlo Simulation. Please run first the simulation to generate the data")
