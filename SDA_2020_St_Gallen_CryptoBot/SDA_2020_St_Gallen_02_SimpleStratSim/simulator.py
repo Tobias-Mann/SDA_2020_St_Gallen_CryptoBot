@@ -124,7 +124,7 @@ class simulator_environment:
         # Add later -> function to retrive realtime performance evaluation
         pass
     
-    def simulate_on_aggregate_data(self, data, verbose=False):
+    def simulate_on_aggregate_data(self, data, verbose=True):
         if verbose:
             print("Starting Simulation:\n")
             bar = lambda values: tqdm(values)

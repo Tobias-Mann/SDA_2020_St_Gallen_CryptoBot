@@ -62,7 +62,7 @@ def merge_basedonlength(df1, df2, column_name):
     len1 = df1.shape[0]
     len2 = df2.shape[0]
     df1[column_name] = np.NaN
-    df1[column_name][-len2:] = df2.iloc[:, 0]
+    df1.loc[:, column_name][-len2:] = df2.iloc[:, 0]
 
 # merge dfs
 def merge_dfs(path, filenames, column):
