@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from ... import SDA_2020_St_Gallen_02_SimpleStratSim as simulator
+import simulator
 import qlearning as ql
 import features
 import smartstrategies
