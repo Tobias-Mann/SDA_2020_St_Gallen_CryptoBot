@@ -7,13 +7,16 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-# Additional imports for qlearning in the second half
+# Additional imports for qlearning in the second part
 import qlearning as ql
 import features
 import smartstrategies
 from tqdm import tqdm
 import multiprocessing as mp
 import os
+
+# Import Monte Carlo for last part
+import montecarlo as mc
 
 # SETUP FOR SIMPLE TRADING STRATEGIES -------------------------------------------------
 # Read in data
@@ -235,3 +238,7 @@ save_df(sim.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns_ql
 save_df(sim2.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns_ql2')
 save_df(sim.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql1')
 save_df(sim2.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql2')
+
+
+# Perform Montecarlo Simulation
+monti = mc.perform_mc_simulation(big_env, data.dropna(), 100, output=f"./{TIMEPERIOD}/Dec19_MC_Paths.csv")

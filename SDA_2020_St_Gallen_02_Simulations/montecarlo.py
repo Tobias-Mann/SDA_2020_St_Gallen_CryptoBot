@@ -49,8 +49,8 @@ def perform_mc_simulation(env, data, repetitions = 100, output="./lastmontecarlo
     return performance_aggregator
 
 if __name__ == "__main__":
-    data = pd.read_csv("./Data/Dec19.csv")
-    data.columns = ["time", "open","high","low","close","volume"]
+    data = pd.read_csv("../Data/Dec19.csv")
+    data =  data[["time", "open","high","low","close","volume"]]
     np.random.seed(0)
     # actionspace
     n = 3
