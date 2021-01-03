@@ -13,6 +13,6 @@ See also: SDA_2020_St_Gallen_01_DataImport, SDA_2020_St_Gallen_02_Simulations, S
 
 Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
-Datafile: ../Data/Dec19.csv, 
+Datafile: ../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/Dec19_MC_Paths.csv.gzip
 
-Output:  /De19.png, /MONTECARLO_Dec_2019.png
+Output:  ./Dec19.png, ./MONTECARLO_Dec_2019.png

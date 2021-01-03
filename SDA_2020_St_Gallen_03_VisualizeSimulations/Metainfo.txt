@@ -1,9 +1,9 @@
 
-Name of Quantlet: SDA_2020_St_Gallen_02_SimpleStratSim
+Name of Quantlet: SDA_2020_St_Gallen_03_VisualizeSimulations
 
 Published in: SDA_2020_St_Gallen_CryptoBot
 
-Description: Trading bot, which analysis a single timeseries of crypto currency prices to identify optimal conditions for entry and exit trades in real-time. Can deploy different strategies including qlearining approaches.
+Description: Plotting various perfomance graphes for simulated technical trading strategies
 
 Keywords: QLearning, Trading Bot, BTC, Bitcoin, Timeseries, Technical Indicators
 
