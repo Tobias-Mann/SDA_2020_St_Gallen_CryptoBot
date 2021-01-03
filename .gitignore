@@ -9,9 +9,7 @@ Data/.DS_Store
 .vscode/settings.json
 lastmontecarlosimulation.csv
 lastmontecarlosimulation.csv
-Data/
+Data/df_raw.csv
 Images/
 .vscode/
 Icon
-Data/BTC_USD/Dec19.csv
-Data/BTC_USD/Dec19.csv

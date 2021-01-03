@@ -5,32 +5,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
-"""
-### DATA SOURCE 1: KAGGLE ------------------------------
-# import dataframe
-df_merged = pd.read_csv('./Data/400 - 1m - Trading Pairs (2013-2020)/btcusd.csv')
-print(df_merged.info())
-
-# convert values from timestamp to date
-df_merged['time'] = pd.to_datetime(df_merged['time'], unit='ms')
-print(df_merged['time'])
-
-# this doesn't work well, we have multiple obs with the same timestamp but different price values
-
-### DATA SOURCE 2: CRYPTODATADOWNLOAD.com ------------------------------
-# import dataframe
-df2 = pd.read_csv('./Data/Bitfinex_BTCUSD_minute.csv', 
-    header=1)
-print(df2.info())
-
-# convert values from timestamp to date
-df2['unix'] = pd.to_datetime(df2['unix'], unit = 'ms')
-print(df2['unix'])
-
-# we only have data until 15th of November, so less than a month
-"""
-
-### DATA SOURCE 3: GITHUB  ------------------------------
+### DATA SOURCE: GITHUB  ------------------------------
 #https://github.com/Zombie-3000/Bitfinex-historical-data
 
 headers = ['Time', 'Open', 'Close', 'High', 'Low', 'Volume']
@@ -42,13 +17,13 @@ df_17 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-hist
 df_18 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2018/merged.csv?raw=true', names = headers)
 df_19 = pd.read_csv('https://raw.githubusercontent.com/Zombie-3000/Bitfinex-historical-data/master/BTCUSD/Candles_1m/2019/merged.csv?raw=true', names = headers)
 
-# check length and compare to theoretical value
-#print('Theoretical maximum obervations:', 24*365*7)
-#print('Actual observations of df:' len())
-
 # Merge dataframes
 data_frames = [df_13, df_14, df_15, df_16, df_17, df_18, df_19]
 df_merged = pd.concat(data_frames)
+
+# check length and compare to theoretical value
+#print('Theoretical maximum obervations:', 60*24*365*7)
+#print('Actual observations of df:' len(df_merged))
 
 #convert timestamp to datae
 df_merged['Time'] = pd.to_datetime(df_merged['Time'], unit = 'ms')
@@ -62,11 +37,11 @@ df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'Hig
 print(df_merged.info())
 
 # save the new file under the folder Data
-df_merged.to_csv('Data/BTC_USD/df_raw.csv', sep = ',', na_rep = '.', index = False)
+df_merged.to_csv('../Data/BTC_USD/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
 # create and save subsets of Decembers
 def make_subset (df, start_window, end_window, name):
-    folder = './Data/BTC_USD/'
+    folder = '../Data/BTC_USD/'
     if os.path.isdir(folder):
         pass
     else:
@@ -94,35 +69,26 @@ ax1.plot(df_merged.time, df_merged.close)
 ax1.set_title('BTC PRICE OVER ALL DATA')
 plt.show()
 
-"""
+
 # plot the different timeframes
 figure = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
 ax1 = figure.add_subplot(111, ylabel='Returns', xlabel = 'Time in Minutes')
 ax1.plot(Nov17.index,
          np.log(1 + Nov17['close'].pct_change()).cumsum(),
          label='Nov17')
-ax1.plot(Dec17.index,
-         np.log(1 + Dec17['close'].pct_change()).cumsum(),
-         label='Dec17')
 ax1.plot(Nov18.index,
          np.log(1 + Nov18['close'].pct_change()).cumsum(),
          label='Nov18')
-ax1.plot(Dec18.index,
-         np.log(1 + Dec18['close'].pct_change()).cumsum(),
-         label='Dec18')
-ax1.plot(Nov19.index,
-         np.log(1 + Nov19['close'].pct_change()).cumsum(),
-         label='Nov19')
 ax1.plot(Dec19.index,
          np.log(1 + Dec19['close'].pct_change()).cumsum(),
          label='Dec19')
 ax1.set_title('BTC RETURNS OVER DIFFERENT PERIODS')
 plt.legend()
 plt.show()
-"""
 
-# plot all single years
-PATH_PLOTS = './Images/Yearly_Prices/'
+
+# plot all single years and save the plots
+PATH_PLOTS = './Images/'
 
 for i in (data_frames):
     i['Time'] = pd.to_datetime(i['Time'], unit = 'ms')
@@ -144,5 +110,3 @@ for i in (data_frames):
     plt.show()
     fig.savefig(PATH_PLOTS + TIME + '_BTC_USD.png', dpi=1200)
 
-Gap16 = make_subset(df_merged, '2016-03-01 00:00:00', '2017-06-30 23:59:00','Gap16')
-Gap16[20000:30000]
