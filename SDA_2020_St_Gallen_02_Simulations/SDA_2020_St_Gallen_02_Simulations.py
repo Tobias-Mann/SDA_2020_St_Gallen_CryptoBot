@@ -235,7 +235,7 @@ def save_df(df, folder_path, name):
     df.to_csv(folder + name_temp)
 
 save_df(sim.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns_ql1')
-save_df(sim2.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns:ql2')
+save_df(sim2.env.portfolio.portfolio_repricing(data), TIMEPERIOD, 'cum_returns_ql2')
 save_df(sim.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql1')
 save_df(sim2.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql2')
 
