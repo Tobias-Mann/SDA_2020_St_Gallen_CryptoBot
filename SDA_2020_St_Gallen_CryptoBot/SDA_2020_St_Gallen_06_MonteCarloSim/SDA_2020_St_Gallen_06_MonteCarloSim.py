@@ -2,7 +2,7 @@ import multiprocessing as mp
 import pandas as pd 
 import numpy as np
 
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
+import SDA_2020_St_Gallen_02_SimpleStratSim.simulator as simulator
 import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.qlearning as ql
 import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.smartstrategies as smartstrategies
 import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.features as features
@@ -10,7 +10,7 @@ import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_04_SmartBalancerSim.featu
 from tqdm import tqdm
 
 
-def perform_mc_simulation(env, data, repetitions = 100, output="./Data/lastmontecarlosimulation.csv"):
+def perform_mc_simulation(env, data, repetitions = 100, output="./lastmontecarlosimulation.csv"):
     # the q_table is asigned with the random starting values when the agent is initialized,
     # thus the same ql.environment can be reused in the simulation but the agent needs to be initialized each time
     performance_aggregator = pd.DataFrame(index=data.index, columns=range(repetitions))
@@ -49,7 +49,7 @@ def perform_mc_simulation(env, data, repetitions = 100, output="./Data/lastmonte
     return performance_aggregator
 
 if __name__ == "__main__":
-    data = pd.read_csv("./Data/BTC_USD/Nov17.csv")
+    data = pd.read_csv("./Data/Dec19.csv")
     data.columns = ["time", "open","high","low","close","volume"]
     np.random.seed(0)
     # actionspace
@@ -64,4 +64,4 @@ if __name__ == "__main__":
     big_osp.features.append(features.rsi(14))
     big_env = ql.environment(big_osp, asp)
 
-    monti = perform_mc_simulation(big_env, data.dropna(), 100, output="./Data/Nov17_Paths.csv")
+    monti = perform_mc_simulation(big_env, data.dropna(), 100, output="./Dec19_MC_Paths.csv")

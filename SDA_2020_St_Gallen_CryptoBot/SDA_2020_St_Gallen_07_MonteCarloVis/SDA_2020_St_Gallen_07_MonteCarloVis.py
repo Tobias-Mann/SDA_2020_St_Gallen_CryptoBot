@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from scipy import stats
 
-import SDA_2020_St_Gallen_CryptoBot.SDA_2020_St_Gallen_07_MonteCarloVis.plotting as plotting
+import plotting
 
 
 def test_average_performance(paths, data, threshold = .01, verbose = False):
@@ -32,4 +32,4 @@ if __name__ == "__main__":
         else:
             print(f"File is mising: {file}")
     else:
-        print("There is no data fo a previous Monte Carlo Simulation. Please run first the simulation to generate the data")
+        print("There is no data from a previous Monte Carlo Simulation. Please run first the simulation to generate the data")
