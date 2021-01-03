@@ -12,10 +12,10 @@ import os
 # DATA IMPORT  --------------------------
 
 TIMEPERIOD = '01.12.2019'
-PATH_PLOTS = './SDA_2020_St_Gallen_03_SimpleStratVis/Images/'
+PATH_PLOTS = './Images/'
 
-df = pd.read_csv('./SDA_2020_St_Gallen_02_SimpleStratSim/Dec_2019/Strategies_Dec_2019.csv')
-df1 = pd.read_csv('./Data/Dec19.csv')
+df = pd.read_csv('../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/strategies_indicators.csv')
+df1 = pd.read_csv('../Data/Dec19.csv')
 df1 = df1[pd.to_datetime(df1.time).agg(lambda x: x.year != 2013).values]
 
 df['open'] = df1['open']
@@ -391,7 +391,7 @@ fig.savefig(PATH_PLOTS + 'OVERVIEW_' + TIMEPERIOD + '.png', dpi = 1200)
 
 # MONTE CARLO SIMULATION PLOT ----------------------------------------------
 
-df_mc = pd.read_csv('Data/lastmontecarlosimulation.csv')
+df_mc = pd.read_csv('../Data/lastmontecarlosimulation.csv')
 df_mc['time'] = pd.to_datetime(df_mc['time'])
 df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
 
