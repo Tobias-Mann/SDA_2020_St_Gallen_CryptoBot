@@ -14,8 +14,8 @@ import os
 TIMEPERIOD = '2014-2019'
 PATH_PLOTS = './Images/'
 
-df = pd.read_csv('SDA_2020_St_Gallen_02_SimpleStratSim/Strategies/Strategies_2014-2019.csv')
-df1 = pd.read_csv('SDA_2020_St_Gallen_02_SimpleStratSim/BTC_USD/df_raw.csv')
+df = pd.read_csv('SDA_2020_St_Gallen_02_SimpleStratSim/2014-2019/Strategies_2014-2019.csv')
+df1 = pd.read_csv('SDA_2020_St_Gallen_02_SimpleStratSim/df_raw.csv')
 df1 = df1[pd.to_datetime(df1.time).agg(lambda x: x.year != 2013).values]
 
 df['open'] = df1['open']
