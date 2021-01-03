@@ -39,7 +39,7 @@ print(df_merged.info())
 df_merged.to_csv('../Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
 ### MAKE SUBSETS OF DATA  ------------------------------
-
+SDA_2020_St_Gallen_CryptoBot / SDA_2020_St_Gallen_01_DataImport / SDA_2020_St_Gallen_01_DataImport.py
 # create and save subsets of Decembers
 def make_subset (df, start_window, end_window, name):
     folder = '../Data/'
