@@ -17,12 +17,12 @@ import os
 
 # SETUP FOR SIMPLE TRADING STRATEGIES -------------------------------------------------
 # Read in data
-data = pd.read_csv("../Data/Dec19.csv")
+data = pd.read_csv("../Data/df_raw.csv")
 data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
-TIMEPERIOD = 'Output_Dec_2019'
+TIMEPERIOD = 'Output_2014-2019'
 PATH_PFS = './'
 PATH_STRATEGIES = './'
 PATH_TEARSHEETS = './'
@@ -35,7 +35,7 @@ STRATEGIESCOLLECTION = {
     "meanreversion": strategies.meanreversion,
     "BuyAndHold":strategies.buyandhold
 }
-
+"""
 # SIMULATE MULTIPLE SIMPLE TRADING STRATEGIES -------------------------------------------------
 portfolios = {}
 memories = {}
@@ -165,7 +165,7 @@ def save_strategies (name):
 strategies_name = 'strategies_indicators'
 save_strategies(strategies_name)
 
-
+"""
 ### Simulations with a QLearning model ### -------------------------------------------------
 
 # set random seed to allow reproducable results
@@ -227,7 +227,7 @@ print("\nPortfolio 2:\n", sim2.env.portfolio.portfolio_repricing(data))
 
 # save Portfolios Performance and Tearsheet of Q-Learning Agents:
 def save_df(df, folder_path, name):
-    folder = folder_path + folder_time_name + '/'
+    folder = folder_path + '/'
     if os.path.isdir(folder):
         pass
     else:
