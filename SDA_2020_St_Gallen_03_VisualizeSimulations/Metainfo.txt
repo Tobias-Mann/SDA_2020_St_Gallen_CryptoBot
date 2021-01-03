@@ -15,4 +15,4 @@ Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
 Datafile: '../Data/Dec19.csv', 
 
-Output:  './Output/Dec19_Paths.csv'
+Output:  ./Q_LEARNING_Dec_2019.png, ./simpeMA_Dec19.png
