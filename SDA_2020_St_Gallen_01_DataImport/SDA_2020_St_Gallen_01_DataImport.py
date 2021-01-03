@@ -36,12 +36,12 @@ df_merged.rename(columns={'Time': 'time', 'Open': 'open', 'Close': 'close', 'Hig
 print(df_merged.info())
 
 # save the new file under the folder Data
-df_merged.to_csv('../Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
+df_merged.to_csv('./Data/df_raw.csv', sep = ',', na_rep = '.', index = False)
 
 ### MAKE SUBSETS OF DATA  ------------------------------
 # create and save subsets of Decembers
 def make_subset (df, start_window, end_window, name):
-    folder = '../Data/'
+    folder = './Data/'
     if os.path.isdir(folder):
         pass
     else:
@@ -60,6 +60,7 @@ Dec19 = make_subset(df_merged, '2019-12-01 00:00:00', '2019-12-31 23:59:00', 'De
 
 
 ### MAKE PLOTS FROM THE DATA  ------------------------------
+PATHNAME = './SDA_2020_St_Gallen_01_DataImport/'
 
 # plot the full timeframe
 fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
@@ -68,11 +69,11 @@ ax1.plot(df_merged.time, df_merged.close)
 ax1.plot(df_merged.time, df_merged.close)
 ax1.set_title('BTC PRICE OVER ALL DATA')
 plt.show()
-fig.savefig('FULL_BTC_USD.png', dpi=1200)
+fig.savefig(PATHNAME + 'FULL_BTC_USD.png', dpi=1200)
 
 # plot the different timeframes
 fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
-ax1 = fig.add_subplot(111, ylabel='Returns', xlabel = 'Observation Steps')
+ax1 = fig.add_subplot(111, ylabel='Cummulative Returns', xlabel = 'Observation Steps')
 ax1.plot(Nov17.index,
          np.log(1 + Nov17['close'].pct_change()).cumsum(),
          label='Nov17')
@@ -85,7 +86,7 @@ ax1.plot(Dec19.index,
 ax1.set_title('BTC RETURNS OVER DIFFERENT PERIODS')
 plt.legend()
 plt.show()
-fig.savefig('3PERIODS_BTC_USD.png', dpi=1200)
+fig.savefig(PATHNAME +'3PERIODS_BTC_USD.png', dpi=1200)
 
 # plot every year
 for i in (data_frames):
@@ -101,4 +102,4 @@ for i in (data_frames):
     ax1.set_title('Timeframe: ' + TIME)
     ax1.plot(i['Time'], i['Close'])
     plt.show()
-    fig.savefig(TIME + '_BTC_USD.png', dpi=1200)
+    fig.savefig(PATHNAME + TIME + '_BTC_USD.png', dpi=1200)
