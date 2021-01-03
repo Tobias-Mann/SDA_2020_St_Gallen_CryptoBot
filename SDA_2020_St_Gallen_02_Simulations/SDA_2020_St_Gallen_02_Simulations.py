@@ -17,12 +17,12 @@ import os
 
 # SETUP FOR SIMPLE TRADING STRATEGIES -------------------------------------------------
 # Read in data
-data = pd.read_csv("../Data/df_raw.csv")
+data = pd.read_csv("../Data/Dec19.csv")
 data = data[["time", "open","high","low","close","volume"]]
 data = data[pd.to_datetime(data.time).agg(lambda x: x.year != 2013).values]
 
 # Define variables
-TIMEPERIOD = 'Output_2014-2019'
+TIMEPERIOD = 'Output_Dec_2019'
 PATH_PFS = './'
 PATH_STRATEGIES = './'
 PATH_TEARSHEETS = './'
@@ -35,7 +35,7 @@ STRATEGIESCOLLECTION = {
     "meanreversion": strategies.meanreversion,
     "BuyAndHold":strategies.buyandhold
 }
-"""
+
 # SIMULATE MULTIPLE SIMPLE TRADING STRATEGIES -------------------------------------------------
 portfolios = {}
 memories = {}
@@ -165,7 +165,7 @@ def save_strategies (name):
 strategies_name = 'strategies_indicators'
 save_strategies(strategies_name)
 
-"""
+
 ### Simulations with a QLearning model ### -------------------------------------------------
 
 # set random seed to allow reproducable results
@@ -212,13 +212,9 @@ sim2.initialize_decisionmaker(smartstrategies.smartbalancer)
 sim.decisionmaker.agent = agent
 sim2.decisionmaker.agent = agent2
 
-# # read in data
-# data = pd.read_csv("./Data/BTC_USD/Dec.csv")
-
 # start simulator
 sim.simulate_on_aggregate_data(data.dropna(), verbose=True)
 sim2.simulate_on_aggregate_data(data.dropna(), verbose=True)
-
 
 # Show Portfolio Performance
 data = data[["time", "open","high","low","close","volume"]]
