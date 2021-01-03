@@ -15,7 +15,7 @@ from tqdm import tqdm
 import multiprocessing as mp
 import os
 
-# SETUP ---------------------------------------------
+# SETUP FOR SIMPLE TRADING STRATEGIES -------------------------------------------------
 # Read in data
 data = pd.read_csv("../Data/Dec19.csv")
 data = data[["time", "open","high","low","close","volume"]]
@@ -36,7 +36,7 @@ STRATEGIESCOLLECTION = {
     "BuyAndHold":strategies.buyandhold
 }
 
-# SIMULATE MULTIPLE STRATEGIES --------------------------
+# SIMULATE MULTIPLE SIMPLE TRADING STRATEGIES -------------------------------------------------
 portfolios = {}
 memories = {}
 for name, strategy in STRATEGIESCOLLECTION.items():
@@ -57,7 +57,7 @@ df_cumulative = dataframebycolumn("cumreturn")
 df_Absolute = dataframebycolumn("value")
 
 
-# GENERAL FUNCTIONS ------------------------------------
+# GENERAL FUNCTIONS -------------------------------------------------
 # get files with a .csv ending
 def find_csv_filenames(path_to_dir, suffix=".csv"):
     filenames = listdir(path_to_dir)
@@ -87,7 +87,7 @@ def merge_dfs(path, filenames, column):
             count += 1
     return df
 
-### SAVE SHEETS FOR LATER ---------------------------------
+### SAVE SHEETS FOR LATER -------------------------------------------------
 
 # Tearsheets: Save single sheets
 def save_tearsheets (folder_time_name):
@@ -166,7 +166,7 @@ strategies_name = 'strategies_indicators'
 save_strategies(strategies_name)
 
 
-### Simulations with a QLearning model ###
+### Simulations with a QLearning model ### -------------------------------------------------
 
 # set random seed to allow reproducable results
 np.random.seed(0)

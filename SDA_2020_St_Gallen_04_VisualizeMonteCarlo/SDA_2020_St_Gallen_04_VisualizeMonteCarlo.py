@@ -22,13 +22,13 @@ def test_average_performance(paths, data, threshold = .01, verbose = False):
 
 if __name__ == "__main__":
     file = "../Data/Dec19.csv"
-    paths_file = "../Data/Nov17_Paths.csv"
+    paths_file = "../Data/lastmontecarlosimulation.csv"
     if os.path.exists(paths_file ):
         if os.path.exists(file):
             data = pd.read_csv(file)
-            paths = pd.read_csv(paths_file ).set_index("time")
+            paths = pd.read_csv(paths_file).set_index("time")
             test_average_performance(paths, data, verbose=True)
-            plotting.create_mc_dist_plot(paths.reset_index(), data, (.9, .6), output="./Images/Nov17.png", title="Qlearning Monte Carlo Simulation vs BTC Nov17")
+            plotting.create_mc_dist_plot(paths.reset_index(), data, (.9, .6), output="./Images/Dec19.png", title="Qlearning Monte Carlo Simulation vs BTC Dec19")
         else:
             print(f"File is mising: {file}")
     else:
