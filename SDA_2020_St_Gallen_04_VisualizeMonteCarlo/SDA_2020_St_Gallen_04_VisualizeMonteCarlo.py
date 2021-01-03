@@ -21,8 +21,8 @@ def test_average_performance(paths, data, threshold = .01, verbose = False):
     return (t, p)
 
 if __name__ == "__main__":
-    file = "./Data/BTC_USD/Nov17.csv"
-    paths_file = "./Data/Nov17_Paths.csv"
+    file = "../Data/Dec19.csv"
+    paths_file = "../Data/Nov17_Paths.csv"
     if os.path.exists(paths_file ):
         if os.path.exists(file):
             data = pd.read_csv(file)
