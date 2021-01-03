@@ -3,13 +3,13 @@ Name of Quantlet: SDA_2020_St_Gallen_02_SimpleStratSim
 
 Published in: SDA_2020_St_Gallen_CryptoBot
 
-Description: Plotting Results from the Monte Carlo Simulation
+Description: Trading bot, which analysis a single timeseries of crypto currency prices to identify optimal conditions for entry and exit trades in real-time. Can deploy different strategies including qlearining approaches.
 
 Keywords: QLearning, Trading Bot, BTC, Bitcoin, Timeseries, Technical Indicators
 
 Author: Tobias Mann, Tim Graf
 
-See also: SDA_2020_St_Gallen_01_DataImport, SDA_2020_St_Gallen_03_VisualizeSimulations, SDA_2020_St_Gallen_04_VisualizeMonteCarlo
+See also: SDA_2020_St_Gallen_01_DataImport, SDA_2020_St_Gallen_02_Simulations, SDA_2020_St_Gallen_03_VisualizeSimulations
 
 Submitted:  'Sun , January 03 2020 by Tobias Mann and Tim Graf'
 
