@@ -83,7 +83,7 @@ class simulator_environment:
         weights = randoms/randoms.sum()
         return ((np.array([ open, high, low, close]) * weights).sum()*2 + open + close)/4
     
-    def process_orders(self, time, ohlc, comission_rate=0):
+    def process_orders(self, time, ohlc, comission_rate=0.001):
         # Check for open orders to be filled
         # A filled order needs to change its status from active to filled,
         # aditionally an according transaction is added to the transactions book
