@@ -83,7 +83,7 @@ class simulator_environment:
         weights = randoms/randoms.sum()
         return ((np.array([ open, high, low, close]) * weights).sum()*2 + open + close)/4
     
-    def process_orders(self, time, ohlc):
+    def process_orders(self, time, ohlc, comission_rate=.01):
         # Check for open orders to be filled
         # A filled order needs to change its status from active to filled,
         # aditionally an according transaction is added to the transactions book
@@ -95,24 +95,24 @@ class simulator_environment:
                 if order["type"]=="market":
                     # buy at market
                     price = self.random_market_price(ohlc[0], ohlc[1], ohlc[2], ohlc[3])
-                    transaction = self.env.portfolio.buy(time, order["quantity"], price)
+                    transaction = self.env.portfolio.buy(time, order["quantity"], price * (1 + comission_rate))
                     self.env.transactionbook.process(transaction, order["id"])
                     filled = True
-                elif order["limit"] >= ohlc[2]:
+                elif order["limit"] * (1 + comission_rate) >= ohlc[2]:
                     # buy at limit
-                    transaction = self.env.portfolio.buy(time, order["quantity"], order["limit"])
+                    transaction = self.env.portfolio.buy(time, order["quantity"], order["limit"] * (1 + comission_rate))
                     self.env.transactionbook.process(transaction, order["id"])
                     filled = True
             else:
                 if order["type"]=="market":
                     # sell at market
                     price = self.random_market_price(ohlc[0], ohlc[1], ohlc[2], ohlc[3])
-                    transaction= self.env.portfolio.sell(time, order["quantity"], price)
+                    transaction= self.env.portfolio.sell(time, order["quantity"], price * (1 - comission_rate))
                     self.env.transactionbook.process(transaction, order["id"])
                     filled = True
-                elif order["limit"] <= ohlc[1]:
+                elif order["limit"] * (1 - comission_rate) <= ohlc[1]:
                     # sell at limit
-                    transaction = self.env.portfolio.sell(time, order["quantity"], order["limit"])
+                    transaction = self.env.portfolio.sell(time, order["quantity"], order["limit"] * (1 - comission_rate))
                     self.env.transactionbook.process(transaction, order["id"])
                     filled = True
                     
