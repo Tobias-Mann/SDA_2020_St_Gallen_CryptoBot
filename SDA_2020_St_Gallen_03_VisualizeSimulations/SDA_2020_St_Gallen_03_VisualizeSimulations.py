@@ -12,7 +12,7 @@ import os
 # DATA IMPORT  --------------------------
 
 TIMEPERIOD = '01.12.2019'
-PATH_PLOTS = './SDA_2020_St_Gallen_03_SimpleStratVis/Images/'
+PATH_PLOTS = './SDA_2020_St_Gallen_03_SimpleStratVis/Output_Plots/'
 
 df = pd.read_csv('./SDA_2020_St_Gallen_02_SimpleStratSim/Dec_2019/Strategies_Dec_2019.csv')
 df1 = pd.read_csv('./Data/Dec19.csv')
