@@ -244,4 +244,4 @@ save_df(sim2.env.portfolio.tearsheet(data), TIMEPERIOD, 'tearsheet_ql2')
 
 
 # Perform Montecarlo Simulation
-monti = mc.perform_mc_simulation(big_env, data.dropna(), 100, output=f"./{TIMEPERIOD}/Dec19_MC_Paths.csv")
+monti = mc.perform_mc_simulation(big_env, data.dropna(), 100, output=f"./{TIMEPERIOD}/Dec19_MC_Paths.csv.gzip")

@@ -22,7 +22,7 @@ def test_average_performance(paths, data, threshold = .01, verbose = False):
 
 if __name__ == "__main__":
     file = "../Data/Dec19.csv"
-    paths_file = "../Data/lastmontecarlosimulation.csv"
+    paths_file = "../SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/Dec19_MC_Paths.csv"
     if os.path.exists(paths_file ):
         if os.path.exists(file):
             data = pd.read_csv(file)
@@ -41,7 +41,7 @@ PATH_PLOTS = './Outputs'
 TIMEPERIOD = 'Dec_2019'
 
 # change the folder where the input is
-df_mc = pd.read_csv('./Data/lastmontecarlosimulation.csv')
+df_mc = pd.read_csv('..//SDA_2020_St_Gallen_02_Simulations/Output_Dec_2019/Dec19_MC_Paths.csv.gzip',  compression='gzip')
 df_mc['time'] = pd.to_datetime(df_mc['time'])
 df_mc_returns = df_mc.loc[:, df_mc.columns != 'time'].diff()
 

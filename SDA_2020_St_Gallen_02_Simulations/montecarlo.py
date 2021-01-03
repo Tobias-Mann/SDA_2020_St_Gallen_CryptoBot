@@ -44,7 +44,7 @@ def perform_mc_simulation(env, data, repetitions = 100, output="./lastmontecarlo
     data = data.set_index("time")
     performance_aggregator.index = data.index
     if output is not None:
-        performance_aggregator.to_csv(output)
+        performance_aggregator.to_csv(output,  compression='gzip')
         print(f"Saved the Paths in: {output}")
     return performance_aggregator
 
